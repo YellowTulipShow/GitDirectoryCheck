@@ -37,15 +37,16 @@ $ python main.py [path]
 
 再 `~/.bashrc` 文件加入一行:
 ```shell
-alias gitdc='python /D/ZRQWork/YTS.ZRQ/PythonScripts/git_directory_check/main.py'
+alias gits='python /.../GitDirectoryCheck/main.py'
 ```
 
 之后再 `shell` 中就可以直接使用命令了
 
 ```shell
-$ gitdc
+$ gits
 ```
 
+从 [PythonScripts](https://github.com/YellowTulipShow/PythonScripts) 代码库中单独分离出来, 进行独立的版本管理
 
 ## 参考学习地址
 ```shell
