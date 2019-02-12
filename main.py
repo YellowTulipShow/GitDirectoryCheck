@@ -101,24 +101,34 @@ def get_all_git_repositories(root):
 
     return rep_infos
 
-def filter_infos(infos):
-    status_codes = [
+def is_need_hint_status_message(msg):
+    no = [
+        "nothing to commit, working tree clean"
+    ]
+    for code in no:
+        if code in msg:
+            return False, code
+    yes = [
         "Changes not staged for commit:",
         "Changes to be committed:",
         "(use \"git push\" to publish your local commits)",
         "Untracked files:"
     ]
+    for code in yes:
+        if code in msg:
+            return True, code
+    return False, ""
 
+def filter_infos(infos):
     rinfos = []
     for info in infos:
-        for code in status_codes:
-            msg = info["out"]
-            if code in msg:
-                color_code = font_fuchsia(code)
-                info["out"] = msg.replace(code, color_code)
-                rinfos.append(info)
-                break
-
+        msg = info["out"]
+        ris, rcode = is_need_hint_status_message(msg)
+        if ris:
+            if rcode != "":
+                ccode = font_fuchsia(rcode)
+                info["out"] = msg.replace(rcode, ccode)
+            rinfos.append(info)
     return rinfos
 
 def font_black(str_text):
