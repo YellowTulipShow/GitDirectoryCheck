@@ -102,12 +102,6 @@ def get_all_git_repositories(root):
     return rep_infos
 
 def is_need_hint_status_message(msg):
-    no = [
-        "nothing to commit, working tree clean"
-    ]
-    for code in no:
-        if code in msg:
-            return False, code
     yes = [
         "Changes not staged for commit:",
         "Changes to be committed:",
@@ -117,6 +111,12 @@ def is_need_hint_status_message(msg):
     for code in yes:
         if code in msg:
             return True, code
+    no = [
+        "nothing to commit, working tree clean"
+    ]
+    for code in no:
+        if code in msg:
+            return False, code
     return False, ""
 
 def filter_infos(infos):
