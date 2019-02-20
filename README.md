@@ -49,8 +49,4 @@ $ gits
 从 [PythonScripts](https://github.com/YellowTulipShow/PythonScripts) 代码库中单独分离出来, 进行独立的版本管理
 
 ## 参考学习地址
-```shell
-# RadoRado 的 git检查脚本, 功能基本实现
-# 但与我的想法还有一些区别, 所以以此为基础进行代码的更改
-https://github.com/RadoRado/Statuser
-```
+* [RadoRado 的 git检查脚本, 功能基本实现 但与我的想法还有一些区别, 所以以此为基础进行代码的更改](https://github.com/RadoRado/Statuser)
