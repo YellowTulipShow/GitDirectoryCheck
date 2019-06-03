@@ -28,6 +28,10 @@ $ python main.py [path]
 }
 ```
 
+项目仓库中有默认的 `_config.json` 文件, 需要复制此文件并更改名称为: `config.json`
+
+`config.json` 已经加入到仓库屏蔽项中, 可随意更改, 不会误检查到
+
 `def_check_paths` 参数为: 默认的检查路径, 已数组形式写入多个
 
 `ignore_paths` 参数为: 遍历递归循环过程中, 子路径中如果出现这些字符串就忽略执行, 同时注意 `window` 路径的间隔平台执行 路径使用 `window` 格式
