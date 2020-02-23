@@ -5,24 +5,12 @@ import json
 import platform
 from subprocess import Popen, PIPE
 
-def read_config_json_file():
-    t = os.path.split(sys.argv[0])
-    try:
-        cp = os.path.join(t[0], "config.json")
-        f = open(cp, encoding='utf-8')
-        return json.load(f);
-    except Exception as e:
-        c = {
-            "def_check_paths": [
-                t[0]
-            ],
-            "ignore_paths": []
-        }
-        print("c:", c)
-        return c
+import file
 
 # 读取 json 配置文件
-c = read_config_json_file();
+c = file.read_program_config_DevelopToRelease(
+    release_file_name = 'config.json',
+    develop_file_name = '_config.json')
 
 def is_window_path(path):
     return re.match(r"[a-zA-Z]:\\.*", path) != None
