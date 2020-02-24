@@ -1,3 +1,4 @@
 # 屏蔽自动生成的文件内容
 __pycache__
 config.json
+.config.release.json

@@ -1,0 +1,12 @@
+{
+    "ignores": [
+        "wwwroot$",
+    ],
+    "roots": [
+        {
+            "path": "D:\\Work",
+            "ignores": [
+            ]
+        },
+    ]
+}
