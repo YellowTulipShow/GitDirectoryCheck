@@ -54,3 +54,4 @@ $ gits
 
 ## 参考学习地址
 * [RadoRado 的 git检查脚本, 功能基本实现 但与我的想法还有一些区别, 所以以此为基础进行代码的更改](https://github.com/RadoRado/Statuser)
+* [python脚本执行CMD命令并返回结果](https://blog.csdn.net/xgh1951/article/details/85244272)
