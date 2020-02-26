@@ -1,6 +1,20 @@
 # coding: UTF-8
 
 import re
+import platform
+
+def is_window_system():
+    return platform.system() == "Windows"
+
+def is_window_path(path):
+    return re.match(r"[a-zA-Z]:\\.*", path) != None
+
+def to_linux_path(window_path):
+    m = re.compile(r"([a-zA-Z]):\\(.*)", re.I | re.M | re.U)
+    r = m.findall(window_path)[0]
+    drive_letter = r[0]
+    son_path = re.sub(r"\\+", "/", str(r[1]))
+    return "/{}/{}".format(drive_letter, son_path)
 
 def trimStart(vstr, symbol=r'\s+'):
     vstr = str(vstr)
