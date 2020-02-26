@@ -22,10 +22,13 @@ def main(config):
 
     is_have_error_git_repo = False
     for path in git_project_paths:
-        if check_git_project(path):
+        is_exception, rcode, message_git_status = check_git_project(path)
+        if is_exception:
+            show_git_repo_result(path, rcode, message_git_status)
             is_have_error_git_repo = True
+
     if not is_have_error_git_repo:
-        # print("root: {}".format(root));
+        print(font_format.interval_line())
         print(font_format.font_green("All warehouses are very clean... ok!"))
         print(font_format.interval_line())
 
@@ -57,9 +60,8 @@ def check_git_project(path):
     message_git_status = execute_command('git status')
     ris, rcode = is_need_hint_status_message(message_git_status)
     if ris and rcode != "":
-        show_git_repo_result(path, rcode, message_git_status)
-        return True
-    return False
+        return True, rcode, message_git_status
+    return False, '', ''
 
 def execute_command(command_string):
     with os.popen(r'git status', 'r') as f:
