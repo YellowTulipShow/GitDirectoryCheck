@@ -27,7 +27,7 @@ def main(config):
     if not is_have_error_git_repo:
         # print("root: {}".format(root));
         print(font_format.font_green("All warehouses are very clean... ok!"))
-        pritn(font_format.interval_line())
+        print(font_format.interval_line())
 
 def subproject_address_list(root, ignores=[]):
     def is_ignore(folder):
