@@ -1,4 +1,5 @@
 {
+    "is_independent_root_execute": false,
     "ignores": [
         "wwwroot$",
     ],

@@ -9,9 +9,11 @@ import file
 import workTree
 
 def main(config):
-    git_project_paths = []
+    is_independent_root_execute = config.get('is_independent_root_execute', False)
     global_ignores = config.get('ignores', [])
     roots = config.get('roots', [])
+
+    git_project_paths = []
     for root in roots:
         root_path = root.get('path', None)
         if not root_path:
@@ -21,10 +23,11 @@ def main(config):
         son_paths = subproject_address_list(root_path, ignores=ignores)
         git_project_paths.extend(son_paths)
 
-    cwt = workTree.CheckWorkTree(git_project_paths);
-    cwt.execute_results()
-    for msg in cwt.results:
-        print(msg)
+        if is_independent_root_execute:
+            git_project_deal_with(son_paths)
+
+    if not is_independent_root_execute:
+        git_project_deal_with(git_project_paths)
 
 def subproject_address_list(root, ignores=[]):
     def is_ignore(folder):
@@ -49,6 +52,11 @@ def subproject_address_list(root, ignores=[]):
         results.extend(r)
     return results
 
+def git_project_deal_with(git_project_paths):
+    cwt = workTree.CheckWorkTree(git_project_paths);
+    cwt.execute_results()
+    for msg in cwt.results:
+        print(msg)
 
 if __name__ == '__main__':
     # 读取 json 配置文件

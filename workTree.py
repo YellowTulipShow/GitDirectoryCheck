@@ -50,10 +50,9 @@ class CheckWorkTree():
         self.results.append("Start find need git operating repositories:")
 
     def output_exception_message(self, path, keyword, result_message):
-        path_format = ''
         if convert.is_window_system() and convert.is_window_path(path):
-            path_format = convert.to_linux_path(path)
-        path_format = path_format.strip('\n')
+            path = convert.to_linux_path(path)
+        path_format = path.strip('\n')
         path_format = font_format.font_red(path_format)
 
         keyword_format = font_format.font_fuchsia(keyword)
@@ -68,6 +67,8 @@ class CheckWorkTree():
     def output_all_clean_message(self):
         self.results.append(font_format.interval_line())
         for path in self.git_project_paths:
+            if convert.is_window_system() and convert.is_window_path(path):
+                path = convert.to_linux_path(path)
             self.results.append(path)
         self.results.append(font_format.font_green("All warehouses are very clean... ok!"))
         self.results.append(font_format.interval_line())
