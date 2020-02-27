@@ -42,6 +42,8 @@ def subproject_address_list(root, ignores=[]):
         return False
     if os.path.isfile(root):
         return []
+    if not os.path.isdir(root):
+        return []
     os.chdir(root)
     folders = os.listdir(root)
     if '.git' in folders:

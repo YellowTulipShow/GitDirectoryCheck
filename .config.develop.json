@@ -5,9 +5,10 @@
     ],
     "roots": [
         {
+            "path": "C:\\Work",
+        },
+        {
             "path": "D:\\Work",
-            "ignores": [
-            ]
         },
     ]
 }
