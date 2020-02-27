@@ -1,7 +1,13 @@
 # coding: UTF-8
 
+import os
 import re
 import platform
+
+def execute_command(command_string):
+    with os.popen(command_string, 'r') as f:
+        text = f.read()
+    return text
 
 def is_window_system():
     return platform.system() == "Windows"
