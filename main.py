@@ -9,24 +9,27 @@ import file
 import workTree
 
 def main(config):
-    is_independent_root_execute = config.get('is_independent_root_execute', False)
+    global_is_independent_root_execute = config.get('is_independent_root_execute', False)
     global_ignores = config.get('ignores', [])
-    roots = config.get('roots', [])
+    global_roots = config.get('roots', [])
 
     git_project_paths = []
-    for root in roots:
+    for root in global_roots:
         root_path = root.get('path', None)
         if not root_path:
             continue
+        is_independent_root_execute = root.get('is_independent_root_execute', False)
+        is_independent_root_execute = is_independent_root_execute or global_is_independent_root_execute
         ignores = root.get('ignores', [])
         ignores.extend(global_ignores)
+
         son_paths = subproject_address_list(root_path, ignores=ignores)
         git_project_paths.extend(son_paths)
 
         if is_independent_root_execute:
             git_project_deal_with(son_paths)
 
-    if not is_independent_root_execute:
+    if not global_is_independent_root_execute:
         git_project_deal_with(git_project_paths)
 
 def subproject_address_list(root, ignores=[]):
