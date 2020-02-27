@@ -2,6 +2,7 @@
 
 def font_black(str_text):
     return "\033[1;30m{}\033[0m".format(str_text)
+
 def font_red(str_text):
     # http://www.cnblogs.com/ping-y/p/5897018.html
     return "\033[1;31m{}\033[0m".format(str_text)

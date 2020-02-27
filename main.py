@@ -1,194 +1,58 @@
+# coding: UTF-8
+
 import sys
 import os
 import re
 import json
-import platform
-from subprocess import Popen, PIPE
 
 import file
+import workTree
 
-# 读取 json 配置文件
-c = file.read_program_config_DevelopToRelease(
-    release_file_name = 'config.json',
-    develop_file_name = '_config.json')
+def main(config):
+    git_project_paths = []
+    global_ignores = config.get('ignores', [])
+    roots = config.get('roots', [])
+    for root in roots:
+        root_path = root.get('path', None)
+        if not root_path:
+            continue
+        ignores = root.get('ignores', [])
+        ignores.extend(global_ignores)
+        son_paths = subproject_address_list(root_path, ignores=ignores)
+        git_project_paths.extend(son_paths)
 
-def is_window_path(path):
-    return re.match(r"[a-zA-Z]:\\.*", path) != None
+    cwt = workTree.CheckWorkTree(git_project_paths);
+    cwt.execute_results()
+    for msg in cwt.results:
+        print(msg)
 
-def to_linux_path(window_path):
-    m = re.compile(r"([a-zA-Z]):\\(.*)", re.I | re.M | re.U)
-    r = m.findall(window_path)[0]
-    drive_letter = r[0]
-    son_path = re.sub(r"\\+", "/", str(r[1]))
-    return "/{}/{}".format(drive_letter, son_path)
-
-def get_root_paths():
-    roots = c["def_check_paths"]
-
-    if len(roots) <= 0:
-        roots.append(os.getcwd())
-
-    if len(sys.argv) > 1:
-        arg_path = sys.argv[1]
-        roots = [arg_path];
-
-    return roots;
-
-def is_ignore_path(root):
-    for ignore in c["ignore_paths"]:
-        if ignore in root:
-            return True
-    return False;
-
-def exe_command(str_command):
-    # http://www.cnblogs.com/nerrissa/articles/5784746.html
-    p = Popen(str_command, shell=True, stdout=PIPE, stderr=PIPE)
-    p.wait()
-    out = p.stdout.read();
-    j = {
-        "out": out.decode("utf-8"),
-    }
-    return j
-
-def get_repositories_status_info(root):
-    os.chdir(root)
-    path = root
-    if platform.system() == "Windows" and is_window_path(path):
-        path = to_linux_path(path)
-    info = {
-        "path": path,
-        "out": exe_command("git status")["out"],
-    }
-    return info
-
-def get_all_git_repositories(root):
-    rep_infos = []
+def subproject_address_list(root, ignores=[]):
+    def is_ignore(folder):
+        if ignores == None or len(ignores) <= 0:
+            return False
+        for ig in ignores:
+            if re.search(ig, folder, re.M|re.I):
+                return True
+        return False
     if os.path.isfile(root):
-        return rep_infos
-
-    if not os.path.isdir(root):
-        raise TypeError("Root path not isfile and not isdir, ERROR!")
-
-    if ".git" in os.listdir(root):
-        info = get_repositories_status_info(root)
-        rep_infos.append(info)
-        return rep_infos
-
-    # 当前路径不是 git 存储库
+        return []
+    os.chdir(root)
     folders = os.listdir(root)
+    if '.git' in folders:
+        return [root]
+    results = []
     for folder in folders:
         path = os.path.join(root, folder)
-
-        if is_ignore_path(path):
+        if is_ignore(path):
             continue
-
-        silist = get_all_git_repositories(path)
-        if len(silist) > 0:
-            for i in silist:
-                rep_infos.append(i)
-
-    return rep_infos
-
-def is_need_hint_status_message(msg):
-    yes = [
-        "Changes not staged for commit:",
-        "Changes to be committed:",
-        "(use \"git push\" to publish your local commits)",
-        "Untracked files:"
-    ]
-    for code in yes:
-        if code in msg:
-            return True, code
-    no = [
-        "nothing to commit, working tree clean"
-    ]
-    for code in no:
-        if code in msg:
-            return False, code
-    return False, ""
-
-def filter_infos(infos):
-    rinfos = []
-    for info in infos:
-        msg = info["out"]
-        ris, rcode = is_need_hint_status_message(msg)
-        if ris:
-            if rcode != "":
-                ccode = font_fuchsia(rcode)
-                info["out"] = msg.replace(rcode, ccode)
-            rinfos.append(info)
-    return rinfos
-
-def font_black(str_text):
-    return "\033[1;30m{}\033[0m".format(str_text)
-def font_red(str_text):
-    # http://www.cnblogs.com/ping-y/p/5897018.html
-    return "\033[1;31m{}\033[0m".format(str_text)
-
-def font_green(str_text):
-    return "\033[1;32m{}\033[0m".format(str_text)
-
-def font_yellow(str_text):
-    return "\033[1;33m{}\033[0m".format(str_text)
-
-def font_blue(str_text):
-    return "\033[1;34m{}\033[0m".format(str_text)
-
-def font_fuchsia(str_text):
-    return "\033[1;35m{}\033[0m".format(str_text)
-
-def font_cyan(str_text):
-    return "\033[1;36m{}\033[0m".format(str_text)
-
-def font_white(str_text):
-    return "\033[1;37m{}\033[0m".format(str_text)
-
-def IntervalLine():
-    print("\n{}\n\n".format("-" * 80), end="")
-
-def print_list_infos(root, infos):
-    if len(need_show_info) <= 0:
-        print("root: {}".format(root));
-        print(font_green("All warehouses are very clean... ok!"))
-        IntervalLine()
-        return
-
-    for info in infos:
-        url = info["path"].strip("\n")
-        red_url = font_red(url)
-        msg = info["out"].strip("\n")
-        print("path: {}".format(red_url))
-        print("out:\n{}".format(msg))
-        IntervalLine()
-
-def print_exception(root, e):
-    color_root = font_blue(root)
-    color_e = font_blue(e)
-    print("root: {}".format(color_root));
-    print("e: {}".format(color_e));
-    IntervalLine()
+        r = subproject_address_list(path, ignores=ignores)
+        results.extend(r)
+    return results
 
 
-# ----------------------------------------------------------------------------------------------------------------------
-
-print("Start find need git operating repositories:")
-IntervalLine()
-
-# 开始执行程序:
-for root in get_root_paths():
-    rep_infos = []
-
-    try:
-        # 获取目录下所有仓库信息
-        rep_infos = get_all_git_repositories(root)
-
-    except Exception as e:
-        # 打印错误信息
-        print_exception(root, e)
-
-    else:
-        # 筛选过滤需要展示的仓库信息
-        need_show_info = filter_infos(rep_infos)
-
-        # 打印仓库信息
-        print_list_infos(root, need_show_info)
+if __name__ == '__main__':
+    # 读取 json 配置文件
+    config = file.read_program_config_DevelopToRelease(
+        release_file_name = '.config.release.json',
+        develop_file_name = '.config.develop.json')
+    main(config)
