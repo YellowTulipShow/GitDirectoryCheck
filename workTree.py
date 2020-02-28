@@ -51,6 +51,7 @@ class CheckWorkTree():
 
     def output_exception_message(self, path, keyword, result_message):
         if convert.is_window_system() and convert.is_window_path(path):
+            # os.system('"D:\\Work\\YTS.ZRQ\\GitDirectoryCheck\\open_git_bash.bat ' + path + '"')
             path = convert.to_linux_path(path)
         path_format = path.strip('\n')
         path_format = font_format.font_red(path_format)
