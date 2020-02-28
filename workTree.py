@@ -6,8 +6,9 @@ import convert
 import font_format
 
 class CheckWorkTree():
-    def __init__(self, git_project_paths):
+    def __init__(self, git_project_paths, config):
         self.git_project_paths = git_project_paths
+        self.config = config
         self.results = []
         self.is_clean = True
 
@@ -50,10 +51,13 @@ class CheckWorkTree():
         self.results.append("Start find need git operating repositories:")
 
     def output_exception_message(self, path, keyword, result_message):
+        path_format = path
         if convert.is_window_system() and convert.is_window_path(path):
-            # os.system('"D:\\Work\\YTS.ZRQ\\GitDirectoryCheck\\open_git_bash.bat ' + path + '"')
-            path = convert.to_linux_path(path)
-        path_format = path.strip('\n')
+            path_format = convert.to_linux_path(path)
+            if self.config.get('is_open_git_bash', False):
+                this_path = os.path.split(os.path.realpath(__file__))[0]
+                os.system('"' + this_path + '\\open_git_bash.bat ' + path + '"')
+        path_format = path_format.strip('\n')
         path_format = font_format.font_red(path_format)
 
         keyword_format = font_format.font_fuchsia(keyword)
