@@ -72,8 +72,11 @@ class CheckWorkTree():
     def output_all_clean_message(self):
         self.results.append(font_format.interval_line())
         for path in self.git_project_paths:
-            if convert.is_window_system() and convert.is_window_path(path):
-                path = convert.to_linux_path(path)
-            self.results.append(path)
+            if convert.is_window_path(path):
+                path_format = '{}{}{}'.format(path, '\t\t|\t', convert.to_linux_path(path))
+            else:
+                path_format = '\t{}'.format(path)
+            self.results.append(path_format)
+        self.results.append(font_format.interval_line())
         self.results.append(font_format.font_green("All warehouses are very clean... ok!"))
         self.results.append(font_format.interval_line())
