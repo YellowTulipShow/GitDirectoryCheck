@@ -73,9 +73,13 @@ class CheckWorkTree():
         self.results.append(font_format.interval_line())
         for path in self.git_project_paths:
             if convert.is_window_path(path):
-                path_format = '{}{}{}'.format(path, '\t\t|\t', convert.to_linux_path(path))
+                linux_path = convert.to_linux_path(path)
+                linux_path = font_format.font_yellow(linux_path)
+                window_path = font_format.font_blue(path)
+                path_format = '{}{}{}'.format(linux_path, ' | ', window_path)
             else:
-                path_format = '\t{}'.format(path)
+                linux_path = font_format.font_yellow(path)
+                path_format = '\t{}'.format(linux_path)
             self.results.append(path_format)
         self.results.append(font_format.interval_line())
         self.results.append(font_format.font_green("All warehouses are very clean... ok!"))
