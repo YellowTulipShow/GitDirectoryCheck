@@ -10,32 +10,47 @@ import file
 import convert
 import workTree
 
-def main(config):
+def analyze_git_repos(config):
     ctemplate = git_repo_config_template()
     global_config = convert.fill_template(ctemplate, config)
+    global_ignores = config.get('ignores', [])
     global_roots = config.get('roots', [])
-
-    git_repos = []
+    git_repos = {}
     for root in global_roots:
         root_path = root.get('path', None)
         if not root_path:
             continue
         root_config = convert.fill_template(global_config, root)
         root_ignores = root_config.get('ignores', [])
+        root_ignores.extend(global_ignores)
         son_paths = subproject_address_list(root_path, ignores=root_ignores)
         for path in son_paths:
             repo_config = copy.deepcopy(root_config)
-            repo_config['path'] = path
-            git_repos.append(repo_config)
-    for repo in git_repos:
-        print(repo)
+            if convert.is_window_path(path):
+                repo_config['linux_path'] = convert.to_linux_path(path)
+                repo_config['window_path'] = path
+            else:
+                repo_config['linux_path'] = path
+                repo_config['window_path'] = ''
+            repo = git_repos.get(path, None)
+            if repo is None:
+                git_repos[path] = repo_config
+            else:
+                git_repos[path] = convert.copy_dict(repo, repo_config)
+    return [git_repos[repo] for repo in git_repos]
 
 def git_repo_config_template():
     return {
-        'path': '',
+        'linux_path': '',
+        'window_path': '',
         'is_independent': False,
         'is_open_git_bash': False,
-        'ignores': [],
+        'git': {
+            'status': {
+                'is_clean': False,
+                'message': '',
+            },
+        },
     }
 
 def subproject_address_list(root, ignores=[]):
@@ -74,4 +89,5 @@ if __name__ == '__main__':
     config = file.read_program_config_DevelopToRelease(
         release_file_name = '.config.release.json',
         develop_file_name = '.config.develop.json')
-    main(config)
+    repos = analyze_git_repos(config)
+    print(repos)
