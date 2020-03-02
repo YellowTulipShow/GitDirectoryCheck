@@ -3,6 +3,7 @@
 import os
 import re
 import platform
+import copy
 
 def execute_command(command_string):
     with os.popen(command_string, 'r') as f:
@@ -49,4 +50,21 @@ def copy_dict(dict_old, dict_new):
                 r[key] = copy_dict({}, v)
         else:
             r[key] = v
+    return r
+
+def fill_template(dict_template, dict_source):
+    r = copy.deepcopy(dict_template)
+    for key in r:
+        sv = dict_source.get(key, None)
+        if not sv:
+            continue
+        nv = copy.deepcopy(sv)
+        rv = copy.deepcopy(r[key])
+        if 'dict' in str(type(rv)):
+            rv = copy_dict(rv, nv)
+        elif 'list' in str(type(rv)):
+            rv.extend(nv)
+        else:
+            rv = nv
+        r[key] = rv
     return r

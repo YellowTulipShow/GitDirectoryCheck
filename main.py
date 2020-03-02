@@ -4,40 +4,39 @@ import sys
 import os
 import re
 import json
+import copy
 
 import file
+import convert
 import workTree
 
 def main(config):
-    global_is_independent_root_execute = config.get('is_independent_root_execute', False)
-    global_is_open_git_bash = config.get('is_open_git_bash', False)
-    global_ignores = config.get('ignores', [])
+    ctemplate = git_repo_config_template()
+    global_config = convert.fill_template(ctemplate, config)
     global_roots = config.get('roots', [])
 
-    git_project_paths = []
+    git_repos = []
     for root in global_roots:
         root_path = root.get('path', None)
         if not root_path:
             continue
-        is_independent_root_execute = root.get('is_independent_root_execute', False)
-        is_independent_root_execute = is_independent_root_execute or global_is_independent_root_execute
-        is_open_git_bash = root.get('is_open_git_bash', False)
-        is_open_git_bash = is_open_git_bash or global_is_open_git_bash
-        ignores = root.get('ignores', [])
-        ignores.extend(global_ignores)
+        root_config = convert.fill_template(global_config, root)
+        root_ignores = root_config.get('ignores', [])
+        son_paths = subproject_address_list(root_path, ignores=root_ignores)
+        for path in son_paths:
+            repo_config = copy.deepcopy(root_config)
+            repo_config['path'] = path
+            git_repos.append(repo_config)
+    for repo in git_repos:
+        print(repo)
 
-        son_paths = subproject_address_list(root_path, ignores=ignores)
-        git_project_paths.extend(son_paths)
-
-        if is_independent_root_execute:
-            git_project_deal_with(son_paths, config={
-                'is_open_git_bash': is_open_git_bash
-            })
-
-    if not global_is_independent_root_execute:
-        git_project_deal_with(git_project_paths, config={
-            'is_open_git_bash': global_is_open_git_bash
-        })
+def git_repo_config_template():
+    return {
+        'path': '',
+        'is_independent': False,
+        'is_open_git_bash': False,
+        'ignores': [],
+    }
 
 def subproject_address_list(root, ignores=[]):
     def is_ignore(folder):
@@ -64,8 +63,8 @@ def subproject_address_list(root, ignores=[]):
         results.extend(r)
     return results
 
-def git_project_deal_with(git_project_paths, config):
-    cwt = workTree.CheckWorkTree(git_project_paths, config=config);
+def git_project_deal_with(git_repos, config):
+    cwt = workTree.CheckWorkTree(git_repos, config=config);
     cwt.execute_results()
     for msg in cwt.results:
         print(msg)
