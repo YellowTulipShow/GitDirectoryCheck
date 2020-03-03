@@ -16,10 +16,14 @@ import workTree
 
 def main(repos):
     is_all_clean = reposCheckStatus(repos)
-    if not is_all_clean:
-        print('有仓库需要手动操作, 后续批量任务无法执行!')
-    else:
-        print('所有仓库干净, 可以执行后续任务!')
+
+    # if not is_all_clean:
+    #     print('有仓库需要手动操作, 后续批量任务无法执行!')
+    # else:
+    #     print('所有仓库干净, 可以执行后续任务!')
+
+    # for repo in repos:
+    #     print(repo['linux_path'], repo['git'])
 
 def reposCheckStatus(repos):
     is_all_clean = True

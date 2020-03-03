@@ -49,13 +49,6 @@ class GitRepos(object):
             'is_independent': False,
             'is_open_git_bash': False,
             'ignores': [],
-            'git': {
-                'status': {
-                    'is_clean': False,
-                    'message': '',
-                    'keyword': '',
-                },
-            },
         }
 
     def subproject_address_list(self, root, ignores=[]):
@@ -99,11 +92,15 @@ class CheckStatus():
         result_message = convert.execute_command('git status')
         is_clean, keyword = self.check_exception_status(result_message)
         self.is_clean = is_clean
+        self.repo['git'] = {
+            'status': {
+                'is_clean': is_clean,
+            }
+        }
         if not is_clean:
             self.problem_result = self.format_exception_message(keyword, result_message)
             self.repo['git']['status']['keyword'] = keyword
             self.repo['git']['status']['message'] = result_message
-        self.repo['git']['status']['is_clean'] = is_clean
 
     def check_exception_status(self, msg):
         yes = [
