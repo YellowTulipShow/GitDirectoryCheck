@@ -17,7 +17,7 @@ class GitRepos(object):
         self.global_ignores = config.get('ignores', [])
         self.global_roots = config.get('roots', [])
 
-    def analyze(self):
+    def scattered_repos(self):
         git_repos = {}
         for root in self.global_roots:
             root_path = root.get('path', None)
@@ -82,27 +82,23 @@ class GitRepos(object):
         return results
 
 class CheckStatus():
-    def __init__(self, git_project_paths, config):
-        self.git_project_paths = git_project_paths
-        self.config = config
-        self.results = []
+    def __init__(self, repo):
+        self.repo = repo
         self.is_clean = True
+        self.problem_result = '',
+        self.linux_path = repo.get('linux_path', None)
+        self.window_path = repo.get('window_path')
 
-    def execute_results(self):
-        self.output_check_start_message();
-        self.is_clean = True
-
-        for path in self.git_project_paths:
-            os.chdir(path)
-            result_message = convert.execute_command('git status')
-            is_clean, keyword = self.check_exception_status(result_message)
-            if is_clean:
-                continue
-            self.is_clean = False
-            self.output_exception_message(path, keyword, result_message)
-
-        if self.is_clean:
-            self.output_all_clean_message();
+    def execute(self):
+        cd_path = self.linux_path
+        if convert.is_window_system():
+            cd_path = self.window_path
+        os.chdir(cd_path)
+        result_message = convert.execute_command('git status')
+        is_clean, keyword = self.check_exception_status(result_message)
+        self.is_clean = is_clean
+        if not is_clean:
+            self.problem_result = self.format_exception_message(keyword, result_message)
 
     def check_exception_status(self, msg):
         yes = [
@@ -122,28 +118,11 @@ class CheckStatus():
                 return True, code
         return True, ""
 
-    def output_check_start_message(self):
-        self.results.append(font_format.interval_line())
-        self.results.append("Start find need git operating repositories:")
-
-    def output_exception_message(self, path, keyword, result_message):
-        path_format = path
-        if convert.is_window_system() and convert.is_window_path(path):
-            path_format = convert.to_linux_path(path)
-            if self.config.get('is_open_git_bash', False):
-                this_path = os.path.split(os.path.realpath(__file__))[0]
-                os.system('"' + this_path + '\\open_git_bash.bat ' + path + '"')
-        path_format = path_format.strip('\n')
-        path_format = font_format.font_red(path_format)
-
+    def format_exception_message(self, keyword, result_message):
         keyword_format = font_format.font_fuchsia(keyword)
         result_message = result_message.replace(keyword, keyword_format)
         result_message = result_message.strip('\n')
-
-        self.results.append(font_format.interval_line())
-        self.results.append("path: {}".format(path_format))
-        self.results.append("out:\n{}".format(result_message))
-        self.results.append(font_format.interval_line())
+        return result_message
 
     def output_all_clean_message(self):
         self.results.append(font_format.interval_line())
