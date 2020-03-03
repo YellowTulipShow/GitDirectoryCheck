@@ -1,11 +1,87 @@
 # coding: UTF-8
 
+import sys
 import os
+import re
+import json
+import copy
 
+import file
 import convert
 import font_format
 
-class CheckWorkTree():
+class GitRepos(object):
+    def __init__(self, config):
+        ctemplate = self.config_template()
+        self.global_config = convert.fill_template(ctemplate, config)
+        self.global_ignores = config.get('ignores', [])
+        self.global_roots = config.get('roots', [])
+
+    def analyze(self):
+        git_repos = {}
+        for root in self.global_roots:
+            root_path = root.get('path', None)
+            if not root_path:
+                continue
+            root_config = convert.fill_template(self.global_config, root)
+            root_ignores = root_config.get('ignores', [])
+            root_ignores.extend(self.global_ignores)
+            son_paths = self.subproject_address_list(root_path, ignores=root_ignores)
+            for path in son_paths:
+                repo_config = copy.deepcopy(root_config)
+                if convert.is_window_path(path):
+                    repo_config['linux_path'] = convert.to_linux_path(path)
+                    repo_config['window_path'] = path
+                else:
+                    repo_config['linux_path'] = path
+                    repo_config['window_path'] = ''
+                repo = git_repos.get(path, None)
+                if repo is None:
+                    git_repos[path] = repo_config
+                else:
+                    git_repos[path] = convert.copy_dict(repo, repo_config)
+        return [git_repos[repo] for repo in git_repos]
+
+    def config_template(self):
+        return {
+            'linux_path': '',
+            'window_path': '',
+            'is_independent': False,
+            'is_open_git_bash': False,
+            'git': {
+                'status': {
+                    'is_clean': False,
+                    'message': '',
+                },
+            },
+        }
+
+    def subproject_address_list(self, root, ignores=[]):
+        def is_ignore(folder):
+            if ignores == None or len(ignores) <= 0:
+                return False
+            for ig in ignores:
+                if re.search(ig, folder, re.M|re.I):
+                    return True
+            return False
+        if os.path.isfile(root):
+            return []
+        if not os.path.isdir(root):
+            return []
+        os.chdir(root)
+        folders = os.listdir(root)
+        if '.git' in folders:
+            return [root]
+        results = []
+        for folder in folders:
+            path = os.path.join(root, folder)
+            if is_ignore(path):
+                continue
+            r = self.subproject_address_list(path, ignores=ignores)
+            results.extend(r)
+        return results
+
+class CheckStatus():
     def __init__(self, git_project_paths, config):
         self.git_project_paths = git_project_paths
         self.config = config
