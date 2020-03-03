@@ -43,16 +43,18 @@ def reposCheckStatus(repos):
                 clean_path += ' | {}'.format(window_path)
             clean_paths.append(clean_path)
     # 打印信息
-    print(font_format.interval_line())
-    print("Start find need git operating repositories:")
-    print(font_format.interval_line())
+    results = []
+    results.append("Start find need git operating repositories:")
     if len(clean_paths) > 0:
-        print('\n'.join(clean_paths))
-        print(font_format.interval_line())
-    if len(problems) > 0:
-        for problem in problems:
-            print(problem)
-            print(font_format.interval_line())
+        results.append('\n'.join(clean_paths))
+    if is_all_clean:
+        results.append(font_format.font_green("All warehouses are very clean... ok!"))
+    elif len(problems) > 0:
+        results.extend(problems)
+    # print(font_format.interval_line())
+    print('\n{}\n'.format(font_format.interval_line()).join(results))
+    print(font_format.interval_line())
+    return is_all_clean
 
 if __name__ == '__main__':
     # 读取 json 配置文件
