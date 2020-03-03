@@ -51,7 +51,6 @@ def reposCheckStatus(repos):
         results.append(font_format.font_green("All warehouses are very clean... ok!"))
     elif len(problems) > 0:
         results.extend(problems)
-    # print(font_format.interval_line())
     print('\n{}\n'.format(font_format.interval_line()).join(results))
     print(font_format.interval_line())
     return is_all_clean

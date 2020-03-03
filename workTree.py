@@ -48,10 +48,12 @@ class GitRepos(object):
             'window_path': '',
             'is_independent': False,
             'is_open_git_bash': False,
+            'ignores': [],
             'git': {
                 'status': {
                     'is_clean': False,
                     'message': '',
+                    'keyword': '',
                 },
             },
         }
@@ -99,6 +101,9 @@ class CheckStatus():
         self.is_clean = is_clean
         if not is_clean:
             self.problem_result = self.format_exception_message(keyword, result_message)
+            self.repo['git']['status']['keyword'] = keyword
+            self.repo['git']['status']['message'] = result_message
+        self.repo['git']['status']['is_clean'] = is_clean
 
     def check_exception_status(self, msg):
         yes = [
@@ -123,19 +128,3 @@ class CheckStatus():
         result_message = result_message.replace(keyword, keyword_format)
         result_message = result_message.strip('\n')
         return result_message
-
-    def output_all_clean_message(self):
-        self.results.append(font_format.interval_line())
-        for path in self.git_project_paths:
-            if convert.is_window_path(path):
-                linux_path = convert.to_linux_path(path)
-                linux_path = font_format.font_yellow(linux_path)
-                window_path = font_format.font_blue(path)
-                path_format = '{}{}{}'.format(linux_path, ' | ', window_path)
-            else:
-                linux_path = font_format.font_yellow(path)
-                path_format = '\t{}'.format(linux_path)
-            self.results.append(path_format)
-        self.results.append(font_format.interval_line())
-        self.results.append(font_format.font_green("All warehouses are very clean... ok!"))
-        self.results.append(font_format.interval_line())
