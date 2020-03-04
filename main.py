@@ -41,6 +41,10 @@ def reposCheckStatus(repos):
             problems.append(problem)
         else:
             clean_path = font_format.font_yellow(linux_path)
+            branch = cs.branch
+            if branch != 'master':
+                branch = font_format.font_red(branch)
+            clean_path = '({}) | {}'.format(branch, clean_path)
             if convert.is_window_system():
                 window_path = repo.get('window_path', '');
                 window_path = font_format.font_blue(window_path)

@@ -83,6 +83,7 @@ class CheckStatus():
         self.problem_result = '',
         self.linux_path = repo.get('linux_path', None)
         self.window_path = repo.get('window_path')
+        self.branch = ''
 
     def execute(self):
         cd_path = self.linux_path
@@ -92,7 +93,9 @@ class CheckStatus():
         result_message = convert.execute_command('git status')
         is_clean, keyword = self.check_exception_status(result_message)
         self.is_clean = is_clean
+        self.branch = self.get_branch_name()
         self.repo['git'] = {
+            'branch': self.branch,
             'status': {
                 'is_clean': is_clean,
             }
@@ -125,3 +128,14 @@ class CheckStatus():
         result_message = result_message.replace(keyword, keyword_format)
         result_message = result_message.strip('\n')
         return result_message
+
+    def get_branch_name(self):
+        result_message = convert.execute_command('git branch')
+        m = re.search(r'\* ([^\s]+)', result_message, re.M|re.I)
+        if m:
+            branch = m.group(1)
+            return branch.lower()
+        else:
+            print('result_message: ({})'.format(result_message))
+            print('m:', m)
+            return 'Not branch!'

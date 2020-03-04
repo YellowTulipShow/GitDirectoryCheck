@@ -2,3 +2,4 @@
 __pycache__
 config.json
 .config.release.json
+__test__.py
