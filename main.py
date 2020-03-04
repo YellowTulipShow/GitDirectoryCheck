@@ -27,9 +27,8 @@ if __name__ == '__main__':
     repos = gits.scattered_repos();
     is_all_clean = gits.repos_check_status(repos)
 
-    if not is_all_clean:
-        print('有仓库需要手动操作, 后续批量任务无法执行!')
-    else:
-        print('所有仓库干净, 可以执行后续任务!')
-        main(repos)
-
+    # if not is_all_clean:
+    #     print('有仓库需要手动操作, 后续批量任务无法执行!')
+    # else:
+    #     print('所有仓库干净, 可以执行后续任务!')
+    #     main(repos)

@@ -46,7 +46,6 @@ class GitRepos(object):
         return {
             'linux_path': '',
             'window_path': '',
-            'is_independent': False,
             'is_open_git_bash': False,
             'ignores': [],
         }

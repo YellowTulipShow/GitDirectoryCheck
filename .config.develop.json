@@ -1,5 +1,4 @@
 {
-    "is_independent": false,
     "is_open_git_bash": false,
     "ignores": [
         "wwwroot$",
