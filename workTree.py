@@ -76,14 +76,69 @@ class GitRepos(object):
             results.extend(r)
         return results
 
+    def repos_check_status(self, repos):
+        for repo in repos:
+            cs = CheckStatus(repo);
+            cs.execute()
+        return self.output_repo_results(repos)
+
+    def output_repo_results(self, repos):
+        is_all_clean = True
+        clean_paths = []
+        problems = []
+
+        for repo in repos:
+            linux_path = repo.get('linux_path', '')
+            window_path = repo.get('window_path', '')
+            is_window = convert.is_window_system()
+            git = repo.get('git', {})
+            git_branch = git.get('branch', {})
+            git_status = git.get('status', {})
+            git_status_is_clean = git_status.get('is_clean')
+            git_status_keyword = git_status.get('keyword')
+            git_status_message = git_status.get('message')
+
+            if git_branch != 'master':
+                git_branch = font_format.font_red(git_branch)
+
+            if not git_status_is_clean:
+                is_all_clean = False
+                msgs = [ 'linux_path: {}'.format(font_format.font_red(linux_path)), ]
+                if is_window:
+                    msgs.append('window_path: {}'.format(font_format.font_blue(window_path)))
+                keyword_format = font_format.font_fuchsia(git_status_keyword)
+                git_status_message = git_status_message.replace(git_status_keyword, keyword_format).strip('\n')
+                msgs.append('Message:\n{}'.format(git_status_message))
+                problems.append('\n'.join(msgs))
+            else:
+                msgs = [
+                    '({})'.format(git_branch),
+                    font_format.font_yellow(linux_path)
+                ]
+                if is_window:
+                    msgs.append(font_format.font_blue(window_path))
+                clean_paths.append(' | '.join(msgs))
+
+        # 打印信息
+        results = []
+        print(font_format.interval_line())
+        results.append("Start find need git operating repositories:")
+        if len(clean_paths) > 0:
+            results.append('\n'.join(clean_paths))
+        if is_all_clean:
+            results.append(font_format.font_green("All warehouses are very clean... ok!"))
+        elif len(problems) > 0:
+            results.extend(problems)
+        print('\n{}\n'.format(font_format.interval_line()).join(results))
+        print(font_format.interval_line())
+        return is_all_clean
+
+
 class CheckStatus():
     def __init__(self, repo):
         self.repo = repo
-        self.is_clean = True
-        self.problem_result = '',
         self.linux_path = repo.get('linux_path', None)
         self.window_path = repo.get('window_path')
-        self.branch = ''
 
     def execute(self):
         cd_path = self.linux_path
@@ -92,18 +147,14 @@ class CheckStatus():
         os.chdir(cd_path)
         result_message = convert.execute_command('git status')
         is_clean, keyword = self.check_exception_status(result_message)
-        self.is_clean = is_clean
-        self.branch = self.get_branch_name()
         self.repo['git'] = {
-            'branch': self.branch,
+            'branch': self.get_branch_name(),
             'status': {
                 'is_clean': is_clean,
+                'keyword': keyword,
+                'message': result_message,
             }
         }
-        if not is_clean:
-            self.problem_result = self.format_exception_message(keyword, result_message)
-            self.repo['git']['status']['keyword'] = keyword
-            self.repo['git']['status']['message'] = result_message
 
     def check_exception_status(self, msg):
         yes = [
