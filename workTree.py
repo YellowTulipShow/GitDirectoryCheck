@@ -189,3 +189,18 @@ class CheckStatus():
             print('result_message: ({})'.format(result_message))
             print('m:', m)
             return 'Not branch!'
+
+
+class Command():
+    def __init__(self, repo):
+        self.repo = repo
+        self.linux_path = repo.get('linux_path', None)
+        self.window_path = repo.get('window_path')
+
+    def execute(self, command):
+        cd_path = self.linux_path
+        if convert.is_window_system():
+            cd_path = self.window_path
+        os.chdir(cd_path)
+        result_message = convert.execute_command(command)
+        return result_message

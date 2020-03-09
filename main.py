@@ -44,9 +44,7 @@ def follow_action(is_all_clean, repos, userArgs):
     if not is_can_continue:
         return
 
-    command = userArgs.get('command', None)
-    if is_all_clean and command:
-        print('所有仓库干净时执行的后续命令:{}'.format(command))
+    execute_command(is_all_clean, repos, userArgs)
     # ... 更多动作
 
 def open_git_bash(is_all_clean, repos, is_user_openbash):
@@ -72,6 +70,26 @@ def open_git_bash(is_all_clean, repos, is_user_openbash):
                 os.system(cmd)
 
     return True
+
+def execute_command(is_all_clean, repos, userArgs):
+    command = userArgs.get('command', None)
+    if is_all_clean and command:
+        results = []
+        print(font_format.interval_line())
+        results.append("批量执行命令:{}".format(command))
+        for repo in repos:
+            linux_path = repo.get('linux_path', '')
+            window_path = repo.get('window_path', '')
+            is_window = convert.is_window_system()
+            cmd = workTree.Command(repo)
+            rmsg = cmd.execute(command)
+            msgs = [ 'linux_path: {}'.format(font_format.font_red(linux_path)), ]
+            if is_window:
+                msgs.append('window_path: {}'.format(font_format.font_blue(window_path)))
+            msgs.append('Message:\n{}'.format(rmsg))
+            results.append('\n'.join(msgs))
+        print('\n{}\n'.format(font_format.interval_line()).join(results))
+        print(font_format.interval_line())
 
 if __name__ == '__main__':
     userArgs = UserArgs()
