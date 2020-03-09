@@ -6,6 +6,7 @@ import os
 import re
 import json
 import copy
+import argparse
 
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer,encoding='utf-8')
 
@@ -14,7 +15,21 @@ import convert
 import font_format
 import workTree
 
-def main():
+def UserArgs():
+    try:
+        parser = argparse.ArgumentParser(description='Git检查遍历程序')
+        parser.add_argument('--openbash', '-o', help='是否需要自动打开 Git Bash 命令窗口', action='store_true')
+        parser.add_argument('--command', '-c', help='所有仓库需要执行的命令, 只在所有仓库都干净的时候执行', type=str)
+        args = parser.parse_args()
+        return {
+            'openbash': args.openbash,
+            'command': args.command,
+        }
+    except Exception as e:
+        print(e)
+        return None
+
+def main(userArgs):
     # 读取 json 配置文件
     config = file.read_program_config_DevelopToRelease(
         release_file_name = '.config.release.json',
@@ -22,15 +37,19 @@ def main():
     gits = workTree.GitRepos(config)
     repos = gits.scattered_repos();
     is_all_clean = gits.repos_check_status(repos)
-    follow_action(is_all_clean, repos)
+    follow_action(is_all_clean, repos, userArgs)
 
-def follow_action(is_all_clean, repos):
-    is_can_continue = open_git_bash(is_all_clean, repos)
+def follow_action(is_all_clean, repos, userArgs):
+    is_can_continue = open_git_bash(is_all_clean, repos, userArgs.get('openbash', False))
     if not is_can_continue:
         return
+
+    command = userArgs.get('command', None)
+    if is_all_clean and command:
+        print('所有仓库干净时执行的后续命令:{}'.format(command))
     # ... 更多动作
 
-def open_git_bash(is_all_clean, repos):
+def open_git_bash(is_all_clean, repos, is_user_openbash):
     if is_all_clean:
         return True
 
@@ -41,18 +60,20 @@ def open_git_bash(is_all_clean, repos):
         return True
 
     for repo in repos:
-        is_clean = repo.get('is_clean', False)
+        is_clean = repo.get('git', {}).get('status', {}).get('is_clean', False)
         is_open_git_bash = repo.get('is_open_git_bash', False)
-        if is_clean or not is_open_git_bash:
-            continue
-        window_path = repo.get('window_path', None)
-        if convert.is_window_system() and window_path:
-            program_dir = os.path.split(os.path.realpath(__file__))[0]
-            os.chdir(program_dir)
-            cmd = '"start open_window_git_bash.bat {}"'.format(window_path)
-            os.system(cmd)
+        is_open_git_bash = is_open_git_bash or is_user_openbash
+        if not is_clean and is_open_git_bash:
+            window_path = repo.get('window_path', None)
+            if convert.is_window_system() and window_path:
+                program_dir = os.path.split(os.path.realpath(__file__))[0]
+                os.chdir(program_dir)
+                cmd = '"start open_window_git_bash.bat {}"'.format(window_path)
+                os.system(cmd)
 
     return True
 
 if __name__ == '__main__':
-    main()
+    userArgs = UserArgs()
+    if userArgs:
+        main(userArgs)
