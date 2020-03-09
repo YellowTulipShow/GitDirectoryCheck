@@ -83,6 +83,7 @@ def execute_command(is_all_clean, repos, userArgs):
             is_window = convert.is_window_system()
             cmd = workTree.Command(repo)
             rmsg = cmd.execute(command)
+            rmsg = convert.trimEnd(rmsg, '\n')
             msgs = [ 'linux_path: {}'.format(font_format.font_red(linux_path)), ]
             if is_window:
                 msgs.append('window_path: {}'.format(font_format.font_blue(window_path)))
