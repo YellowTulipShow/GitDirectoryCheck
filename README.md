@@ -40,14 +40,12 @@ $ gits
 
 ## 配置文件说明
 
-程序根目录下有默认的配置文件: `.config.develop.json`
+第一次运行`main.py`时就根据程序内置的配置内容自动生成运行时配置文件: `config.json`
 
-再第一次运行`main.py`时就根据`.config.develop.json`的内容自动生成运行时配置文件: `.config.release.json`
-
-随意修改`.config.release.json`的内容, 达到配置程序的目的
+可随意修改`config.json`的内容, 达到配置程序的目的
 
 内容参数注解如下:
-```json
+```
 {
     // 全局配置项: 如果仓库不干净是否, 自动打开对应的Git Bash程序
     // 目前仅在 Window系统下有效, 同时注意修改脚本文件 open_window_git_bash.bat: Git Bash程序的安装路径

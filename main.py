@@ -10,9 +10,9 @@ import argparse
 
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer,encoding='utf-8')
 
-import file
-import convert
-import font_format
+from YTSTools import file
+from YTSTools import convert
+from YTSTools import font_format
 import workTree
 
 def UserArgs():
@@ -41,7 +41,7 @@ def develop_config():
     workaddress = '/var/work'
     if convert.is_window_system():
         workaddress = 'D:\\Work'
-    return file.read_program_config('.config.release.json', {
+    return file.read_program_config('config.json', {
         "is_open_git_bash": False,
         "ignores": [
             "wwwroot$",
@@ -54,7 +54,6 @@ def develop_config():
             ]
         },]
     })
-
 
 def follow_action(is_all_clean, repos, userArgs):
     is_can_continue = open_git_bash(is_all_clean, repos, userArgs.get('openbash', False))
