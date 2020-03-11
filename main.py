@@ -31,13 +31,30 @@ def UserArgs():
 
 def main(userArgs):
     # 读取 json 配置文件
-    config = file.read_program_config_DevelopToRelease(
-        release_file_name = '.config.release.json',
-        develop_file_name = '.config.develop.json')
+    config = develop_config()
     gits = workTree.GitRepos(config)
     repos = gits.scattered_repos();
     is_all_clean = gits.repos_check_status(repos)
     follow_action(is_all_clean, repos, userArgs)
+
+def develop_config():
+    workaddress = '/var/work'
+    if convert.is_window_system():
+        workaddress = 'D:\\Work'
+    return file.read_program_config('.config.release.json', {
+        "is_open_git_bash": False,
+        "ignores": [
+            "wwwroot$",
+        ],
+        "roots": [{
+            "path": workaddress,
+            "ignores": [
+                "YTS.Test$",
+                "YTS.Learn$",
+            ]
+        },]
+    })
+
 
 def follow_action(is_all_clean, repos, userArgs):
     is_can_continue = open_git_bash(is_all_clean, repos, userArgs.get('openbash', False))
