@@ -26,7 +26,7 @@ def UserArgs():
             'command': args.command,
         }
     except Exception as e:
-        print(e)
+        print("Command Input Error: \n", e)
         return None
 
 def main(userArgs):
@@ -38,16 +38,18 @@ def main(userArgs):
     follow_action(is_all_clean, repos, userArgs)
 
 def develop_config():
-    workaddress = '/var/work'
-    if convert.is_window_system():
-        workaddress = 'D:\\Work'
+    isWin = convert.is_window_system()
+    index = 0 if isWin else 1
     return file.read_program_config('config.json', {
         "is_open_git_bash": False,
         "ignores": [
             "wwwroot$",
         ],
         "roots": [{
-            "path": workaddress,
+            "path": [
+                "D:\\Work",
+                "/var/work"
+                ][index],
             "ignores": [
                 "YTS.Test$",
                 "YTS.Learn$",
