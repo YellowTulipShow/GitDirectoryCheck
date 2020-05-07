@@ -3,8 +3,6 @@
 # interface接口: 任务接口
 class ITask():
     def __init__(self):
-        self.repo = {}
-        self.msgs = {}
 
     """
     注入用户参数内容
@@ -28,4 +26,4 @@ class ITask():
         string[] 打印结果
     """
     def PrintResult(self, repo):
-        return self.msgs
+        return []

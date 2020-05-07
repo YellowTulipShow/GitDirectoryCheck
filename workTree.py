@@ -10,6 +10,8 @@ import file
 import convert
 import font_format
 
+from ITask import ITask
+
 class GitRepos(object):
     def __init__(self, config):
         ctemplate = self.config_template()
@@ -132,6 +134,20 @@ class GitRepos(object):
         print(font_format.interval_line())
         return is_all_clean
 
+class RepoCheckStatus(ITask):
+    def __init__(self):
+        ITask.__init__(self)
+
+    def UserArgumentAdd(self, keyname, parser):
+        return parser
+
+    def OnExecute(self, repo):
+        cs = CheckStatus(repo)
+        cs.execute()
+        return repo
+
+    def PrintResult(self, repo):
+        return []
 
 class CheckStatus():
     def __init__(self, repo):
@@ -190,6 +206,69 @@ class CheckStatus():
             print('m:', m)
             return 'Not branch!'
 
+class RepoOpenGitBash(ITask):
+    def __init__(self):
+        ITask.__init__(self)
+
+    def UserArgumentAdd(self, , parser):
+        parser.add_argument('--' + keyname, '-o', help='是否需要自动打开 Git Bash 命令窗口', action='store_true')
+        return parser
+
+    def OnExecute(self, repo):
+        if self.IsCanOpen(repo):
+            window_path = repo.get('window_path', None)
+            if convert.is_window_system() and window_path:
+                program_dir = os.path.split(os.path.realpath(__file__))[0]
+                os.chdir(program_dir)
+                cmd = '"start {} {}"'.format(self.GetScriptName(), window_path)
+                os.system(cmd)
+        return repo
+
+    def IsCanOpen(self, repo):
+        filec = file.read_program_file_DevelopToRelease(
+            release_file_name = self.GetScriptName(),
+            develop_file_name = self.GetDecScriptName())
+        if not filec:
+            return False
+
+        git = repo.get('git', {})
+        git_status = git.get('status', {})
+        is_clean = git_status.get('is_clean', False)
+        is_open_git_bash = repo.get('is_open_git_bash', False)
+        is_open_git_bash = is_open_git_bash or is_user_openbash
+
+        return not is_clean and is_open_git_bash
+
+    def GetScriptName():
+        return "open_window_git_bash.bat"
+    def GetDecScriptName():
+        return "open_window_git_bash.develop.bat"
+
+class RepoExecuteCommand(ITask):
+    def __init__(self, command):
+        ITask.__init__(self)
+        self.command = command
+        self.msgs = [];
+
+    def UserArgumentAdd(self, keyname, parser):
+        return parser
+
+    def OnExecute(self, repo):
+        self.msgs = []
+        linux_path = repo.get('linux_path', '')
+        window_path = repo.get('window_path', '')
+        is_window = convert.is_window_system()
+        cmd = Command(repo)
+        rmsg = cmd.execute(command)
+        rmsg = convert.trimEnd(rmsg, '\n')
+        self.msgs = [ 'linux_path: {}'.format(font_format.font_red(linux_path)), ]
+        if is_window:
+            self.msgs.append('window_path: {}'.format(font_format.font_blue(window_path)))
+        self.msgs.append('Message:\n{}'.format(rmsg))
+        return repo
+
+    def PrintResult(self, repo):
+        return self.msgs
 
 class Command():
     def __init__(self, repo):
