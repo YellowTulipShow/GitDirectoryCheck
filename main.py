@@ -69,7 +69,9 @@ def main(userArgs):
     gits = workTree.GitRepos(config)
     repos = gits.scattered_repos()
 
+    not_clean_count = 0
     for repo in repos:
+        repo_msgs = []
         for ITask in tasks:
             rrepo = ITask.OnExecute(repo)
             if rrepo:
@@ -77,8 +79,34 @@ def main(userArgs):
             msgs = ITask.PrintResult(repo)
             if msgs:
                 printContent = '\n'.join(msgs)
-                sys.stdout.write(printContent + "\n")
-                sys.stdout.flush()
+                repo_msgs.append(printContent)
+
+        if not repo_is_clean(repo):
+            not_clean_count += 1
+            printWrite(font_format.interval_line())
+            printWrite('\n'.join(repo_msgs))
+            printWrite(font_format.interval_line())
+        else:
+            printWrite('\n'.join(repo_msgs))
+
+    printWrite(font_format.interval_line())
+
+    if not_clean_count <= 0:
+        printWrite(font_format.font_green("All warehouses are very clean... ok!"))
+    else:
+        printWrite("Need Oper Repo Count: {}".format(font_format.font_red(not_clean_count)))
+
+    printWrite(font_format.interval_line())
+
+def repo_is_clean(repo):
+    git = repo.get('git', {})
+    git_status = git.get('status', {})
+    git_status_is_clean = git_status.get('is_clean', None)
+    return git_status_is_clean
+
+def printWrite(strContent):
+    sys.stdout.write(strContent + "\n")
+    sys.stdout.flush()
 
 if __name__ == '__main__':
     userArgs = UserArgs()

@@ -94,34 +94,35 @@ class RepoCheckStatus(ITask):
         git = repo.get('git', {})
         git_branch = git.get('branch', {})
         git_status = git.get('status', {})
-        git_status_is_clean = git_status.get('is_clean')
-        git_status_keyword = git_status.get('keyword')
-        git_status_message = git_status.get('message')
+        git_status_is_clean = git_status.get('is_clean', None)
+        git_status_keyword = git_status.get('keyword', None)
+        git_status_message = git_status.get('message', None)
+
+        titleHeader = []
 
         if git_branch != 'master':
             git_branch = font_format.font_red(git_branch)
+        titleHeader.append('({})'.format(git_branch))
+
+        if git_status_is_clean:
+            titleHeader.append(font_format.font_yellow(linux_path))
+        else:
+            titleHeader.append(font_format.font_red(linux_path))
+
+        if is_window:
+            titleHeader.append(font_format.font_blue(window_path))
 
         results = []
+        results.append(' | '.join(titleHeader))
+
         if not git_status_is_clean:
-            msgs = []
-            msgs.append(font_format.interval_line())
-            msgs.append('linux_path: {}'.format(font_format.font_red(linux_path)))
-            if is_window:
-                msgs.append('window_path: {}'.format(font_format.font_blue(window_path)))
             keyword_format = font_format.font_fuchsia(git_status_keyword)
-            git_status_message = git_status_message.replace(
-                git_status_keyword, keyword_format).strip('\n')
-            msgs.append('Message:\n{}'.format(git_status_message))
-            msgs.append(font_format.interval_line())
-            results.append('\n'.join(msgs))
-        else:
-            msgs = [
-                '({})'.format(git_branch),
-                font_format.font_yellow(linux_path)
-            ]
-            if is_window:
-                msgs.append(font_format.font_blue(window_path))
-            results.append(' | '.join(msgs))
+            git_status_message = git_status_message.replace(git_status_keyword, keyword_format)
+            git_status_message = git_status_message.strip('\n')
+            content = '\nMessage:\n{}'.format(git_status_message)
+            content = content.replace('\n', '\n    ')
+            content = content.strip('\n')
+            results.append(content)
         return results
 
 class CheckStatus():
