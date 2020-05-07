@@ -12,7 +12,6 @@ from YTSTools import font_format
 
 from ITask import ITask
 
-
 class GitRepos(object):
     def __init__(self, config):
         ctemplate = self.config_template()
@@ -79,34 +78,6 @@ class GitRepos(object):
             results.extend(r)
         return results
 
-    # def repos_check_status(self, repos):
-    #     for repo in repos:
-    #         cs = CheckStatus(repo);
-    #         cs.execute()
-    #     return self.output_repo_results(repos)
-
-    # def output_repo_results(self, repos):
-    #     is_all_clean = True
-    #     clean_paths = []
-    #     problems = []
-
-    #     for repo in repos:
-
-    #     # 打印信息
-    #     results = []
-    #     print(font_format.interval_line())
-    #     results.append("Start find need git operating repositories:")
-    #     if len(clean_paths) > 0:
-    #         results.append('\n'.join(clean_paths))
-    #     if is_all_clean:
-    #         results.append(font_format.font_green("All warehouses are very clean... ok!"))
-    #     elif len(problems) > 0:
-    #         results.extend(problems)
-    #     print('\n{}\n'.format(font_format.interval_line()).join(results))
-    #     print(font_format.interval_line())
-    #     return is_all_clean
-
-
 class RepoCheckStatus(ITask):
     def __init__(self):
         ITask.__init__(self)
@@ -132,15 +103,16 @@ class RepoCheckStatus(ITask):
 
         results = []
         if not git_status_is_clean:
-            msgs = ['linux_path: {}'.format(
-                font_format.font_red(linux_path)), ]
+            msgs = []
+            msgs.append(font_format.interval_line())
+            msgs.append('linux_path: {}'.format(font_format.font_red(linux_path)))
             if is_window:
-                msgs.append('window_path: {}'.format(
-                    font_format.font_blue(window_path)))
+                msgs.append('window_path: {}'.format(font_format.font_blue(window_path)))
             keyword_format = font_format.font_fuchsia(git_status_keyword)
             git_status_message = git_status_message.replace(
                 git_status_keyword, keyword_format).strip('\n')
             msgs.append('Message:\n{}'.format(git_status_message))
+            msgs.append(font_format.interval_line())
             results.append('\n'.join(msgs))
         else:
             msgs = [
@@ -151,7 +123,6 @@ class RepoCheckStatus(ITask):
                 msgs.append(font_format.font_blue(window_path))
             results.append(' | '.join(msgs))
         return results
-
 
 class CheckStatus():
     def __init__(self, repo):
@@ -210,7 +181,6 @@ class CheckStatus():
             print('m:', m)
             return 'Not branch!'
 
-
 class RepoOpenGitBash(ITask):
     def __init__(self, is_user_openbash):
         ITask.__init__(self)
@@ -248,7 +218,6 @@ class RepoOpenGitBash(ITask):
     def GetDecScriptName(self):
         return "open_window_git_bash.develop.bat"
 
-
 class RepoExecuteCommand(ITask):
     def __init__(self, command):
         ITask.__init__(self)
@@ -275,7 +244,6 @@ class RepoExecuteCommand(ITask):
 
     def PrintResult(self, repo):
         return self.msgs
-
 
 class Command():
     def __init__(self, repo):

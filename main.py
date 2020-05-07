@@ -1,9 +1,5 @@
 # coding: UTF-8
 
-import workTree
-from YTSTools import font_format
-from YTSTools import convert
-from YTSTools import file
 import io
 import sys
 import os
@@ -11,9 +7,15 @@ import re
 import json
 import copy
 import argparse
+import time
 
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
+from YTSTools import font_format
+from YTSTools import convert
+from YTSTools import file
+
+import workTree
 
 def UserArgs():
     try:
@@ -31,14 +33,12 @@ def UserArgs():
         print("Command Input Error: \n", e)
         return None
 
-
 def Get_ITask_List(userArgs):
     tasks = []
     tasks.append(workTree.RepoCheckStatus())
-    # tasks.append(workTree.RepoOpenGitBash(userArgs.get('openbash', False)))
-    # tasks.append(workTree.RepoExecuteCommand(userArgs.get('command', None)))
+    tasks.append(workTree.RepoOpenGitBash(userArgs.get('openbash', False)))
+    tasks.append(workTree.RepoExecuteCommand(userArgs.get('command', None)))
     return tasks
-
 
 def develop_config():
     isWin = convert.is_window_system()
@@ -60,7 +60,6 @@ def develop_config():
         }, ]
     })
 
-
 def main(userArgs):
     # 读取 json 配置文件
     config = develop_config()
@@ -77,9 +76,9 @@ def main(userArgs):
                 repo = rrepo
             msgs = ITask.PrintResult(repo)
             if msgs:
-                print('\n'.join(msgs))
-        break
-
+                printContent = '\n'.join(msgs)
+                sys.stdout.write(printContent + "\n")
+                sys.stdout.flush()
 
 if __name__ == '__main__':
     userArgs = UserArgs()
