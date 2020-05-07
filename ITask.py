@@ -3,14 +3,7 @@
 # interface接口: 任务接口
 class ITask():
     def __init__(self):
-
-    """
-    注入用户参数内容
-    Returns:
-        ArgumentParser 回传传入的解析器对象
-    """
-    def UserArgumentAdd(self, keyname, parser):
-        return parser
+        pass
 
     """
     执行相关的任务操作

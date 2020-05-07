@@ -77,69 +77,36 @@ class GitRepos(object):
             results.extend(r)
         return results
 
-    def repos_check_status(self, repos):
-        for repo in repos:
-            cs = CheckStatus(repo);
-            cs.execute()
-        return self.output_repo_results(repos)
+    # def repos_check_status(self, repos):
+    #     for repo in repos:
+    #         cs = CheckStatus(repo);
+    #         cs.execute()
+    #     return self.output_repo_results(repos)
 
-    def output_repo_results(self, repos):
-        is_all_clean = True
-        clean_paths = []
-        problems = []
+    # def output_repo_results(self, repos):
+    #     is_all_clean = True
+    #     clean_paths = []
+    #     problems = []
 
-        for repo in repos:
-            linux_path = repo.get('linux_path', '')
-            window_path = repo.get('window_path', '')
-            is_window = convert.is_window_system()
-            git = repo.get('git', {})
-            git_branch = git.get('branch', {})
-            git_status = git.get('status', {})
-            git_status_is_clean = git_status.get('is_clean')
-            git_status_keyword = git_status.get('keyword')
-            git_status_message = git_status.get('message')
+    #     for repo in repos:
 
-            if git_branch != 'master':
-                git_branch = font_format.font_red(git_branch)
-
-            if not git_status_is_clean:
-                is_all_clean = False
-                msgs = [ 'linux_path: {}'.format(font_format.font_red(linux_path)), ]
-                if is_window:
-                    msgs.append('window_path: {}'.format(font_format.font_blue(window_path)))
-                keyword_format = font_format.font_fuchsia(git_status_keyword)
-                git_status_message = git_status_message.replace(git_status_keyword, keyword_format).strip('\n')
-                msgs.append('Message:\n{}'.format(git_status_message))
-                problems.append('\n'.join(msgs))
-            else:
-                msgs = [
-                    '({})'.format(git_branch),
-                    font_format.font_yellow(linux_path)
-                ]
-                if is_window:
-                    msgs.append(font_format.font_blue(window_path))
-                clean_paths.append(' | '.join(msgs))
-
-        # 打印信息
-        results = []
-        print(font_format.interval_line())
-        results.append("Start find need git operating repositories:")
-        if len(clean_paths) > 0:
-            results.append('\n'.join(clean_paths))
-        if is_all_clean:
-            results.append(font_format.font_green("All warehouses are very clean... ok!"))
-        elif len(problems) > 0:
-            results.extend(problems)
-        print('\n{}\n'.format(font_format.interval_line()).join(results))
-        print(font_format.interval_line())
-        return is_all_clean
+    #     # 打印信息
+    #     results = []
+    #     print(font_format.interval_line())
+    #     results.append("Start find need git operating repositories:")
+    #     if len(clean_paths) > 0:
+    #         results.append('\n'.join(clean_paths))
+    #     if is_all_clean:
+    #         results.append(font_format.font_green("All warehouses are very clean... ok!"))
+    #     elif len(problems) > 0:
+    #         results.extend(problems)
+    #     print('\n{}\n'.format(font_format.interval_line()).join(results))
+    #     print(font_format.interval_line())
+    #     return is_all_clean
 
 class RepoCheckStatus(ITask):
     def __init__(self):
         ITask.__init__(self)
-
-    def UserArgumentAdd(self, keyname, parser):
-        return parser
 
     def OnExecute(self, repo):
         cs = CheckStatus(repo)
@@ -147,7 +114,38 @@ class RepoCheckStatus(ITask):
         return repo
 
     def PrintResult(self, repo):
-        return []
+        linux_path = repo.get('linux_path', '')
+        window_path = repo.get('window_path', '')
+        is_window = convert.is_window_system()
+        git = repo.get('git', {})
+        git_branch = git.get('branch', {})
+        git_status = git.get('status', {})
+        git_status_is_clean = git_status.get('is_clean')
+        git_status_keyword = git_status.get('keyword')
+        git_status_message = git_status.get('message')
+
+        if git_branch != 'master':
+            git_branch = font_format.font_red(git_branch)
+
+        results = []
+        if not git_status_is_clean:
+            is_all_clean = False
+            msgs = [ 'linux_path: {}'.format(font_format.font_red(linux_path)), ]
+            if is_window:
+                msgs.append('window_path: {}'.format(font_format.font_blue(window_path)))
+            keyword_format = font_format.font_fuchsia(git_status_keyword)
+            git_status_message = git_status_message.replace(git_status_keyword, keyword_format).strip('\n')
+            msgs.append('Message:\n{}'.format(git_status_message))
+            results.append('\n'.join(msgs))
+        else:
+            msgs = [
+                '({})'.format(git_branch),
+                font_format.font_yellow(linux_path)
+            ]
+            if is_window:
+                msgs.append(font_format.font_blue(window_path))
+            results.append(' | '.join(msgs))
+        return results
 
 class CheckStatus():
     def __init__(self, repo):
@@ -207,21 +205,19 @@ class CheckStatus():
             return 'Not branch!'
 
 class RepoOpenGitBash(ITask):
-    def __init__(self):
+    def __init__(self, is_user_openbash):
         ITask.__init__(self)
-
-    def UserArgumentAdd(self, , parser):
-        parser.add_argument('--' + keyname, '-o', help='是否需要自动打开 Git Bash 命令窗口', action='store_true')
-        return parser
+        self.is_user_openbash = is_user_openbash
 
     def OnExecute(self, repo):
-        if self.IsCanOpen(repo):
-            window_path = repo.get('window_path', None)
-            if convert.is_window_system() and window_path:
-                program_dir = os.path.split(os.path.realpath(__file__))[0]
-                os.chdir(program_dir)
-                cmd = '"start {} {}"'.format(self.GetScriptName(), window_path)
-                os.system(cmd)
+        if not self.IsCanOpen(repo):
+            return None
+        window_path = repo.get('window_path', None)
+        if convert.is_window_system() and window_path:
+            program_dir = os.path.split(os.path.realpath(__file__))[0]
+            os.chdir(program_dir)
+            cmd = '"start {} {}"'.format(self.GetScriptName(), window_path)
+            os.system(cmd)
         return repo
 
     def IsCanOpen(self, repo):
@@ -235,13 +231,13 @@ class RepoOpenGitBash(ITask):
         git_status = git.get('status', {})
         is_clean = git_status.get('is_clean', False)
         is_open_git_bash = repo.get('is_open_git_bash', False)
-        is_open_git_bash = is_open_git_bash or is_user_openbash
+        is_open_git_bash = is_open_git_bash or self.is_user_openbash
 
         return not is_clean and is_open_git_bash
 
-    def GetScriptName():
+    def GetScriptName(self):
         return "open_window_git_bash.bat"
-    def GetDecScriptName():
+    def GetDecScriptName(self):
         return "open_window_git_bash.develop.bat"
 
 class RepoExecuteCommand(ITask):
@@ -250,16 +246,15 @@ class RepoExecuteCommand(ITask):
         self.command = command
         self.msgs = [];
 
-    def UserArgumentAdd(self, keyname, parser):
-        return parser
-
     def OnExecute(self, repo):
+        if not self.command:
+            return None
         self.msgs = []
         linux_path = repo.get('linux_path', '')
         window_path = repo.get('window_path', '')
         is_window = convert.is_window_system()
         cmd = Command(repo)
-        rmsg = cmd.execute(command)
+        rmsg = cmd.execute(self.command)
         rmsg = convert.trimEnd(rmsg, '\n')
         self.msgs = [ 'linux_path: {}'.format(font_format.font_red(linux_path)), ]
         if is_window:

@@ -29,13 +29,12 @@ def UserArgs():
         print("Command Input Error: \n", e)
         return None
 
-def main(userArgs):
-    # 读取 json 配置文件
-    config = develop_config()
-    gits = workTree.GitRepos(config)
-    repos = gits.scattered_repos();
-    is_all_clean = gits.repos_check_status(repos)
-    follow_action(is_all_clean, repos, userArgs)
+def Get_ITask_List(userArgs):
+    tasks = []
+    tasks.append(workTree.RepoCheckStatus())
+    tasks.append(workTree.RepoOpenGitBash(userArgs.get('openbash', False)))
+    tasks.append(workTree.RepoExecuteCommand(userArgs.get('command', None)))
+    return tasks
 
 def develop_config():
     isWin = convert.is_window_system()
@@ -57,58 +56,23 @@ def develop_config():
         },]
     })
 
-def follow_action(is_all_clean, repos, userArgs):
-    is_can_continue = open_git_bash(is_all_clean, repos, userArgs.get('openbash', False))
-    if not is_can_continue:
-        return
+def main(userArgs):
+    # 读取 json 配置文件
+    config = develop_config()
 
-    execute_command(is_all_clean, repos, userArgs)
-    # ... 更多动作
+    tasks = Get_ITask_List(userArgs);
 
-def open_git_bash(is_all_clean, repos, is_user_openbash):
-    if is_all_clean:
-        return True
-
-    filec = file.read_program_file_DevelopToRelease(
-        release_file_name = 'open_window_git_bash.bat',
-        develop_file_name = 'open_window_git_bash.develop.bat')
-    if not filec:
-        return True
+    gits = workTree.GitRepos(config)
+    repos = gits.scattered_repos();
 
     for repo in repos:
-        is_clean = repo.get('git', {}).get('status', {}).get('is_clean', False)
-        is_open_git_bash = repo.get('is_open_git_bash', False)
-        is_open_git_bash = is_open_git_bash or is_user_openbash
-        if not is_clean and is_open_git_bash:
-            window_path = repo.get('window_path', None)
-            if convert.is_window_system() and window_path:
-                program_dir = os.path.split(os.path.realpath(__file__))[0]
-                os.chdir(program_dir)
-                cmd = '"start open_window_git_bash.bat {}"'.format(window_path)
-                os.system(cmd)
-
-    return True
-
-def execute_command(is_all_clean, repos, userArgs):
-    command = userArgs.get('command', None)
-    if is_all_clean and command:
-        results = []
-        print(font_format.interval_line())
-        results.append("批量执行命令:{}".format(command))
-        for repo in repos:
-            linux_path = repo.get('linux_path', '')
-            window_path = repo.get('window_path', '')
-            is_window = convert.is_window_system()
-            cmd = workTree.Command(repo)
-            rmsg = cmd.execute(command)
-            rmsg = convert.trimEnd(rmsg, '\n')
-            msgs = [ 'linux_path: {}'.format(font_format.font_red(linux_path)), ]
-            if is_window:
-                msgs.append('window_path: {}'.format(font_format.font_blue(window_path)))
-            msgs.append('Message:\n{}'.format(rmsg))
-            results.append('\n'.join(msgs))
-        print('\n{}\n'.format(font_format.interval_line()).join(results))
-        print(font_format.interval_line())
+        for ITask in tasks:
+            rrepo = ITask.OnExecute(repo)
+            if rrepo:
+                repo = rrepo
+            msgs = ITask.PrintResult(repo)
+            if msgs:
+                print('\n'.join(msgs))
 
 if __name__ == '__main__':
     userArgs = UserArgs()
