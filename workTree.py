@@ -6,11 +6,12 @@ import re
 import json
 import copy
 
-import file
-import convert
-import font_format
+from YTSTools import file
+from YTSTools import convert
+from YTSTools import font_format
 
 from ITask import ITask
+
 
 class GitRepos(object):
     def __init__(self, config):
@@ -28,7 +29,8 @@ class GitRepos(object):
             root_config = convert.fill_template(self.global_config, root)
             root_ignores = root_config.get('ignores', [])
             root_ignores.extend(self.global_ignores)
-            son_paths = self.subproject_address_list(root_path, ignores=root_ignores)
+            son_paths = self.subproject_address_list(
+                root_path, ignores=root_ignores)
             for path in son_paths:
                 repo_config = copy.deepcopy(root_config)
                 if convert.is_window_path(path):
@@ -57,7 +59,7 @@ class GitRepos(object):
             if ignores == None or len(ignores) <= 0:
                 return False
             for ig in ignores:
-                if re.search(ig, folder, re.M|re.I):
+                if re.search(ig, folder, re.M | re.I):
                     return True
             return False
         if os.path.isfile(root):
@@ -104,6 +106,7 @@ class GitRepos(object):
     #     print(font_format.interval_line())
     #     return is_all_clean
 
+
 class RepoCheckStatus(ITask):
     def __init__(self):
         ITask.__init__(self)
@@ -129,12 +132,14 @@ class RepoCheckStatus(ITask):
 
         results = []
         if not git_status_is_clean:
-            is_all_clean = False
-            msgs = [ 'linux_path: {}'.format(font_format.font_red(linux_path)), ]
+            msgs = ['linux_path: {}'.format(
+                font_format.font_red(linux_path)), ]
             if is_window:
-                msgs.append('window_path: {}'.format(font_format.font_blue(window_path)))
+                msgs.append('window_path: {}'.format(
+                    font_format.font_blue(window_path)))
             keyword_format = font_format.font_fuchsia(git_status_keyword)
-            git_status_message = git_status_message.replace(git_status_keyword, keyword_format).strip('\n')
+            git_status_message = git_status_message.replace(
+                git_status_keyword, keyword_format).strip('\n')
             msgs.append('Message:\n{}'.format(git_status_message))
             results.append('\n'.join(msgs))
         else:
@@ -146,6 +151,7 @@ class RepoCheckStatus(ITask):
                 msgs.append(font_format.font_blue(window_path))
             results.append(' | '.join(msgs))
         return results
+
 
 class CheckStatus():
     def __init__(self, repo):
@@ -195,7 +201,7 @@ class CheckStatus():
 
     def get_branch_name(self):
         result_message = convert.execute_command('git branch')
-        m = re.search(r'\* ([^\s]+)', result_message, re.M|re.I)
+        m = re.search(r'\* ([^\s]+)', result_message, re.M | re.I)
         if m:
             branch = m.group(1)
             return branch.lower()
@@ -203,6 +209,7 @@ class CheckStatus():
             print('result_message: ({})'.format(result_message))
             print('m:', m)
             return 'Not branch!'
+
 
 class RepoOpenGitBash(ITask):
     def __init__(self, is_user_openbash):
@@ -222,8 +229,8 @@ class RepoOpenGitBash(ITask):
 
     def IsCanOpen(self, repo):
         filec = file.read_program_file_DevelopToRelease(
-            release_file_name = self.GetScriptName(),
-            develop_file_name = self.GetDecScriptName())
+            release_file_name=self.GetScriptName(),
+            develop_file_name=self.GetDecScriptName())
         if not filec:
             return False
 
@@ -237,14 +244,16 @@ class RepoOpenGitBash(ITask):
 
     def GetScriptName(self):
         return "open_window_git_bash.bat"
+
     def GetDecScriptName(self):
         return "open_window_git_bash.develop.bat"
+
 
 class RepoExecuteCommand(ITask):
     def __init__(self, command):
         ITask.__init__(self)
         self.command = command
-        self.msgs = [];
+        self.msgs = []
 
     def OnExecute(self, repo):
         if not self.command:
@@ -256,14 +265,17 @@ class RepoExecuteCommand(ITask):
         cmd = Command(repo)
         rmsg = cmd.execute(self.command)
         rmsg = convert.trimEnd(rmsg, '\n')
-        self.msgs = [ 'linux_path: {}'.format(font_format.font_red(linux_path)), ]
+        self.msgs = ['linux_path: {}'.format(
+            font_format.font_red(linux_path)), ]
         if is_window:
-            self.msgs.append('window_path: {}'.format(font_format.font_blue(window_path)))
+            self.msgs.append('window_path: {}'.format(
+                font_format.font_blue(window_path)))
         self.msgs.append('Message:\n{}'.format(rmsg))
         return repo
 
     def PrintResult(self, repo):
         return self.msgs
+
 
 class Command():
     def __init__(self, repo):
