@@ -125,6 +125,9 @@ class RepoCheckStatus(ITask):
             results.append(content)
         return results
 
+    def IsWriteIntervalLine(self, repo):
+        return not repo_is_clean(repo)
+
 class CheckStatus():
     def __init__(self, repo):
         self.repo = repo
@@ -235,6 +238,9 @@ class RepoOpenGitBash(ITask):
 
     def PrintResult(self, repo):
         return self.msgs
+
+    def IsWriteIntervalLine(self, repo):
+        return not repo_is_clean(repo)
 
 def repo_is_clean(repo):
     git = repo.get('git', {})

@@ -20,3 +20,11 @@ class ITask():
     """
     def PrintResult(self, repo):
         return []
+
+    """
+    是否将输出分割
+    Returns:
+        boolean 是/否
+    """
+    def IsWriteIntervalLine(self, repo):
+        return False

@@ -81,7 +81,7 @@ def main(userArgs):
             msgs = ITask.PrintResult(repo)
             if msgs:
                 printContent = '\n'.join(msgs)
-                if not workTree.repo_is_clean(repo):
+                if ITask.IsWriteIntervalLine(repo):
                     console.WriteIntervalLine(printContent)
                 else:
                     console.Write(printContent)
