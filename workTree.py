@@ -205,19 +205,22 @@ class RepoOpenGitBash(ITask):
         if not filec:
             return False
 
-        git = repo.get('git', {})
-        git_status = git.get('status', {})
-        is_clean = git_status.get('is_clean', False)
         is_open_git_bash = repo.get('is_open_git_bash', False)
         is_open_git_bash = is_open_git_bash or self.is_user_openbash
 
-        return not is_clean and is_open_git_bash
+        return not repo_is_clean(repo) and is_open_git_bash
 
     def GetScriptName(self):
         return "open_window_git_bash.bat"
 
     def GetDecScriptName(self):
         return "open_window_git_bash.develop.bat"
+
+def repo_is_clean(repo):
+    git = repo.get('git', {})
+    git_status = git.get('status', {})
+    is_clean = git_status.get('is_clean', False)
+    return is_clean
 
 class RepoExecuteCommand(ITask):
     def __init__(self, command):
@@ -226,21 +229,29 @@ class RepoExecuteCommand(ITask):
         self.msgs = []
 
     def OnExecute(self, repo):
+        self.msgs = []
         if not self.command:
             return None
-        self.msgs = []
-        linux_path = repo.get('linux_path', '')
-        window_path = repo.get('window_path', '')
-        is_window = convert.is_window_system()
-        cmd = Command(repo)
-        rmsg = cmd.execute(self.command)
-        rmsg = convert.trimEnd(rmsg, '\n')
-        self.msgs = ['linux_path: {}'.format(
-            font_format.font_red(linux_path)), ]
-        if is_window:
-            self.msgs.append('window_path: {}'.format(
-                font_format.font_blue(window_path)))
-        self.msgs.append('Message:\n{}'.format(rmsg))
+
+        if not repo_is_clean(repo):
+            return None
+
+        res = os.system(self.command)
+        msg = ""
+        if res == 0:
+            msg = "Custom command executed {}: {}".format(
+                font_format.font_green("successfully"),
+                font_format.font_green(self.command)
+                )
+        else:
+            msg = "Custom command executed {}: {}, status code: {}".format(
+                font_format.font_red("failed"),
+                font_format.font_red(self.command),
+                font_format.font_red(str(res))
+                )
+            print(res)
+        self.msgs.append(msg)
+
         return repo
 
     def PrintResult(self, repo):

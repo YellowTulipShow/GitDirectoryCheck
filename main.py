@@ -74,7 +74,6 @@ def main(userArgs):
 
     not_clean_count = 0
     for repo in repos:
-        repo_msgs = []
         for ITask in tasks:
             rrepo = ITask.OnExecute(repo)
             if rrepo:
@@ -82,25 +81,21 @@ def main(userArgs):
             msgs = ITask.PrintResult(repo)
             if msgs:
                 printContent = '\n'.join(msgs)
-                repo_msgs.append(printContent)
+                if not workTree.repo_is_clean(repo):
+                    console.WriteIntervalLine(printContent)
+                else:
+                    console.Write(printContent)
 
-        if not repo_is_clean(repo):
+        if not workTree.repo_is_clean(repo):
             not_clean_count += 1
-            console.WriteIntervalLine('\n'.join(repo_msgs))
-        else:
-            console.Write('\n'.join(repo_msgs))
+
+        # break
 
     if not_clean_count <= 0:
         resultMsg = font_format.font_green("All warehouses are very clean... ok!")
     else:
         resultMsg = "Need Oper Repo Count: {}".format(font_format.font_red(not_clean_count))
     console.WriteIntervalLine(resultMsg)
-
-def repo_is_clean(repo):
-    git = repo.get('git', {})
-    git_status = git.get('status', {})
-    git_status_is_clean = git_status.get('is_clean', None)
-    return git_status_is_clean
 
 class Console():
     def __init__(self):
