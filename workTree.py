@@ -186,35 +186,55 @@ class RepoOpenGitBash(ITask):
     def __init__(self, is_user_openbash):
         ITask.__init__(self)
         self.is_user_openbash = is_user_openbash
+        self.msgs = []
 
     def OnExecute(self, repo):
-        if not self.IsCanOpen(repo):
+        self.msgs = []
+        if repo_is_clean(repo):
             return None
+
+        is_open_git_bash = repo.get('is_open_git_bash', False)
+        is_open_git_bash = is_open_git_bash or self.is_user_openbash
+        if not is_open_git_bash:
+            return None
+
+        filec = file.read_program_file_DevelopToRelease(
+            release_file_name=self.GetScriptName(),
+            develop_file_name=self.GetDecScriptName())
+        if not filec:
+            self.msgs.append("auto open Git Bash Script File ({}) Not Exist!".format(
+                font_format.font_red(self.GetScriptName())
+                ))
+            return None
+
         window_path = repo.get('window_path', None)
         if convert.is_window_system() and window_path:
             program_dir = os.path.split(os.path.realpath(__file__))[0]
             os.chdir(program_dir)
             cmd = '"start {} {}"'.format(self.GetScriptName(), window_path)
-            os.system(cmd)
+
+            res = os.system(cmd)
+            msg = ""
+            if res == 0:
+                msg = "auto open Git Bash executed {}!".format(
+                    font_format.font_green("successfully"))
+            else:
+                msg = "auto open Git Bash executed {}, status code: {}".format(
+                    font_format.font_red("failed"),
+                    font_format.font_red(str(res))
+                    )
+                print(res)
+            self.msgs.append(msg)
         return repo
-
-    def IsCanOpen(self, repo):
-        filec = file.read_program_file_DevelopToRelease(
-            release_file_name=self.GetScriptName(),
-            develop_file_name=self.GetDecScriptName())
-        if not filec:
-            return False
-
-        is_open_git_bash = repo.get('is_open_git_bash', False)
-        is_open_git_bash = is_open_git_bash or self.is_user_openbash
-
-        return not repo_is_clean(repo) and is_open_git_bash
 
     def GetScriptName(self):
         return "open_window_git_bash.bat"
 
     def GetDecScriptName(self):
         return "open_window_git_bash.develop.bat"
+
+    def PrintResult(self, repo):
+        return self.msgs
 
 def repo_is_clean(repo):
     git = repo.get('git', {})
