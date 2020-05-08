@@ -69,6 +69,9 @@ def main(userArgs):
     gits = workTree.GitRepos(config)
     repos = gits.scattered_repos()
 
+    console = Console()
+    console.WriteIntervalLine("Git Check Program Start Run:")
+
     not_clean_count = 0
     for repo in repos:
         repo_msgs = []
@@ -83,20 +86,15 @@ def main(userArgs):
 
         if not repo_is_clean(repo):
             not_clean_count += 1
-            printWrite(font_format.interval_line())
-            printWrite('\n'.join(repo_msgs))
-            printWrite(font_format.interval_line())
+            console.WriteIntervalLine('\n'.join(repo_msgs))
         else:
-            printWrite('\n'.join(repo_msgs))
-
-    printWrite(font_format.interval_line())
+            console.Write('\n'.join(repo_msgs))
 
     if not_clean_count <= 0:
-        printWrite(font_format.font_green("All warehouses are very clean... ok!"))
+        resultMsg = font_format.font_green("All warehouses are very clean... ok!")
     else:
-        printWrite("Need Oper Repo Count: {}".format(font_format.font_red(not_clean_count)))
-
-    printWrite(font_format.interval_line())
+        resultMsg = "Need Oper Repo Count: {}".format(font_format.font_red(not_clean_count))
+    console.WriteIntervalLine(resultMsg)
 
 def repo_is_clean(repo):
     git = repo.get('git', {})
@@ -104,9 +102,21 @@ def repo_is_clean(repo):
     git_status_is_clean = git_status.get('is_clean', None)
     return git_status_is_clean
 
-def printWrite(strContent):
-    sys.stdout.write(strContent + "\n")
-    sys.stdout.flush()
+class Console():
+    def __init__(self):
+        self.beforeIsIntervalLine = False
+
+    def Write(self, strContent):
+        sys.stdout.write(strContent + "\n")
+        sys.stdout.flush()
+        self.beforeIsIntervalLine = False
+
+    def WriteIntervalLine(self, strContent):
+        if not self.beforeIsIntervalLine:
+            self.Write(font_format.interval_line())
+        self.Write(strContent)
+        self.Write(font_format.interval_line())
+        self.beforeIsIntervalLine = True
 
 if __name__ == '__main__':
     userArgs = UserArgs()

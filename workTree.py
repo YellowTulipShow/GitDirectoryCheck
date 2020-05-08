@@ -120,7 +120,7 @@ class RepoCheckStatus(ITask):
             git_status_message = git_status_message.replace(git_status_keyword, keyword_format)
             git_status_message = git_status_message.strip('\n')
             content = '\nMessage:\n{}'.format(git_status_message)
-            content = content.replace('\n', '\n    ')
+            # content = content.replace('\n', '\n    ')
             content = content.strip('\n')
             results.append(content)
         return results
