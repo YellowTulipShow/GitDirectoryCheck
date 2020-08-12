@@ -23,7 +23,7 @@ def UserArgs():
         parser.add_argument('--openbash', '-o',
                             help='是否需要自动打开 Git Bash 命令窗口', action='store_true')
         parser.add_argument('--command', '-c',
-                            help='所有仓库需要执行的命令, 只在所有仓库都干净的时候执行', type=str)
+                            help='如果仓库干净便执行的命令输入的命令', type=str)
         args = parser.parse_args()
         return {
             'openbash': args.openbash,

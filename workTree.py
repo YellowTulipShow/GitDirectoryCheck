@@ -248,6 +248,11 @@ def repo_is_clean(repo):
     is_clean = git_status.get('is_clean', False)
     return is_clean
 
+def repo_get_branch(repo):
+    git = repo.get('git', {})
+    branch = git.get('branch', '')
+    return branch
+
 class RepoExecuteCommand(ITask):
     def __init__(self, command):
         ITask.__init__(self)
@@ -261,6 +266,15 @@ class RepoExecuteCommand(ITask):
 
         if not repo_is_clean(repo):
             return None
+
+        branch = repo_get_branch(repo)
+        if branch != 'master':
+            msg = "current branch not is {}: {}".format(
+                font_format.font_green('master'),
+                font_format.font_red(branch)
+                )
+            self.msgs.append(msg)
+            return repo
 
         res = os.system(self.command)
         msg = ""
