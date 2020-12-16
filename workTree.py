@@ -94,9 +94,9 @@ class RepoCheckStatus(ITask):
         git = repo.get('git', {})
         git_branch = git.get('branch', {})
         git_status = git.get('status', {})
-        git_status_is_clean = git_status.get('is_clean', None)
-        git_status_keyword = git_status.get('keyword', None)
-        git_status_message = git_status.get('message', None)
+        git_status_is_clean = git_status.get('is_clean', False)
+        git_status_keyword = git_status.get('keyword', '')
+        git_status_message = git_status.get('message', '')
 
         titleHeader = []
 
@@ -139,8 +139,13 @@ class CheckStatus():
         if convert.is_window_system():
             cd_path = self.window_path
         os.chdir(cd_path)
-        result_message = convert.execute_command('git status')
-        is_clean, keyword = self.check_exception_status(result_message)
+        try:
+            result_message = convert.execute_command('git status')
+            is_clean, keyword = self.check_exception_status(result_message)
+        except Exception as e:
+            result_message = 'Exception Error:\n' + str(e)
+            is_clean = False
+            keyword = str(e)
         self.repo['git'] = {
             'branch': self.get_branch_name(),
             'status': {
