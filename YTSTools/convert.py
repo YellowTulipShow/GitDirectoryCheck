@@ -6,9 +6,12 @@ import platform
 import copy
 
 def execute_command(command_string):
-    with os.popen(command_string, 'r') as f:
-        text = f.read()
-    return text
+    with os.popen(command_string) as fp:
+        bf = fp._stream.buffer.read()
+    try:
+        return bf.decode().strip()
+    except UnicodeDecodeError:
+        return bf.decode('gbk').strip()
 
 def is_window_system():
     return platform.system() == "Windows"
