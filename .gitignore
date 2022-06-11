@@ -4,3 +4,8 @@ config.json
 .config.release.json
 __test__.py
 open_window_git_bash.bat
+
+_release/
+_release_*/
+_configs/**/*.config
+!_configs/fixed/*.config
