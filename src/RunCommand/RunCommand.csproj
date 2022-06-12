@@ -1,9 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
-  </PropertyGroup>
+    <PropertyGroup>
+        <Title>Git各项目检查工具</Title>
+        <PackageId></PackageId>
+        <Version>0.0.1</Version>
+        <Authors>YellowTulipShow</Authors>
+        <Description>Git各项目检查工具</Description>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <PackAsTool>true</PackAsTool>
+        <ToolCommandName>gitcheck</ToolCommandName>
+    </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="YTS.Log" Version="0.1.2" />

@@ -47,8 +47,7 @@ if ($cpath -and (Test-Path $cpath)) {
     for ($i = 0; $i -lt $list.Count; $i++) {
         if ($list.Count -eq 1) {
             $item = $list;
-        }
-        else {
+        } else {
             $item = $list[$i]
         }
         if (!$item) {
@@ -59,8 +58,7 @@ if ($cpath -and (Test-Path $cpath)) {
         for ($j = 0; $j -lt $systems.Count; $j++) {
             if ($systems.Count -eq 1) {
                 $sys = $systems;
-            }
-            else {
+            } else {
                 $sys = $systems[$j];
             }
 
@@ -70,6 +68,37 @@ if ($cpath -and (Test-Path $cpath)) {
             Write-Host "dotnet publish $item -o './_release/$sys/$name' --runtime '$sys'"
             dotnet publish $item -o "./_release/$sys/$name" --runtime "$sys"
         }
+    }
+}
+
+# 打包命令项目
+PrintLineSplit
+Write-Host "[Release Command]:";
+$cpath = ConfigFileHandle("./_configs/command.config")
+if ($cpath -and (Test-Path $cpath)) {
+    $save_path = "./_release/command_packages"
+    if ($save_path -and (Test-Path $save_path)) {
+        Remove-Item -Recurse -Force $save_path
+    }
+
+    $list = Get-Content $cpath
+    for ($i = 0; $i -lt $list.Count; $i++) {
+        if ($list.Count -eq 1) {
+            $item = $list;
+        } else {
+            $item = $list[$i]
+        }
+        if (!$item) {
+            continue;
+        }
+
+        PrintLineSplit
+
+        # 打包项目
+        Write-Output "dotnet build $item"
+        dotnet build $item
+        Write-Output "dotnet pack $item --output '$save_path'"
+        dotnet pack $item --output "$save_path"
     }
 }
 

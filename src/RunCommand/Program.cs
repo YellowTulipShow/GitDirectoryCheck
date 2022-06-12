@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Text;
 
 namespace RunCommand
 {
@@ -6,6 +8,62 @@ namespace RunCommand
     {
         static void Main(string[] args)
         {
+            Test_Main1();
+            // Test_Main2(args);
+        }
+
+        private static int Test_Main2(string[] args)
+        {
+            // size of tab
+            const int Val1 = 2;
+
+            // working string
+            const string Val_Text = "Geeks for Geeks";
+            // check for the argument
+            if (args.Length < 2)
+            {
+                Console.WriteLine(Val_Text);
+                return 1;
+            }
+
+            try
+            {
+                // replacing space characters in a string with
+                // a tab character
+                using (var wrt1 = new StreamWriter(args[1]))
+                {
+                    using (var rdr1 = new StreamReader(args[0]))
+                    {
+                        Console.SetOut(wrt1);
+                        Console.SetIn(rdr1);
+                        string line;
+                        while ((line = Console.ReadLine()) != null)
+                        {
+                            string newLine = line.Replace(("").PadRight(Val1, ' '), "\t");
+                            Console.WriteLine(newLine);
+                        }
+                    }
+                }
+            }
+            catch (IOException e)
+            {
+                TextWriter errwrt = Console.Error;
+                errwrt.WriteLine(e.Message);
+                return 1;
+            }
+
+            // use of OpenStandardOutput() method
+            var standardOutput = new StreamWriter(Console.OpenStandardOutput());
+            standardOutput.AutoFlush = true;
+
+            // set the output
+            Console.SetOut(standardOutput);
+            Console.WriteLine("OpenStandardOutput Example");
+            return 0;
+        }
+        private static void Test_Main1()
+        {
+
             Console.WriteLine("Hello World!");
             ConsoleColor.Red.WriteColorLine("Hello World!");
 
@@ -25,28 +83,18 @@ namespace RunCommand
                 Console.WriteLine();
             }
 
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.Write("/x01");
-            Console.Write("/u0001");
-            Console.Write("/001");
-            Console.Write("/x10");
-            Console.Write("/u0010");
-            Console.Write("/020");
+            using (Stream outputSteam = Console.OpenStandardOutput())
+            {
+                outputSteam.Write(Encoding.UTF8.GetBytes("\033[32m he GGGGGGGGG \033[0m"));
+                outputSteam.Write(Encoding.UTF8.GetBytes("\\033[32m he GGGGGGGGG \\033[0m"));
+            }
 
-            Console.WriteLine();
-            Console.Write("{0,-50}", "Class1.TestMethod1");
-            Console.Write("{0,-2}", "/x10");
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine("Pass");
+            Console.WriteLine("This is a \033[1;35m test \033[0m!");
+            Console.WriteLine("This is a \033[1;32;43m test \033[0m!");
+            Console.WriteLine("\033[1;33;44mThis is a test !\033[0m");
 
-            Console.WriteLine();
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.Write("{0,-50}", "Class1.TestMethod2");
-            Console.Write("{0,-2}", "/x10");
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("Failed");
-
-            Console.ReadLine();
+            Console.WriteLine("\033[32m he EEEEEEEE \033[0m");
+            Console.WriteLine("\\033[32m he EEEEEEEE \\033[0m");
         }
     }
 }
