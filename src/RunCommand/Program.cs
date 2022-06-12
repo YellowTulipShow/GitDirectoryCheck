@@ -9,58 +9,8 @@ namespace RunCommand
         static void Main(string[] args)
         {
             Test_Main1();
-            // Test_Main2(args);
         }
 
-        private static int Test_Main2(string[] args)
-        {
-            // size of tab
-            const int Val1 = 2;
-
-            // working string
-            const string Val_Text = "Geeks for Geeks";
-            // check for the argument
-            if (args.Length < 2)
-            {
-                Console.WriteLine(Val_Text);
-                return 1;
-            }
-
-            try
-            {
-                // replacing space characters in a string with
-                // a tab character
-                using (var wrt1 = new StreamWriter(args[1]))
-                {
-                    using (var rdr1 = new StreamReader(args[0]))
-                    {
-                        Console.SetOut(wrt1);
-                        Console.SetIn(rdr1);
-                        string line;
-                        while ((line = Console.ReadLine()) != null)
-                        {
-                            string newLine = line.Replace(("").PadRight(Val1, ' '), "\t");
-                            Console.WriteLine(newLine);
-                        }
-                    }
-                }
-            }
-            catch (IOException e)
-            {
-                TextWriter errwrt = Console.Error;
-                errwrt.WriteLine(e.Message);
-                return 1;
-            }
-
-            // use of OpenStandardOutput() method
-            var standardOutput = new StreamWriter(Console.OpenStandardOutput());
-            standardOutput.AutoFlush = true;
-
-            // set the output
-            Console.SetOut(standardOutput);
-            Console.WriteLine("OpenStandardOutput Example");
-            return 0;
-        }
         private static void Test_Main1()
         {
 
