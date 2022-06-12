@@ -90,3 +90,4 @@ $ gits
 * [Python 命令行参数的3种传入方式](https://tendcode.com/article/python-shell/)
 * [使用 python 执行 shell 命令的几种常用方式](https://tendcode.com/article/python-shell-cmd/)
 * [python argparse用法总结](https://www.jianshu.com/p/fef2d215b91d)
+* [使用 .NET 的 ANSI 着色控制台输出](https://www.itbaoku.cn/post/433410/ANSI-Coloring-Console-Output-with-.NET)

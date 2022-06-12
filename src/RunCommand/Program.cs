@@ -85,16 +85,16 @@ namespace RunCommand
 
             using (Stream outputSteam = Console.OpenStandardOutput())
             {
-                outputSteam.Write(Encoding.UTF8.GetBytes("\033[32m he GGGGGGGGG \033[0m"));
-                outputSteam.Write(Encoding.UTF8.GetBytes("\\033[32m he GGGGGGGGG \\033[0m"));
+                outputSteam.Write(Encoding.UTF8.GetBytes("\x1b[32m he GGGGGGGGG \x1b[0m"));
             }
 
-            Console.WriteLine("This is a \033[1;35m test \033[0m!");
-            Console.WriteLine("This is a \033[1;32;43m test \033[0m!");
-            Console.WriteLine("\033[1;33;44mThis is a test !\033[0m");
+            Console.WriteLine("This is a \x1b[1;35m test \x1b[0m!");
+            Console.WriteLine("This is a \x1b[1;32;43m test \x1b[0m!");
+            Console.WriteLine("\x1b[1;33;44mThis is a test !\x1b[0m");
 
-            Console.WriteLine("\033[32m he EEEEEEEE \033[0m");
-            Console.WriteLine("\\033[32m he EEEEEEEE \\033[0m");
+            Console.WriteLine("\x1b[32m he EEEEEEEE \x1b[0m");
+
+            Console.WriteLine("\x1b[36mTEST\x1b[0m");
         }
     }
 }
