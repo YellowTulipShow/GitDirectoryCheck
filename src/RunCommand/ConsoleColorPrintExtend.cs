@@ -4,7 +4,15 @@ namespace RunCommand
 {
     public static class ConsoleColorPrintExtend
     {
-        public static void WriteColorLine(this ConsoleColor color, string str)
+
+        public static void Write(this ConsoleColor color, string str)
+        {
+            ConsoleColor selfcolor = Console.ForegroundColor;
+            Console.ForegroundColor = color;
+            Console.Write(str);
+            Console.ForegroundColor = selfcolor;
+        }
+        public static void WriteLine(this ConsoleColor color, string str)
         {
             ConsoleColor selfcolor = Console.ForegroundColor;
             Console.ForegroundColor = color;

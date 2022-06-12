@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace RunCommand
@@ -8,6 +9,14 @@ namespace RunCommand
     {
         static void Main(string[] args)
         {
+            Console.WriteLine($"OSVersion: {Environment.OSVersion.ToString()}");
+            Console.WriteLine($"UserInteractive: {Environment.UserInteractive}");
+
+            Console.WriteLine($"FrameworkDescription: {RuntimeInformation.FrameworkDescription}");
+            Console.WriteLine($"OSDescription: {RuntimeInformation.OSDescription}");
+            Console.WriteLine($"OS: {RuntimeInformation.OSArchitecture.ToString()}");
+            Console.WriteLine($"ProcessArchitecture: {RuntimeInformation.ProcessArchitecture.ToString()}");
+
             Test_Main1();
         }
 
@@ -15,7 +24,7 @@ namespace RunCommand
         {
 
             Console.WriteLine("Hello World!");
-            ConsoleColor.Red.WriteColorLine("Hello World!");
+            ConsoleColor.Red.WriteLine("Hello World!");
 
             String nl = Environment.NewLine;
             String[] colorNames = Enum.GetNames(typeof(ConsoleColor));
