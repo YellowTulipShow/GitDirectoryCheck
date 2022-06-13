@@ -1,24 +1,43 @@
 ﻿using System;
+using System.CommandLine;
 using System.IO;
-using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace RunCommand
 {
     class Program
     {
-        static void Main(string[] args)
+        static async Task<int> Main(string[] args)
         {
-            Console.WriteLine($"OSVersion: {Environment.OSVersion.ToString()}");
-            Console.WriteLine($"UserInteractive: {Environment.UserInteractive}");
-
-            Console.WriteLine($"FrameworkDescription: {RuntimeInformation.FrameworkDescription}");
-            Console.WriteLine($"OSDescription: {RuntimeInformation.OSDescription}");
-            Console.WriteLine($"OS: {RuntimeInformation.OSArchitecture.ToString()}");
-            Console.WriteLine($"ProcessArchitecture: {RuntimeInformation.ProcessArchitecture.ToString()}");
-
-            Test_Main1();
+            var mainHelper = GetMainHelper();
+            return await CheckArgs(args, mainHelper);
         }
+
+        private static MainHelper GetMainHelper()
+        {
+            var main = new MainHelper();
+            return main;
+        }
+        private static async Task<int> CheckArgs(string[] args, MainHelper mainHelper)
+        {
+            var openbashOption = new Option<bool>(
+                aliases: new string[] { "-o", "--openbash" },
+                description: "是否需要自动打开命令窗口",
+                getDefaultValue: () => false);
+            var commandOption = new Option<string>(
+                aliases: new string[] { "-c", "--command" },
+                description: "如果仓库干净便执行的命令输入的命令");
+            var rootCommand = new RootCommand("批量检查 Git 仓库状态");
+            rootCommand.AddOption(openbashOption);
+            rootCommand.AddOption(commandOption);
+            rootCommand.SetHandler((isopenbash, command) =>
+            {
+                mainHelper.OnExecute(isopenbash, command);
+            }, openbashOption, commandOption);
+            return await rootCommand.InvokeAsync(args);
+        }
+
 
         private static void Test_Main1()
         {
