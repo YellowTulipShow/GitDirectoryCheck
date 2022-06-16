@@ -28,7 +28,7 @@ namespace RunCommand
             try
             {
                 Option<string> configFilePathOption = GetOption_ConfigFilePath();
-                Option<bool> openShellOption = GetOption_OpenShell();
+                Option<bool?> openShellOption = GetOption_OpenShell();
                 Option<string> commandOption = GetOption_Command();
                 Option<ESystemType> systemTypeOption = GetOption_SystemType();
 
@@ -43,7 +43,7 @@ namespace RunCommand
                     {
                         string configFilePath = context.ParseResult.GetValueForOption(configFilePathOption);
                         logArgs["configFilePath"] = configFilePath;
-                        bool isOpenShell = context.ParseResult.GetValueForOption(openShellOption);
+                        bool? isOpenShell = context.ParseResult.GetValueForOption(openShellOption);
                         logArgs["isOpenShell"] = isOpenShell;
                         string command = context.ParseResult.GetValueForOption(commandOption);
                         logArgs["command"] = command;
@@ -86,11 +86,11 @@ namespace RunCommand
             option.Arity = ArgumentArity.ExactlyOne;
             return option;
         }
-        private Option<bool> GetOption_OpenShell()
+        private Option<bool?> GetOption_OpenShell()
         {
-            var option = new Option<bool>(
+            var option = new Option<bool?>(
                 aliases: new string[] { "-o", "--open-shell" },
-                getDefaultValue: () => false,
+                getDefaultValue: () => null,
                 description: "当Git仓库'不干净'时, 是否需要自动打开命令窗口"); ;
             option.Arity = ArgumentArity.ExactlyOne;
             return option;

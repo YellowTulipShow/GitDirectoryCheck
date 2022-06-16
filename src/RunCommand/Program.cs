@@ -18,7 +18,7 @@ namespace RunCommand
             {
                 var logFile = ILogExtend.GetLogFilePath("Program");
                 ILog log = new FilePrintLog(logFile, encoding).Connect(new ConsolePrintLog());
-                IMain im = new MainHelpr(log);
+                IMain im = new MainHelpr(log, encoding);
                 CommandArgsParser commandArgsParser = new CommandArgsParser(log, im);
                 return commandArgsParser.OnParser(args);
             }

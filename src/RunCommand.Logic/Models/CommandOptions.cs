@@ -8,7 +8,7 @@
         /// <summary>
         /// 当Git仓库'不干净'时, 是否需要自动打开命令窗口
         /// </summary>
-        public bool IsOpenShell { get; set; }
+        public bool? IsOpenShell { get; set; }
 
         /// <summary>
         /// 当Git仓库'不干净'时, 在其路径执行的命令内容
