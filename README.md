@@ -91,3 +91,6 @@ $ gits
 * [使用 python 执行 shell 命令的几种常用方式](https://tendcode.com/article/python-shell-cmd/)
 * [python argparse用法总结](https://www.jianshu.com/p/fef2d215b91d)
 * [使用 .NET 的 ANSI 着色控制台输出](https://www.itbaoku.cn/post/433410/ANSI-Coloring-Console-Output-with-.NET)
+* [Linux Shell命令——命令别名 alias（含“永久生效”方法）](https://blog.csdn.net/u013894429/article/details/79908554)
+* [window中的cmd中设置别名(alias)及设置快捷键打开cmd](https://blog.csdn.net/yiranzhiliposui/article/details/83116819)
+* [为 Windows PowerShell 设置 alias （命令行命令别名）](https://blog.csdn.net/lei_qi/article/details/106592404)

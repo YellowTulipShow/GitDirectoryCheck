@@ -1,23 +1,23 @@
 ﻿using System;
-using System.IO;
-using System.Linq;
-using System.Text.RegularExpressions;
 
 using System.CommandLine;
 
 using YTS.Log;
+
+using RunCommand.Logic;
+using RunCommand.Logic.Models;
 
 namespace RunCommand
 {
     public class CommandArgsParser
     {
         private readonly ILog log;
-        private readonly MainHelpr mainHelpr;
+        private readonly IMain main;
 
-        public CommandArgsParser(ILog log, MainHelpr mainHelpr)
+        public CommandArgsParser(ILog log, IMain main)
         {
             this.log = log;
-            this.mainHelpr = mainHelpr;
+            this.main = main;
         }
 
         public int OnParser(string[] args)
@@ -27,21 +27,34 @@ namespace RunCommand
             int code = 0;
             try
             {
+                Option<string> configFilePathOption = GetOption_ConfigFilePath();
                 Option<bool> openShellOption = GetOption_OpenShell();
                 Option<string> commandOption = GetOption_Command();
+                Option<ESystemType> systemTypeOption = GetOption_SystemType();
 
                 RootCommand rootC = new RootCommand("检查目录下所有 Git 仓库状态");
+                rootC.AddOption(configFilePathOption);
                 rootC.AddOption(openShellOption);
                 rootC.AddOption(commandOption);
+
                 rootC.SetHandler(context =>
                 {
                     try
                     {
+                        string configFilePath = context.ParseResult.GetValueForOption(configFilePathOption);
+                        logArgs["configFilePath"] = configFilePath;
                         bool isOpenShell = context.ParseResult.GetValueForOption(openShellOption);
                         logArgs["isOpenShell"] = isOpenShell;
                         string command = context.ParseResult.GetValueForOption(commandOption);
                         logArgs["command"] = command;
-                        mainHelpr.OnExecute(isOpenShell, command);
+                        ESystemType systemType = context.ParseResult.GetValueForOption(systemTypeOption);
+                        logArgs["systemType"] = systemType.ToString();
+                        main.OnExecute(configFilePath, new Logic.Models.CommandOptions()
+                        {
+                            IsOpenShell = isOpenShell,
+                            Command = command,
+                            SystemType = systemType,
+                        });
                     }
                     catch (Exception ex)
                     {
@@ -60,21 +73,47 @@ namespace RunCommand
             return code;
         }
 
+        private Option<string> GetOption_ConfigFilePath()
+        {
+            var option = new Option<string>(
+                aliases: new string[] { "-c", "--config" },
+                getDefaultValue: () =>
+                {
+                    // 当前用户配置地址
+                    return Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+                },
+                description: "配置文件读取路径"); ;
+            option.Arity = ArgumentArity.ExactlyOne;
+            return option;
+        }
         private Option<bool> GetOption_OpenShell()
         {
             var option = new Option<bool>(
                 aliases: new string[] { "-o", "--open-shell" },
                 getDefaultValue: () => false,
-                description: "当Git仓库'不干净'时, 是否需要自动打开命令窗口");;
+                description: "当Git仓库'不干净'时, 是否需要自动打开命令窗口"); ;
             option.Arity = ArgumentArity.ExactlyOne;
             return option;
         }
         private Option<string> GetOption_Command()
         {
             var option = new Option<string>(
-                aliases: new string[] { "-o", "--output" },
+                aliases: new string[] { "--command" },
                 getDefaultValue: () => null,
                 description: "当Git仓库'不干净'时, 在其路径执行的命令内容");
+            option.Arity = ArgumentArity.ExactlyOne;
+            return option;
+        }
+
+        private Option<ESystemType> GetOption_SystemType()
+        {
+            var option = new Option<ESystemType>(
+                aliases: new string[] { "--system" },
+                getDefaultValue: () =>
+                {
+                    return ESystemType.Window;
+                },
+                description: "显示的执行当前执行的系统标识, 用于打印输出消息内容颜色使用");
             option.Arity = ArgumentArity.ExactlyOne;
             return option;
         }

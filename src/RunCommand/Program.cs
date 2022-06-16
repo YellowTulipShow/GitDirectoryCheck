@@ -1,10 +1,11 @@
 ﻿using System;
-using System.CommandLine;
 using System.IO;
 using System.Text;
-using System.Threading.Tasks;
 
 using YTS.Log;
+
+using RunCommand.Logic;
+using RunCommand.Logic.Implementation;
 
 namespace RunCommand
 {
@@ -17,9 +18,8 @@ namespace RunCommand
             {
                 var logFile = ILogExtend.GetLogFilePath("Program");
                 ILog log = new FilePrintLog(logFile, encoding).Connect(new ConsolePrintLog());
-
-                MainHelpr mainHelpr = new MainHelpr(log);
-                CommandArgsParser commandArgsParser = new CommandArgsParser(log, mainHelpr);
+                IMain im = new MainHelpr(log);
+                CommandArgsParser commandArgsParser = new CommandArgsParser(log, im);
                 return commandArgsParser.OnParser(args);
             }
             catch (Exception ex)
@@ -30,42 +30,10 @@ namespace RunCommand
             }
         }
 
-        static async Task<int> Main(string[] args)
-        {
-            var mainHelper = GetMainHelper();
-            return await CheckArgs(args, mainHelper);
-        }
-
-        private static MainHelper GetMainHelper()
-        {
-            var main = new MainHelper();
-            return main;
-        }
-        private static async Task<int> CheckArgs(string[] args, MainHelper mainHelper)
-        {
-            var openbashOption = new Option<bool>(
-                aliases: new string[] { "-o", "--openbash" },
-                description: "是否需要自动打开命令窗口",
-                getDefaultValue: () => false);
-            var commandOption = new Option<string>(
-                aliases: new string[] { "-c", "--command" },
-                description: "如果仓库干净便执行的命令输入的命令");
-            var rootCommand = new RootCommand("批量检查 Git 仓库状态");
-            rootCommand.AddOption(openbashOption);
-            rootCommand.AddOption(commandOption);
-            rootCommand.SetHandler((isopenbash, command) =>
-            {
-                mainHelper.OnExecute(isopenbash, command);
-            }, openbashOption, commandOption);
-            return await rootCommand.InvokeAsync(args);
-        }
-
-
         private static void Test_Main1()
         {
 
             Console.WriteLine("Hello World!");
-            ConsoleColor.Red.WriteLine("Hello World!");
 
             String nl = Environment.NewLine;
             String[] colorNames = Enum.GetNames(typeof(ConsoleColor));
