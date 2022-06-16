@@ -20,7 +20,7 @@ namespace RunCommand.Logic.Implementation
         /// <inheritdoc/>
         public void Write(string content)
         {
-            Console.Write($"{content}\n");
+            Console.Write($"{content}");
             this.beforeIsIntervalLine = false;
         }
 
@@ -41,7 +41,7 @@ namespace RunCommand.Logic.Implementation
             string value_backgroundColor = ToColorValue_BackgroundColor(backgroundColor);
             string mergeContnet = MergeContentAndColorFormat(content, value_textColor, value_backgroundColor);
 
-            Console.Write($"{mergeContnet}\n");
+            Console.Write($"{mergeContnet}");
 
             this.beforeIsIntervalLine = false;
         }
@@ -49,7 +49,7 @@ namespace RunCommand.Logic.Implementation
         /// <inheritdoc/>
         public void WriteLine(string content, EPrintColor textColor, EPrintColor backgroundColor)
         {
-            if (!this.beforeIsIntervalLine)
+            if (this.beforeIsIntervalLine)
                 Console.Write(interval_line);
 
             string value_textColor = ToColorValue_Text(textColor);
@@ -100,7 +100,6 @@ namespace RunCommand.Logic.Implementation
             }
             string color = !string.IsNullOrEmpty(value_textColor) ?
                 value_textColor : value_backgroundColor;
-            Console.WriteLine($"color: {color}");
             return $"\x1b[1;{color}m{content}\x1b[0m";
         }
     }

@@ -61,7 +61,8 @@ namespace RunCommand.Logic.Implementation
             }
             string content = File.ReadAllText(file.FullName, this.encoding);
             var config = JsonConvert.DeserializeObject<Configs>(content);
-            print.WriteLine($"获取配置文件成功: {file.FullName}", EPrintColor.Blue);
+            print.Write($"获取配置文件成功:");
+            print.WriteLine($"{file.FullName}", EPrintColor.Blue);
             return config;
         }
         private Configs GetDefaultConfigs()
