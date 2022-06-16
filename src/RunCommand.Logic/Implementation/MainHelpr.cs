@@ -39,39 +39,10 @@ namespace RunCommand.Logic.Implementation
 
             print = commandOptions.SystemType.ToIPrintColor();
             logArgs["print.Type"] = print.GetType().Name;
+            print.WriteLine($"print.GetType().Name: {print.GetType().Name}");
 
             configs = ReadConfigs(configFilePath);
             logArgs["configs"] = configs;
-
-
-            Console.WriteLine($" ------------ ");
-            Console.WriteLine($"Name: {print.GetType().FullName}");
-            print.Write("普通文本内容1");
-            print.Write("普通文本内容2");
-            print.WriteLine("单行文本内容1");
-            print.WriteLine("单行文本内容2");
-            foreach (EPrintColor color in Enum.GetValues(typeof(EPrintColor)))
-            {
-                print.WriteLine($"[黑底{color}字]", color, EPrintColor.Black);
-                print.WriteLine($"[白底{color}字]", color, EPrintColor.White);
-            }
-
-            using Process cur = Process.GetCurrentProcess();
-            //当前进程的id
-            Console.WriteLine($"cur.Id: {cur.Id}");
-            //获取关联的进程的终端服务会话标识符。
-            Console.WriteLine($"cur.SessionId: {cur.SessionId}");
-            //当前进程的名称
-            Console.WriteLine($"cur.ProcessName: {cur.ProcessName}");
-            //当前进程的启动时间
-            Console.WriteLine($"cur.StartTime: {cur.StartTime}");
-            //获取关联进程终止时指定的值,在退出事件中使用
-            //Console.WriteLine(cur.ExitCode);
-            //获取进程的当前机器名称
-            Console.WriteLine($"cur.MachineName: {cur.MachineName}");
-            //.代表本地
-            //获取进程的主窗口标题。
-            Console.WriteLine($"cur.MainWindowTitle: {cur.MainWindowTitle}");
 
             Console.WriteLine($"Console.Title: {Console.Title}");
         }
@@ -85,12 +56,14 @@ namespace RunCommand.Logic.Implementation
                 Configs defaultConfigs = GetDefaultConfigs();
                 string json = JsonConvert.SerializeObject(defaultConfigs, jsonSerializerSettings);
                 File.WriteAllText(file.FullName, json, this.encoding);
+                print.WriteLine($"配置文件不存在, 自动创建默认项: {file.FullName}", EPrintColor.Red);
                 return defaultConfigs;
             }
             string content = File.ReadAllText(file.FullName, this.encoding);
-            return JsonConvert.DeserializeObject<Configs>(content);
+            var config = JsonConvert.DeserializeObject<Configs>(content);
+            print.WriteLine($"获取配置文件成功: {file.FullName}", EPrintColor.Blue);
+            return config;
         }
-
         private Configs GetDefaultConfigs()
         {
             return new Configs()
@@ -109,6 +82,13 @@ namespace RunCommand.Logic.Implementation
                         },
                     },
                 },
+            };
+        }
+
+        private ITask[] GetNeedExecuteITask()
+        {
+            return new ITask[]
+            {
             };
         }
     }

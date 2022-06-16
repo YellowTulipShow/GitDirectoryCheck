@@ -6,6 +6,10 @@
     public enum EPrintColor
     {
         /// <summary>
+        /// 不输出
+        /// </summary>
+        None,
+        /// <summary>
         /// 黑色
         /// </summary>
         Black,

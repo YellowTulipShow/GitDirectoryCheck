@@ -6,6 +6,8 @@ using YTS.Log;
 
 using RunCommand.Logic;
 using RunCommand.Logic.Models;
+using System.Runtime.InteropServices;
+using System.IO;
 
 namespace RunCommand
 {
@@ -36,6 +38,7 @@ namespace RunCommand
                 rootC.AddOption(configFilePathOption);
                 rootC.AddOption(openShellOption);
                 rootC.AddOption(commandOption);
+                rootC.AddOption(systemTypeOption);
 
                 rootC.SetHandler(context =>
                 {
@@ -80,7 +83,9 @@ namespace RunCommand
                 getDefaultValue: () =>
                 {
                     // 当前用户配置地址
-                    return Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+                    string dire = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+                    string file = Path.Combine(dire, ".command_gitcheck_config.json");
+                    return file;
                 },
                 description: "配置文件读取路径"); ;
             option.Arity = ArgumentArity.ExactlyOne;
@@ -111,7 +116,17 @@ namespace RunCommand
                 aliases: new string[] { "--system" },
                 getDefaultValue: () =>
                 {
-                    return ESystemType.Window;
+                    if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                    {
+                        log.Info("DDDDDDDDDDDDDDDDDDD");
+                        log.Info($"dfdfdffdf: [{Console.Title.ToLower().Trim()}]");
+                        if (Console.Title.ToLower().Trim() == @"invisible cygwin console")
+                        {
+                            return ESystemType.Linux;
+                        }
+                        return ESystemType.Window;
+                    }
+                    return ESystemType.Linux;
                 },
                 description: "显示的执行当前执行的系统标识, 用于打印输出消息内容颜色使用");
             option.Arity = ArgumentArity.ExactlyOne;
