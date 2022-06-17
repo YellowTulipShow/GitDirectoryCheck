@@ -9,29 +9,22 @@ namespace RunCommand.Logic.Implementation
     /// </summary>
     public class SystemShellConsolePrintHelper_Linux : IPrint, IPrintColor
     {
-        private bool beforeIsIntervalLine;
-        private string interval_line;
+        private readonly static string interval_line = $"\n{"".PadLeft(80, '-')}\n";
+
         public SystemShellConsolePrintHelper_Linux()
         {
-            beforeIsIntervalLine = false;
-            interval_line = $"\n{"".PadLeft(80, '-')}\n";
         }
 
         /// <inheritdoc/>
         public void Write(string content)
         {
-            Console.Write($"{content}");
-            this.beforeIsIntervalLine = false;
+            Console.Write(content);
         }
 
         /// <inheritdoc/>
         public void WriteLine(string content)
         {
-            if (!this.beforeIsIntervalLine)
-                Console.Write(interval_line);
-            Console.Write(content);
-            Console.Write(interval_line);
-            this.beforeIsIntervalLine = true;
+            Console.WriteLine(content);
         }
 
         /// <inheritdoc/>
@@ -42,23 +35,16 @@ namespace RunCommand.Logic.Implementation
             string mergeContnet = MergeContentAndColorFormat(content, value_textColor, value_backgroundColor);
 
             Console.Write($"{mergeContnet}");
-
-            this.beforeIsIntervalLine = false;
         }
 
         /// <inheritdoc/>
         public void WriteLine(string content, EPrintColor textColor, EPrintColor backgroundColor)
         {
-            if (this.beforeIsIntervalLine)
-                Console.Write(interval_line);
-
             string value_textColor = ToColorValue_Text(textColor);
             string value_backgroundColor = ToColorValue_BackgroundColor(backgroundColor);
             string mergeContnet = MergeContentAndColorFormat(content, value_textColor, value_backgroundColor);
-            Console.Write(mergeContnet);
 
-            Console.Write(interval_line);
-            this.beforeIsIntervalLine = true;
+            Console.WriteLine(mergeContnet);
         }
         private static string ToColorValue_Text(EPrintColor printColor)
         {

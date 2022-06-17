@@ -9,52 +9,40 @@ namespace RunCommand.Logic.Implementation
     /// </summary>
     public class SystemShellConsolePrintHelper_Window : IPrint, IPrintColor
     {
-        private bool beforeIsIntervalLine;
-        private string interval_line;
         public SystemShellConsolePrintHelper_Window()
         {
-            beforeIsIntervalLine = false;
-            interval_line = $"\n{"".PadLeft(80, '-')}\n";
         }
 
         /// <inheritdoc/>
         public void Write(string content)
         {
-            Console.Write($"{content}\n");
-            this.beforeIsIntervalLine = false;
+            Console.Write(content);
         }
 
         /// <inheritdoc/>
         public void WriteLine(string content)
         {
-            if (!this.beforeIsIntervalLine)
-                Console.Write(interval_line);
-            Console.Write(content);
-            Console.Write(interval_line);
-            this.beforeIsIntervalLine = true;
+            Console.WriteLine(content);
         }
 
         /// <inheritdoc/>
         public void Write(string content, EPrintColor textColor, EPrintColor backgroundColor)
         {
             SetConsoleColor(textColor, backgroundColor);
+
             Console.Write(content);
+
             Console.ResetColor();
-            this.beforeIsIntervalLine = false;
         }
 
         /// <inheritdoc/>
         public void WriteLine(string content, EPrintColor textColor, EPrintColor backgroundColor)
         {
-            if (!this.beforeIsIntervalLine)
-                Console.Write(interval_line);
-
             SetConsoleColor(textColor, backgroundColor);
-            Console.Write(content);
-            Console.ResetColor();
 
-            Console.Write(interval_line);
-            this.beforeIsIntervalLine = true;
+            Console.WriteLine(content);
+
+            Console.ResetColor();
         }
         private static void SetConsoleColor(EPrintColor textColor, EPrintColor backgroundColor)
         {
@@ -63,6 +51,7 @@ namespace RunCommand.Logic.Implementation
             {
                 Console.ForegroundColor = (ConsoleColor)console_textColor;
             }
+
             var console_backgroundColor = ToConsoleColor(backgroundColor);
             if (console_backgroundColor != null)
             {
