@@ -5,11 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
-using RunCommand.Logic.Models;
+using GitCheckCommand.Logic.Models;
 
 using YTS.Log;
 
-namespace RunCommand.Logic.Implementation
+namespace GitCheckCommand.Logic.Implementation
 {
     public class FindGitRepositoryHelper
     {
@@ -38,7 +38,8 @@ namespace RunCommand.Logic.Implementation
                 }
                 var ignoresRegexs = (croot.IgnoresRegexs ?? new string[] { })
                     .Concat(configs.IgnoresRegexs ?? new string[] { });
-                var gits_list = DepthFind(rootDire, ignoresRegexs);
+                bool? isOpenShell = croot.IsOpenShell ?? configs.IsOpenShell;
+                var gits_list = DepthFind(rootDire, ignoresRegexs, isOpenShell);
                 depthCount -= 1;
                 if (gits_list != null)
                 {
@@ -52,7 +53,7 @@ namespace RunCommand.Logic.Implementation
             return gitRepos.ToArray();
         }
 
-        private IList<GitRepository> DepthFind(DirectoryInfo rootDire, IEnumerable<string> ignoresRegexs)
+        private IList<GitRepository> DepthFind(DirectoryInfo rootDire, IEnumerable<string> ignoresRegexs, bool? isOpenShell)
         {
             depthCount += 1;
             const int max_depth = 999;
@@ -77,7 +78,12 @@ namespace RunCommand.Logic.Implementation
             var subDires = rootDire.GetDirectories();
             if (subDires.Any(d => d.Name.ToLower() == ".git"))
             {
-                gitRepos.Add(ToGitRepository(rootDire));
+                // 写入 Git 仓库相关执行信息
+                gitRepos.Add(new GitRepository()
+                {
+                    Path = rootDire,
+                    IsOpenShell = isOpenShell,
+                });
                 return gitRepos;
             }
             foreach (DirectoryInfo subDire in subDires)
@@ -86,19 +92,11 @@ namespace RunCommand.Logic.Implementation
                 {
                     continue;
                 }
-                var subGitRepos = DepthFind(subDire, ignoresRegexs);
+                var subGitRepos = DepthFind(subDire, ignoresRegexs, isOpenShell);
                 depthCount -= 1;
                 gitRepos.AddRange(subGitRepos);
             }
             return gitRepos;
-        }
-
-        private GitRepository ToGitRepository(DirectoryInfo gitDireInfo)
-        {
-            return new GitRepository()
-            {
-                Path = gitDireInfo,
-            };
         }
     }
 }

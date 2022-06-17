@@ -5,9 +5,9 @@ using Newtonsoft.Json;
 
 using YTS.Log;
 
-using RunCommand.Logic.Models;
+using GitCheckCommand.Logic.Models;
 
-namespace RunCommand.Logic.Implementation
+namespace GitCheckCommand.Logic.Implementation
 {
     public class ConfigHelper
     {

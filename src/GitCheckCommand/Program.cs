@@ -4,10 +4,10 @@ using System.Text;
 
 using YTS.Log;
 
-using RunCommand.Logic;
-using RunCommand.Logic.Implementation;
+using GitCheckCommand.Logic;
+using GitCheckCommand.Logic.Implementation;
 
-namespace RunCommand
+namespace GitCheckCommand
 {
     class Program
     {

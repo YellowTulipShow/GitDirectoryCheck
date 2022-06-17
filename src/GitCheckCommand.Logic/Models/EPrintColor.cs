@@ -1,4 +1,4 @@
-﻿namespace RunCommand.Logic.Models
+﻿namespace GitCheckCommand.Logic.Models
 {
     /// <summary>
     /// 枚举: 打印输出颜色

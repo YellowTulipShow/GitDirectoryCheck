@@ -1,6 +1,6 @@
-using RunCommand.Logic.Models;
+using GitCheckCommand.Logic.Models;
 
-namespace RunCommand
+namespace GitCheckCommand
 {
     /// <summary>
     /// 接口: 打印输出接口

@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace RunCommand.Logic.Models
+namespace GitCheckCommand.Logic.Models
 {
     /// <summary>
     /// 配置项

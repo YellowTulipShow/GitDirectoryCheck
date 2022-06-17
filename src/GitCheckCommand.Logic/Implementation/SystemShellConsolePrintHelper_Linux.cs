@@ -1,16 +1,14 @@
 using System;
 
-using RunCommand.Logic.Models;
+using GitCheckCommand.Logic.Models;
 
-namespace RunCommand.Logic.Implementation
+namespace GitCheckCommand.Logic.Implementation
 {
     /// <summary>
     /// Linux 系统类型 Shell 控制台打印输出实现类
     /// </summary>
     public class SystemShellConsolePrintHelper_Linux : IPrint, IPrintColor
     {
-        private readonly static string interval_line = $"\n{"".PadLeft(80, '-')}\n";
-
         public SystemShellConsolePrintHelper_Linux()
         {
         }
@@ -34,7 +32,7 @@ namespace RunCommand.Logic.Implementation
             string value_backgroundColor = ToColorValue_BackgroundColor(backgroundColor);
             string mergeContnet = MergeContentAndColorFormat(content, value_textColor, value_backgroundColor);
 
-            Console.Write($"{mergeContnet}");
+            this.Write($"{mergeContnet}");
         }
 
         /// <inheritdoc/>
@@ -44,7 +42,7 @@ namespace RunCommand.Logic.Implementation
             string value_backgroundColor = ToColorValue_BackgroundColor(backgroundColor);
             string mergeContnet = MergeContentAndColorFormat(content, value_textColor, value_backgroundColor);
 
-            Console.WriteLine(mergeContnet);
+            this.WriteLine(mergeContnet);
         }
         private static string ToColorValue_Text(EPrintColor printColor)
         {

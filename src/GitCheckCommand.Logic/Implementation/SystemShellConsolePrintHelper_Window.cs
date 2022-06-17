@@ -1,8 +1,8 @@
 using System;
 
-using RunCommand.Logic.Models;
+using GitCheckCommand.Logic.Models;
 
-namespace RunCommand.Logic.Implementation
+namespace GitCheckCommand.Logic.Implementation
 {
     /// <summary>
     /// Window 系统类型 Shell 控制台打印输出实现类
@@ -30,7 +30,7 @@ namespace RunCommand.Logic.Implementation
         {
             SetConsoleColor(textColor, backgroundColor);
 
-            Console.Write(content);
+            this.Write(content);
 
             Console.ResetColor();
         }
@@ -40,7 +40,7 @@ namespace RunCommand.Logic.Implementation
         {
             SetConsoleColor(textColor, backgroundColor);
 
-            Console.WriteLine(content);
+            this.WriteLine(content);
 
             Console.ResetColor();
         }

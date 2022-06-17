@@ -4,12 +4,12 @@ using System.CommandLine;
 
 using YTS.Log;
 
-using RunCommand.Logic;
-using RunCommand.Logic.Models;
+using GitCheckCommand.Logic;
+using GitCheckCommand.Logic.Models;
 using System.Runtime.InteropServices;
 using System.IO;
 
-namespace RunCommand
+namespace GitCheckCommand
 {
     public class CommandArgsParser
     {

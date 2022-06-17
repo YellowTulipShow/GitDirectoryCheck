@@ -1,7 +1,7 @@
 ﻿
-using RunCommand.Logic.Models;
+using GitCheckCommand.Logic.Models;
 
-namespace RunCommand.Logic
+namespace GitCheckCommand.Logic
 {
     /// <summary>
     /// 接口: 主逻辑执行

@@ -1,8 +1,8 @@
 ﻿using System;
 
-using RunCommand.Logic.Implementation;
+using GitCheckCommand.Logic.Implementation;
 
-namespace RunCommand.Logic.Models
+namespace GitCheckCommand.Logic.Models
 {
     /// <summary>
     /// 枚举: 系统类型

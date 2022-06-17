@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <Title>Git各项目检查工具</Title>
-        <PackageId></PackageId>
+        <PackageId>GitCheckCommand</PackageId>
         <Version>0.0.1</Version>
         <Authors>YellowTulipShow</Authors>
         <Description>Git各项目检查工具</Description>
@@ -18,12 +18,11 @@
 
   <ItemGroup>
     <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
-    <PackageReference Include="YTS.Git" Version="0.1.0" />
     <PackageReference Include="YTS.Log" Version="0.1.2" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\RunCommand.Logic\RunCommand.Logic.csproj" />
+    <ProjectReference Include="..\RunCommand.Logic\GitCheckCommand.Logic.csproj" />
   </ItemGroup>
 
 </Project>

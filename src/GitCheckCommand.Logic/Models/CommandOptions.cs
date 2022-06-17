@@ -1,4 +1,4 @@
-﻿namespace RunCommand.Logic.Models
+﻿namespace GitCheckCommand.Logic.Models
 {
     /// <summary>
     /// 命令选项内容
