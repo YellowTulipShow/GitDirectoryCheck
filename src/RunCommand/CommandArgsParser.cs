@@ -118,7 +118,7 @@ namespace RunCommand
                 {
                     if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                     {
-                        if (Console.Title.ToLower().Trim() == @"invisible cygwin console")
+                        if (Console.Title.ToLower().Trim().Contains(@"invisible cygwin console"))
                         {
                             return ESystemType.Linux;
                         }

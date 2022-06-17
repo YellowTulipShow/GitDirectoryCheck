@@ -2,12 +2,15 @@
 using System.IO;
 using System.Text;
 using System.Diagnostics;
+using System.Linq;
+using System.Collections.Generic;
 
 using Newtonsoft.Json;
 
 using YTS.Log;
 
 using RunCommand.Logic.Models;
+using System.Text.RegularExpressions;
 
 namespace RunCommand.Logic.Implementation
 {
@@ -21,10 +24,6 @@ namespace RunCommand.Logic.Implementation
         {
             this.log = log;
             this.encoding = encoding;
-            jsonSerializerSettings = new JsonSerializerSettings()
-            {
-                Formatting = Formatting.Indented,
-            };
         }
 
         private CommandOptions commandOptions;
@@ -38,52 +37,26 @@ namespace RunCommand.Logic.Implementation
             this.commandOptions = commandOptions;
 
             print = commandOptions.SystemType.ToIPrintColor();
-            logArgs["print.Type"] = print.GetType().Name;
-            print.WriteLine($"print.GetType().Name: {print.GetType().Name}");
+            string printTypeName = print.GetType().Name;
+            logArgs["printTypeName"] = printTypeName;
 
-            configs = ReadConfigs(configFilePath);
+            configs = new ConfigHelper(log, encoding, print)
+                .ReadConfigs(configFilePath, this.commandOptions.SystemType);
             logArgs["configs"] = configs;
 
-            Console.WriteLine($"Console.Title: {Console.Title}");
-        }
-
-        private Configs ReadConfigs(string configFilePath)
-        {
-            FileInfo file = new FileInfo(configFilePath);
-            if (!file.Exists)
+            GitRepository[] gitRepos = new FindGitRepositoryHelper(log)
+                .OnExecute(configs);
+            foreach (GitRepository gitRepo in gitRepos)
             {
-                file.Create().Close();
-                Configs defaultConfigs = GetDefaultConfigs();
-                string json = JsonConvert.SerializeObject(defaultConfigs, jsonSerializerSettings);
-                File.WriteAllText(file.FullName, json, this.encoding);
-                print.WriteLine($"配置文件不存在, 自动创建默认项: {file.FullName}", EPrintColor.Red);
-                return defaultConfigs;
+                print.WriteLine($"Git目录地址: [{gitRepo.Path.FullName}]");
             }
-            string content = File.ReadAllText(file.FullName, this.encoding);
-            var config = JsonConvert.DeserializeObject<Configs>(content);
-            print.Write($"获取配置文件成功:");
-            print.WriteLine($"{file.FullName}", EPrintColor.Blue);
-            return config;
-        }
-        private Configs GetDefaultConfigs()
-        {
-            return new Configs()
-            {
-                IsOpenShell = false,
-                IgnoresRegexs = new string[] { },
-                Roots = new ConfigRoot[] {
-                    new ConfigRoot()
-                    {
-                        Path = this.commandOptions.SystemType == ESystemType.Window ?
-                            @"D:\Work" :
-                            @"/var/work",
-                        IgnoresRegexs = new string[] {
-                            @"YTS.Test$",
-                            @"YTS.Learn$",
-                        },
-                    },
-                },
-            };
+
+            //ITask[] tasks = GetNeedExecuteITask();
+            //foreach (ITask task in tasks)
+            //{
+            //}
+
+            log.Info("信息输出:", logArgs);
         }
 
         private ITask[] GetNeedExecuteITask()
