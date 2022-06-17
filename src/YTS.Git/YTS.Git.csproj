@@ -1,0 +1,44 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>netcoreapp3.1</TargetFramework>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<xmlDoc>true</xmlDoc>
+		<Title>Git相关支持库</Title>
+		<PackageId>YTS.Git</PackageId>
+		<Version>0.1.0</Version>
+		<Authors>YellowTulipShow</Authors>
+		<Description>Git相关支持库</Description>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<RepositoryType>git</RepositoryType>
+		<NeutralLanguage>zh</NeutralLanguage>
+		<RepositoryUrl>https://github.com/YellowTulipShow/DotNetCore.YTS.Solution</RepositoryUrl>
+		<PackageProjectUrl>https://github.com/YellowTulipShow/DotNetCore.YTS.Solution</PackageProjectUrl>
+		<Company />
+		<PackageIcon>favicon.png</PackageIcon>
+		<PackageIconUrl />
+		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+		<PackageLicenseFile>LICENSE</PackageLicenseFile>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="..\favicon.png">
+			<Pack>True</Pack>
+			<PackagePath></PackagePath>
+		</None>
+		<None Include="..\..\LICENSE">
+			<Pack>True</Pack>
+			<PackagePath></PackagePath>
+		</None>
+		<None Update="ChangeLog.md">
+			<PackagePath>\</PackagePath>
+			<Pack>True</Pack>
+		</None>
+		<None Update="README.md">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+	</ItemGroup>
+
+</Project>
