@@ -42,7 +42,6 @@ namespace RunCommand.Logic.Implementation
 
             configs = new ConfigHelper(log, encoding, print)
                 .ReadConfigs(configFilePath, this.commandOptions.SystemType);
-            logArgs["configs"] = configs;
 
             GitRepository[] gitRepos = new FindGitRepositoryHelper(log)
                 .OnExecute(configs);
