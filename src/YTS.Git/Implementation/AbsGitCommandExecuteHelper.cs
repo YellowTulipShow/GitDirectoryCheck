@@ -5,14 +5,12 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-using YTS.Git.SubCommands;
-
 namespace YTS.Git
 {
     /// <summary>
     /// Git 操作工具类
     /// </summary>
-    public class GitHelper : IGit, IGitInit, IGitAdd, IGitStatus, IGitCommit, IGitPull, IGitPush
+    public abstract class AbsGitCommandExecuteHelper
     {
         private readonly Encoding encoding;
         private readonly Repository repository;
@@ -21,18 +19,23 @@ namespace YTS.Git
         /// 实例化 - Git 操作工具类
         /// </summary>
         /// <param name="repository">需操作的存储库配置</param>
-        public GitHelper(Repository repository)
+        public AbsGitCommandExecuteHelper(Repository repository)
         {
             this.repository = repository;
             encoding = Encoding.UTF8;
         }
 
-        private void OnExecuteOnlyCommand(string command, Action<string> readLineCallBack)
+        /// <summary>
+        /// 单独执行命令内容
+        /// </summary>
+        /// <param name="command">命令内容</param>
+        /// <param name="readLineCallBack"></param>
+        public void OnExecuteOnlyCommand(string command, Action<string> readLineCallBack)
         {
             ProcessStartInfo info = new ProcessStartInfo(@"git", command)
             {
                 UseShellExecute = false,
-                WorkingDirectory = repository.SystemPath,
+                WorkingDirectory = repository.RootPath.FullName,
                 RedirectStandardOutput = true,
                 StandardOutputEncoding = encoding,
             };
@@ -69,7 +72,7 @@ namespace YTS.Git
         /// <inheritdoc />
         void IGitInit.OnCommand()
         {
-            DirectoryInfo dire = new DirectoryInfo(repository.SystemPath);
+            DirectoryInfo dire = repository.RootPath;
             if (!dire.Exists)
             {
                 dire.Create();

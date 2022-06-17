@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace YTS.Git.SubCommands
+namespace YTS.Git
 {
     /// <summary>
     /// 接口: Git - init 子命令

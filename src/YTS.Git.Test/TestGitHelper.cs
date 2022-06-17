@@ -9,14 +9,15 @@ using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 
 using YTS.Log;
-using YTS.Logic.IO;
+using System.Diagnostics;
+using System.Linq;
 
 namespace YTS.Git.Test
 {
     [TestClass]
     public class TestGitHelper
     {
-        public const string root_dire = @"C:\_code_test";
+        public const string root_dire = @"D:\_yts_git_test_run_dire";
         private ILog log;
 
         [TestInitialize]
@@ -31,102 +32,46 @@ namespace YTS.Git.Test
         {
         }
 
-        //[TestMethod]
-        //public void Test_Status()
-        //{
-        //    ProcessStartInfo info = new ProcessStartInfo("git", "status")
-        //    {
-        //        UseShellExecute = false,
-        //        WorkingDirectory = @"D:\Work\YTS.ZRQ\PlanNotes.YTSZRQ.StorageArea",
-        //        RedirectStandardInput = true,
-        //        //RedirectStandardError = true,
-        //        RedirectStandardOutput = true,
-        //    };
-        //    Process process = Process.Start(info);
-        //    process.BeginOutputReadLine();
-        //    using (var sr = process.StandardOutput)
-        //    {
-        //        string str = sr.ReadToEnd();
-        //        Assert.IsTrue(str != null);
-        //    }
-        //    process.WaitForExit();
-        //    process.Close();
-        //}
-
-        //[TestMethod]
+        [TestMethod]
         public void Test_ALL()
         {
             // 未完全实现
-
-            try
+            if (Directory.Exists(root_dire))
             {
-                IGit git = new GitHelper(new Repository()
-                {
-                    SystemPath = root_dire,
-                    IsEnable = true,
-                    BranchName = "master",
-                    Remote = new RepositoryRemoteWarehouse()
-                    {
-                        Address = "git@gitee.com:YellowTulipShow/TestLibraryGitCodeOperation.git",
-                        OriginName = "origin",
-                        BranchName = "master",
-                    },
-                });
-                // 清理测试环境
-                if (Directory.Exists(root_dire))
-                    Directory.Delete(root_dire, true);
-
-                git.Init().OnCommand();
-                Assert.AreEqual(true, Directory.Exists(root_dire));
-                Assert.AreEqual(true, Directory.Exists(Path.Combine(root_dire, ".git")));
-
-                string json = JsonConvert.SerializeObject(new { });
-                FileExtend.WriteAllText(Path.Combine(root_dire, "1.json"), json);
-
-                git.Add().OnCommand("1.json");
-                IList<string> msgs;
-                msgs = git.Status().OnCommand();
-                msgs.Test(new string[] {
-                    "On branch master",
-                    "",
-                    "No commits yet",
-                    "",
-                    "Changes to be committed:",
-                    "  (use \"git rm --cached <file>...\" to unstage)",
-                    "        new file:   1.json",
-                });
-                git.Commit().OnCommand("save data");
-                msgs = git.Status().OnCommand();
-                msgs.Test(new string[] {
-                    "On branch master",
-                    "Your branch is up to date with 'origin/master'.",
-                    "",
-                    "nothing to commit, working tree clean",
-                });
-
-                msgs = git.Pull().OnCommand("pull merge code");
-                msgs.Test(new string[] {
-                    "On branch master",
-                    "Your branch is up to date with 'origin/master'.",
-                    "",
-                    "nothing to commit, working tree clean",
-                });
-
-                msgs = git.Push().OnCommand();
-                msgs.Test(new string[] {
-                    "On branch master",
-                    "Your branch is up to date with 'origin/master'.",
-                    "",
-                    "nothing to commit, working tree clean",
-                });
-
                 Directory.Delete(root_dire, true);
+                Directory.CreateDirectory(root_dire);
             }
-            catch (Exception ex)
+
+            IGit git = new GitHelper(new Repository()
             {
-                log.Error("执行流程出错!", ex);
-                Assert.IsTrue(false);
-            }
+                RootPath = new DirectoryInfo(root_dire),
+            });
+
+            git.Init().OnCommand();
+            Assert.AreEqual(true, Directory.Exists(root_dire));
+            Assert.AreEqual(true, Directory.Exists(Path.Combine(root_dire, ".git")));
+
+            string json = JsonConvert.SerializeObject(new { });
+            File.WriteAllText(Path.Combine(root_dire, "1.json"), json);
+
+            git.Add().OnCommand("1.json");
+
+            IList<string> msgs;
+            msgs = git.Status().OnCommand();
+            msgs.Test(new string[] {
+                "On branch master",
+                "No commits yet",
+                "Changes to be committed:",
+                "  (use \"git rm --cached <file>...\" to unstage)",
+                "        new file:   1.json",
+            });
+
+            git.Commit().OnCommand("save data");
+            msgs = git.Status().OnCommand();
+            msgs.Test(new string[] {
+                "On branch master",
+                "nothing to commit, working tree clean",
+            });
         }
     }
 
@@ -141,13 +86,23 @@ namespace YTS.Git.Test
         {
             Assert.IsNotNull(actual);
             Assert.IsNotNull(expected);
-            Assert.AreEqual(expected.Count, actual);
-            for (int index = 0; index < expected.Count; index++)
-            {
-                string actual_line = actual[index]?.Trim();
-                string expected_line = expected[index]?.Trim();
-                Assert.IsTrue(Regex.IsMatch(actual_line, expected_line));
-            }
+            actual = actual
+                .Select(b => b.Trim())
+                .Where(b => !string.IsNullOrEmpty(b))
+                .ToList();
+            expected = expected
+                .Select(b => b.Trim())
+                .Where(b => !string.IsNullOrEmpty(b))
+                .ToList();
+            const string sign = " | ";
+            string actualStr = string.Join(sign, actual);
+            string expectedStr = string.Join(sign, expected);
+            Regex reSpace = new Regex(@"\s{2,}");
+            actualStr = reSpace.Replace(actualStr, " ");
+            expectedStr = reSpace.Replace(expectedStr, " ");
+            Assert.IsTrue(actualStr.Length > 4);
+            Assert.IsTrue(expectedStr.Length > 4);
+            Assert.AreEqual(actualStr, expectedStr);
         }
     }
 }

@@ -1,6 +1,4 @@
-﻿using YTS.Git.SubCommands;
-
-namespace YTS.Git
+﻿namespace YTS.Git
 {
     /// <summary>
     /// 接口: Git 操作工具
@@ -30,17 +28,5 @@ namespace YTS.Git
         /// </summary>
         /// <returns>执行实现对象</returns>
         IGitCommit Commit();
-
-        /// <summary>
-        /// git pull : 拉取远程仓库数据子命令
-        /// </summary>
-        /// <returns>执行实现对象</returns>
-        IGitPull Pull();
-
-        /// <summary>
-        /// git push : 推送本地到远程仓库子命令
-        /// </summary>
-        /// <returns>执行实现对象</returns>
-        IGitPush Push();
     }
 }

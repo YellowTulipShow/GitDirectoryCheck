@@ -1,4 +1,6 @@
-﻿namespace YTS.Git
+﻿using System.IO;
+
+namespace YTS.Git
 {
     /// <summary>
     /// 存储库
@@ -6,24 +8,9 @@
     public struct Repository
     {
         /// <summary>
-        /// 系统地址
+        /// 所在系统目录地址
         /// </summary>
-        public string SystemPath { get; set; }
-
-        /// <summary>
-        /// 是否启用
-        /// </summary>
-        public bool IsEnable { get; set; }
-
-        /// <summary>
-        /// 存储分支名称
-        /// </summary>
-        public string BranchName { get; set; }
-
-        /// <summary>
-        /// 远程仓库
-        /// </summary>
-        public RepositoryRemoteWarehouse Remote { get; set; }
+        public DirectoryInfo RootPath { get; set; }
     }
 
     /// <summary>
