@@ -7,7 +7,7 @@ namespace GitCheckCommand.Logic.Models
 {
     public struct GitRepositoryStatus
     {
-        public bool IClean { get; set; }
+        public bool IsClean { get; set; }
         public string[] StatusMsgs { get; set; }
         public int NoCleanMsgIndex { get; set; }
     }

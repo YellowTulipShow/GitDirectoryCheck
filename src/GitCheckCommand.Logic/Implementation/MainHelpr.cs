@@ -1,12 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Text;
-using System.Diagnostics;
-using System.Linq;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
-
-using Newtonsoft.Json;
+﻿using System.Text;
 
 using YTS.Log;
 
@@ -52,6 +44,7 @@ namespace GitCheckCommand.Logic.Implementation
                 HandlerGitRepository(print, gitRepo, tasks, cOption);
             }
         }
+
         private IWriteGitRepositoryInfo[] GetNeed_IReadGitRepositoryInfo()
         {
             return new IWriteGitRepositoryInfo[]
@@ -73,13 +66,12 @@ namespace GitCheckCommand.Logic.Implementation
         private void HandlerGitRepository(IPrintColor print, GitRepository gitRepo, ITask[] tasks, CommandOptions cOption)
         {
             var logArgs = log.CreateArgDictionary();
-            if (gitRepo.Status.IClean)
+            if (gitRepo.Status.IsClean)
             {
                 print.WriteGitRepositoryPath(gitRepo, cOption.SystemType);
                 return;
             }
             print.WriteGitRepositoryStatusInfo(gitRepo.Status);
-            print.WriteIntervalLine();
             foreach (ITask task in tasks)
             {
                 string taskTypeName = task.GetType().Name;

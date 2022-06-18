@@ -33,7 +33,7 @@ namespace GitCheckCommand.Logic.Implementation
             (bool isClean, int noCleanMsgIndex) = CheckStatusMessageIsClean(msgs);
             repository.Status = new GitRepositoryStatus()
             {
-                IClean = isClean,
+                IsClean = isClean,
                 StatusMsgs = msgs.ToArray(),
                 NoCleanMsgIndex = noCleanMsgIndex,
             };

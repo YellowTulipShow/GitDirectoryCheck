@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-using GitCheckCommand.Logic.Models;
+﻿using GitCheckCommand.Logic.Models;
 
 namespace GitCheckCommand.Logic
 {
@@ -11,6 +7,11 @@ namespace GitCheckCommand.Logic
     /// </summary>
     public interface IWriteGitRepositoryInfo
     {
-        GitRepository OnExecute(GitRepository repository)
+        /// <summary>
+        /// 执行写入内容操作
+        /// </summary>
+        /// <param name="repository">存储库信息</param>
+        /// <returns>写入完成后的存储库信息</returns>
+        GitRepository OnExecute(GitRepository repository);
     }
 }

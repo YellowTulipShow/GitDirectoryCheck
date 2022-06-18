@@ -11,6 +11,7 @@ namespace GitCheckCommand.Logic.Models
     {
         Window,
         Linux,
+        WindowGitBash,
     }
 
     /// <summary>
@@ -29,7 +30,21 @@ namespace GitCheckCommand.Logic.Models
             {
                 ESystemType.Window => new SystemShellConsolePrintHelper_Window(),
                 ESystemType.Linux => new SystemShellConsolePrintHelper_Linux(),
+                ESystemType.WindowGitBash => new SystemShellConsolePrintHelper_Linux(),
                 _ => throw new ArgumentOutOfRangeException(nameof(systemType), $"转为打印输出颜色接口, 无法解析: {systemType}"),
+            };
+        }
+
+        public static string ToConfigRootDefaultPath(this ESystemType systemType)
+        {
+            const string window = @"C:\Work";
+            const string linux = @"/var/work";
+            return systemType switch
+            {
+                ESystemType.Window => window,
+                ESystemType.Linux => linux,
+                ESystemType.WindowGitBash => window,
+                _ => throw new ArgumentOutOfRangeException(nameof(systemType), $"转为配置默认项根目录地址, 无法解析: {systemType}"),
             };
         }
     }

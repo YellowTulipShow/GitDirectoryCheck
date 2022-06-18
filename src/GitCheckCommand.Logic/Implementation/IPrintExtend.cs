@@ -32,7 +32,6 @@ namespace GitCheckCommand.Logic
         }
 
         private readonly static string interval_line = $"\n{"".PadLeft(80, '-')}\n";
-        private static bool isBeforeWriteIntervalLine = false;
         /// <summary>
         /// 写入间隔行
         /// </summary>
@@ -56,27 +55,37 @@ namespace GitCheckCommand.Logic
                 print.Write(")");
             }
             print.Write(" | ");
-            string path = gitRepo.Path.FullName;
-            if (systemType == ESystemType.Window)
+            switch (systemType)
             {
-                path = '/' + path
-                    .Replace('\\', '/')
-                    .Replace("", "");
+                case ESystemType.Window:
+                    print.WriteOnlyGitRepositoryPath_WindowAndLinux(gitRepo.Status.IsClean, gitRepo.Path.FullName);
+                    break;
+                case ESystemType.Linux:
+                    print.WriteOnlyGitRepositoryPath_WindowAndLinux(gitRepo.Status.IsClean, gitRepo.Path.FullName);
+                    break;
+                case ESystemType.WindowGitBash:
+                    print.WriteOnlyGitRepositoryPath_WindowGitBash(gitRepo.Status.IsClean, gitRepo.Path.FullName);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(systemType), $"输出存储库路径地址, 无法解析: {systemType}");
             }
-            if (gitRepo.Status.IClean)
-            {
-                print.WriteLine(path, EPrintColor.Yellow);
-            }
-            else
-            {
-                print.WriteLine(path, EPrintColor.Red);
-                print.WriteIntervalLine();
-            }
+        }
+        private static void WriteOnlyGitRepositoryPath_WindowAndLinux(this IPrintColor print, bool IsClean, string PathFullName)
+        {
+            print.WriteLine(PathFullName, IsClean ? EPrintColor.Yellow : EPrintColor.Red);
+        }
+        private static void WriteOnlyGitRepositoryPath_WindowGitBash(this IPrintColor print, bool IsClean, string PathFullName)
+        {
+            string windowPath = PathFullName;
+            string linuePath = '/' + PathFullName.Replace('\\', '/').Replace(":", "");
+            print.WriteLine(linuePath, IsClean ? EPrintColor.Yellow : EPrintColor.Red);
+            print.Write(" | ");
+            print.WriteLine(windowPath, EPrintColor.Blue);
         }
 
         public static void WriteGitRepositoryStatusInfo(this IPrintColor print, GitRepositoryStatus status)
         {
-            if (status.IClean)
+            if (status.IsClean)
                 return;
             print.WriteLine("当前仓库需要处理:\n");
             for (int i = 0; i < status.StatusMsgs.Length; i++)
@@ -89,7 +98,6 @@ namespace GitCheckCommand.Logic
                 }
                 print.WriteLine(msg);
             }
-            print.WriteLine("\n");
         }
     }
 }

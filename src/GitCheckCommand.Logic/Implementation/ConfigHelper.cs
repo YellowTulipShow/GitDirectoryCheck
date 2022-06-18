@@ -52,9 +52,7 @@ namespace GitCheckCommand.Logic.Implementation
                 Roots = new ConfigRoot[] {
                     new ConfigRoot()
                     {
-                        Path = systemType == ESystemType.Window ?
-                            @"D:\Work" :
-                            @"/var/work",
+                        Path = systemType.ToConfigRootDefaultPath(),
                         IgnoresRegexs = new string[] {
                             @"YTS.Test$",
                             @"YTS.Learn$",

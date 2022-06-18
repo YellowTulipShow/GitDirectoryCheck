@@ -8,6 +8,7 @@ using GitCheckCommand.Logic;
 using GitCheckCommand.Logic.Models;
 using System.Runtime.InteropServices;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace GitCheckCommand
 {
@@ -100,11 +101,18 @@ namespace GitCheckCommand
                 aliases: new string[] { "--system" },
                 getDefaultValue: () =>
                 {
-                    if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                    string userDire = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+                    bool isWindowTypePath = Regex.IsMatch(userDire, @"^[a-z]+:\\",
+                        RegexOptions.ECMAScript | RegexOptions.IgnoreCase);
+                    Console.WriteLine($"userDire: {userDire}");
+                    Console.WriteLine($"isWindowTypePath: {isWindowTypePath}");
+                    bool isOSWindow = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+                    // 判断是否 Window 类型盘符路径: C:\Users
+                    if (isWindowTypePath || isOSWindow)
                     {
                         if (Console.Title.ToLower().Trim().Contains(@"invisible cygwin console"))
                         {
-                            return ESystemType.Linux;
+                            return ESystemType.WindowGitBash;
                         }
                         return ESystemType.Window;
                     }
