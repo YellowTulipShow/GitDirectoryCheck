@@ -8,19 +8,20 @@
 
 ## 运行测试版本
 
-* 程序语言: `Python`
-* 版本: `Python 3.6.0+`
-* `Window`下运行建议使用Git自带的 `Git Bash` 命令行程序
-* `Linux`下使用`Shell`即可
+* 程序语言: `C#`
+* 运行平台: `.Net Core 3.1`
+* 与之前版本相比基于可以跨平台安装执行
 
 ### 使用
+
+首先确保计算机中含有 `.Net Core 3.1 +` 运行时环境, 如果没有请自行下载
 
 随便找一个目录 `git clone` 拉取下程序源码
 
 调用命令即可运行:
 
 ```shell
-$ python main.py
+$ dotnet run --project ./src/GitCheckCommand/GitCheckCommand.csproj
 ```
 
 ### 方便使用

@@ -44,6 +44,11 @@ namespace GitCheckCommand.Logic.Implementation
             logArgs["printTypeName"] = printTypeName;
             Configs configs = configHelper.ReadConfigs(configFilePath, cOption.SystemType);
             GitRepository[] gitRepos = findGitRepositoryHelper.OnExecute(configs);
+            if (gitRepos == null || gitRepos.Length <= 0)
+            {
+                print.WriteLine("存储库列表为空!", EPrintColor.Red);
+                return;
+            }
             IWriteGitRepositoryInfo[] readTools = GetNeed_IReadGitRepositoryInfo();
             ITask[] tasks = GetNeedExecuteITask(print, cOption);
             int notCleanGitCount = 0;

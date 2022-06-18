@@ -3,7 +3,7 @@
     <PropertyGroup>
         <TargetFramework>netcoreapp3.1</TargetFramework>
         <Title>操作 Git 检查命令</Title>
-        <PackageId>GitCheckCommand.Logic</PackageId>
+        <PackageId>GitCheckCommand</PackageId>
         <Version>2.0.1</Version>
         <Authors>YellowTulipShow</Authors>
         <Description>批量检查系统当中的 Git 存储库用于查看</Description>
