@@ -25,6 +25,10 @@ namespace GitCheckCommand.Logic.Implementation
         public void Write(string content)
         {
             Console.Write(content);
+            if (content.Contains("\n"))
+            {
+                lineCount++;
+            }
         }
 
         /// <inheritdoc/>
@@ -50,7 +54,6 @@ namespace GitCheckCommand.Logic.Implementation
             string value_backgroundColor = ToColorValue_BackgroundColor(backgroundColor);
             string mergeContnet = MergeContentAndColorFormat(content, value_textColor, value_backgroundColor);
             this.WriteLine(mergeContnet);
-            lineCount++;
         }
         private static string ToColorValue_Text(EPrintColor printColor)
         {

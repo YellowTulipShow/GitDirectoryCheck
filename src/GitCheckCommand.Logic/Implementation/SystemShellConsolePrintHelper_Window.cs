@@ -23,6 +23,10 @@ namespace GitCheckCommand.Logic.Implementation
         public void Write(string content)
         {
             Console.Write(content);
+            if (content.Contains("\n"))
+            {
+                lineCount++;
+            }
         }
 
         /// <inheritdoc/>
@@ -46,7 +50,6 @@ namespace GitCheckCommand.Logic.Implementation
             SetConsoleColor(textColor, backgroundColor);
             this.WriteLine(content);
             Console.ResetColor();
-            lineCount++;
         }
         private static void SetConsoleColor(EPrintColor textColor, EPrintColor backgroundColor)
         {

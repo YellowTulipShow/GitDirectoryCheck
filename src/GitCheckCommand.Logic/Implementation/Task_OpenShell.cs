@@ -34,18 +34,13 @@ namespace GitCheckCommand.Logic.Implementation
             bool isOpenShell = commandOptions.IsOpenShell ?? repository.IsOpenShell ?? false;
             if (!isOpenShell)
             {
-                return new TaskResponse()
-                {
-                    IsSuccess = true,
-                    ErrorCode = ETaskResponseErrorCode.None,
-                    ErrorMessage = string.Empty,
-                };
+                return new TaskResponse() { Code = ETaskResponseCode.None };
             }
             print.WriteLine($"执行打开Shell操作中, 请等待...", EPrintColor.Purple);
             return new TaskResponse()
             {
                 IsSuccess = false,
-                ErrorCode = ETaskResponseErrorCode.NotFinished,
+                Code = ETaskResponseCode.NotFinished,
                 ErrorMessage = "未实现打开Shell逻辑操作",
             };
         }

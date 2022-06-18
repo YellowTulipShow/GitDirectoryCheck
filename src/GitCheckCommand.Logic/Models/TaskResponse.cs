@@ -5,8 +5,8 @@
     /// </summary>
     public struct TaskResponse
     {
+        public ETaskResponseCode Code { get; set; }
         public bool IsSuccess { get; set; }
-        public ETaskResponseErrorCode ErrorCode { get; set; }
         public string ErrorMessage { get; set; }
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Text.RegularExpressions;
 
 using GitCheckCommand.Logic.Models;
 
@@ -31,18 +32,35 @@ namespace GitCheckCommand.Logic
             printColor.WriteLine(content, textColor, EPrintColor.None);
         }
 
-        private readonly static string interval_line = $"\n{"".PadLeft(80, '-')}\n";
-        private static int beforeWriteLineCount = -1;
+        //private readonly static string interval_line = $"\n{"".PadLeft(80, '-')}\n";
+        private readonly static string interval_line = $"{"".PadLeft(80, '-')}";
+        private static int beforeWriteIntervalLineCount = -1;
         /// <summary>
         /// 写入间隔行
         /// </summary>
         /// <param name="print">输出接口</param>
         public static void WriteIntervalLine(this IPrint print)
         {
-            if (beforeWriteLineCount == print.GetLineCount())
+            if (beforeWriteIntervalLineCount == print.GetLineCount())
+            {
                 return;
+            }
             print.WriteLine(interval_line);
-            beforeWriteLineCount = print.GetLineCount();
+            beforeWriteIntervalLineCount = print.GetLineCount();
+        }
+        private static int beforeWriteSpaceLineCount = -1;
+        /// <summary>
+        /// 写入空行
+        /// </summary>
+        /// <param name="print">输出接口</param>
+        public static void WriteSpaceLine(this IPrint print)
+        {
+            if (beforeWriteSpaceLineCount == print.GetLineCount())
+            {
+                return;
+            }
+            print.WriteLine(string.Empty);
+            beforeWriteSpaceLineCount = print.GetLineCount();
         }
 
         public static void WriteGitRepositoryPath(this IPrintColor print, GitRepository gitRepo, ESystemType systemType)
@@ -93,6 +111,8 @@ namespace GitCheckCommand.Logic
         {
             if (status.IsClean)
                 return;
+
+            Regex spaceLineRegex = new Regex(@"^\s*$");
             print.WriteLine("当前仓库需要处理:\n");
             for (int i = 0; i < status.StatusMsgs.Length; i++)
             {
@@ -100,6 +120,10 @@ namespace GitCheckCommand.Logic
                 if (i == status.NoCleanMsgIndex)
                 {
                     print.WriteLine(msg, EPrintColor.Purple);
+                    continue;
+                }
+                if (spaceLineRegex.IsMatch(msg) && i == status.StatusMsgs.Length - 1)
+                {
                     continue;
                 }
                 print.WriteLine(msg);

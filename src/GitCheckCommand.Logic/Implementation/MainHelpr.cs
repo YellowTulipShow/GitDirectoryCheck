@@ -34,6 +34,9 @@ namespace GitCheckCommand.Logic.Implementation
             IWriteGitRepositoryInfo[] readTools = GetNeed_IReadGitRepositoryInfo();
             ITask[] tasks = GetNeedExecuteITask(print, cOption);
             int notCleanGitCount = 0;
+            print.WriteIntervalLine();
+            print.WriteLine("开始检查:");
+            print.WriteIntervalLine();
             for (int index_gitRepo = 0; index_gitRepo < gitRepos.Length; index_gitRepo++)
             {
                 GitRepository gitRepo = gitRepos[index_gitRepo];
@@ -48,6 +51,7 @@ namespace GitCheckCommand.Logic.Implementation
                 }
                 HandlerGitRepository(print, gitRepo, tasks, cOption);
             }
+            print.WriteIntervalLine();
             if (notCleanGitCount > 0)
             {
                 print.Write("Need Oper Repo Count: ");
@@ -86,7 +90,9 @@ namespace GitCheckCommand.Logic.Implementation
                 print.WriteGitRepositoryPath(gitRepo, cOption.SystemType);
                 return;
             }
+            print.WriteIntervalLine();
             print.WriteGitRepositoryStatusInfo(gitRepo.Status);
+            print.WriteSpaceLine();
             foreach (ITask task in tasks)
             {
                 string taskTypeName = task.GetType().Name;
@@ -94,24 +100,27 @@ namespace GitCheckCommand.Logic.Implementation
                 string taskDesc = task.GetDescribe();
                 logArgs["taskDesc"] = taskDesc;
                 TaskResponse response = task.OnExecute(gitRepo);
-                if (!response.IsSuccess)
+
+                if (response.Code == ETaskResponseCode.None)
+                    continue;
+                if (response.IsSuccess)
                 {
-                    print.WriteLine($"任务: [{taskDesc}]({taskTypeName}) 执行失败!");
-                    print.WriteLine($"响应内容: [{response.ErrorCode}] {response.ErrorMessage}");
-                    log.Error("任务执行失败!", logArgs);
-                }
-                else if (response.ErrorCode != ETaskResponseErrorCode.None)
-                {
-                    print.WriteLine($"任务: [{taskDesc}]({taskTypeName}) 执行完成!");
-                    print.WriteLine($"响应内容: [{response.ErrorCode}] {response.ErrorMessage}");
+                    print.WriteLine($"任务: [{taskDesc}] ({taskTypeName}) [{response.Code}] 执行完成!");
+                    if (!string.IsNullOrEmpty(response.ErrorMessage))
+                        print.WriteLine($"错误消息: {response.ErrorMessage}");
                 }
                 else
                 {
-                    continue;
+                    print.WriteLine($"任务: [{taskDesc}] ({taskTypeName}) [{response.Code}] 执行失败!");
+                    if (!string.IsNullOrEmpty(response.ErrorMessage))
+                        print.WriteLine($"错误消息: {response.ErrorMessage}");
+                    log.Error("任务执行失败!", logArgs);
                 }
-                print.WriteLine("");
+                print.WriteSpaceLine();
             }
+            print.WriteSpaceLine();
             print.WriteGitRepositoryPath(gitRepo, cOption.SystemType);
+            print.WriteIntervalLine();
         }
     }
 }

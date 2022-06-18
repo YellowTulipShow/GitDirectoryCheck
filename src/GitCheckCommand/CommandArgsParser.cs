@@ -104,8 +104,6 @@ namespace GitCheckCommand
                     string userDire = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
                     bool isWindowTypePath = Regex.IsMatch(userDire, @"^[a-z]+:\\",
                         RegexOptions.ECMAScript | RegexOptions.IgnoreCase);
-                    Console.WriteLine($"userDire: {userDire}");
-                    Console.WriteLine($"isWindowTypePath: {isWindowTypePath}");
                     bool isOSWindow = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
                     // 判断是否 Window 类型盘符路径: C:\Users
                     if (isWindowTypePath || isOSWindow)

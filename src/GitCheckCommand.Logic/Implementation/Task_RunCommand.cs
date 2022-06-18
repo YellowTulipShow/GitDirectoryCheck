@@ -5,6 +5,8 @@ using System.Diagnostics;
 using YTS.Log;
 
 using GitCheckCommand.Logic.Models;
+using System.Text.RegularExpressions;
+using System;
 
 namespace GitCheckCommand.Logic.Implementation
 {
@@ -30,41 +32,71 @@ namespace GitCheckCommand.Logic.Implementation
 
         public TaskResponse OnExecute(GitRepository repository)
         {
+            var logArgs = log.CreateArgDictionary();
+            logArgs["taskDescribe"] = GetDescribe();
             string command = (commandOptions.Command ?? string.Empty).Trim();
             if (string.IsNullOrEmpty(command)) {
+                return new TaskResponse() { Code = ETaskResponseCode.None };
+            }
+            logArgs["command"] = command;
+            Regex commandRegex = new Regex(@"^([a-z]+)\s+([^\n]+)$",
+                RegexOptions.ECMAScript | RegexOptions.IgnoreCase);
+            logArgs["commandRegex"] = commandRegex.ToString();
+            try
+            {
+                Match match = commandRegex.Match(command);
+                if (!match.Success)
+                {
+                    return new TaskResponse()
+                    {
+                        Code = ETaskResponseCode.ParameterIsEmpty,
+                        IsSuccess = false,
+                        ErrorMessage = $"命令不符合规范, 命令: ({command}), 规范正则: /{commandRegex}/i",
+                    };
+                }
+                string fileName = match.Groups[1].Value;
+                logArgs["fileName"] = fileName;
+                string arguments = match.Groups[2].Value;
+                logArgs["arguments"] = arguments;
+                ProcessStartInfo info = new ProcessStartInfo(fileName, arguments)
+                {
+                    UseShellExecute = false,
+                    WorkingDirectory = repository.Path.FullName,
+                    RedirectStandardOutput = true,
+                    StandardOutputEncoding = encoding,
+                };
+                print.WriteLine("执行命令内容响应内容:");
+                using (Process process = Process.Start(info))
+                {
+                    using (StreamReader sr = process.StandardOutput)
+                    {
+                        while (!sr.EndOfStream)
+                        {
+                            print.WriteLine(sr.ReadLine());
+                        }
+                        sr.Close();
+                    }
+                    process.WaitForExit();
+                    process.Close();
+                }
+                print.WriteSpaceLine();
                 return new TaskResponse()
                 {
                     IsSuccess = true,
-                    ErrorCode = ETaskResponseErrorCode.ParameterIsEmpty,
-                    ErrorMessage = "未指定执行命令跳过执行",
+                    Code = ETaskResponseCode.End,
+                    ErrorMessage = string.Empty,
                 };
             }
-            ProcessStartInfo info = new ProcessStartInfo(@"git", command)
+            catch (Exception ex)
             {
-                UseShellExecute = false,
-                WorkingDirectory = repository.Path.FullName,
-                RedirectStandardOutput = true,
-                StandardOutputEncoding = encoding,
-            };
-            using (Process process = Process.Start(info))
-            {
-                using (StreamReader sr = process.StandardOutput)
+                log.Error($"运行任务出错!", ex, logArgs);
+                return new TaskResponse()
                 {
-                    while (!sr.EndOfStream)
-                    {
-                        print.WriteLine(sr.ReadLine());
-                    }
-                    sr.Close();
-                }
-                process.WaitForExit();
-                process.Close();
+                    IsSuccess = false,
+                    Code = ETaskResponseCode.Exception,
+                    ErrorMessage = $"运行任务出错: {ex.Message}",
+                };
             }
-            return new TaskResponse()
-            {
-                IsSuccess = true,
-                ErrorCode = ETaskResponseErrorCode.None,
-                ErrorMessage = string.Empty,
-            };
         }
     }
 }
