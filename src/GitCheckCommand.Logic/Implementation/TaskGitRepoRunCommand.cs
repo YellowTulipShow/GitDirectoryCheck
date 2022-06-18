@@ -4,8 +4,12 @@ using System.Text;
 using Newtonsoft.Json;
 
 using YTS.Log;
+using YTS.Git;
 
 using GitCheckCommand.Logic.Models;
+using System.Text.RegularExpressions;
+using System.Diagnostics;
+using System.Collections.Generic;
 
 namespace GitCheckCommand.Logic.Implementation
 {
@@ -16,18 +20,12 @@ namespace GitCheckCommand.Logic.Implementation
         private readonly IPrintColor print;
         private readonly CommandOptions commandOptions;
 
-        private readonly GitHelper gitHelper;
-
         public TaskGitRepoRunCommand(ILog log, Encoding encoding, IPrintColor print, CommandOptions commandOptions)
         {
             this.log = log;
             this.encoding = encoding;
             this.print = print;
             this.commandOptions = commandOptions;
-            gitHelper = new GitHelper(new Repository()
-            {
-                
-            });
         }
 
         public string GetDescribe()
@@ -37,10 +35,40 @@ namespace GitCheckCommand.Logic.Implementation
 
         public TaskResponse OnExecute(GitRepository repository)
         {
-            print.WriteLine($"任务: 执行自定义命令, 仓库: {repository.Path.FullName}");
+            string command = (commandOptions.Command ?? string.Empty).Trim();
+            if (string.IsNullOrEmpty(command)) {
+                return new TaskResponse()
+                {
+                    IsSuccess = true,
+                    ErrorCode = ETaskResponseErrorCode.ParameterIsEmpty,
+                    ErrorMessage = "未指定执行命令跳过执行",
+                };
+            }
+            ProcessStartInfo info = new ProcessStartInfo(@"git", command)
+            {
+                UseShellExecute = false,
+                WorkingDirectory = repository.Path.FullName,
+                RedirectStandardOutput = true,
+                StandardOutputEncoding = encoding,
+            };
+            using (Process process = Process.Start(info))
+            {
+                using (StreamReader sr = process.StandardOutput)
+                {
+                    while (!sr.EndOfStream)
+                    {
+                        print.WriteLine(sr.ReadLine());
+                    }
+                    sr.Close();
+                }
+                process.WaitForExit();
+                process.Close();
+            }
             return new TaskResponse()
             {
                 IsSuccess = true,
+                ErrorCode = ETaskResponseErrorCode.None,
+                ErrorMessage = string.Empty,
             };
         }
     }

@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\RunCommand.Logic\GitCheckCommand.Logic.csproj" />
+    <ProjectReference Include="..\GitCheckCommand.Logic\GitCheckCommand.Logic.csproj" />
   </ItemGroup>
 
 </Project>

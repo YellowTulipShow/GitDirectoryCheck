@@ -5,6 +5,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="YTS.Git" Version="0.1.1" />
         <PackageReference Include="YTS.Log" Version="0.1.2" />
     </ItemGroup>
 

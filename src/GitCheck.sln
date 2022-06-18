@@ -3,21 +3,14 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30114.105
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GitCheckCommand", "GitCheckCommand\GitCheckCommand.csproj", "{86D8A728-DD1D-484F-8B9C-E4235CFAACD5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GitCheckCommand", "GitCheckCommand\GitCheckCommand.csproj", "{86D8A728-DD1D-484F-8B9C-E4235CFAACD5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GitCheckCommand.Logic", "GitCheckCommand.Logic\GitCheckCommand.Logic.csproj", "{A4C28820-3E24-481D-9969-466347B22C12}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YTS.Git", "YTS.Git\YTS.Git.csproj", "{039000A1-0D5B-4877-840A-9621D7D76D27}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YTS.Git.Test", "YTS.Git.Test\YTS.Git.Test.csproj", "{48EFAC0E-1740-4348-ADC5-3D5AAD935932}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GitCheckCommand.Logic", "GitCheckCommand.Logic\GitCheckCommand.Logic.csproj", "{A4C28820-3E24-481D-9969-466347B22C12}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{86D8A728-DD1D-484F-8B9C-E4235CFAACD5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -28,13 +21,11 @@ Global
 		{A4C28820-3E24-481D-9969-466347B22C12}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A4C28820-3E24-481D-9969-466347B22C12}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A4C28820-3E24-481D-9969-466347B22C12}.Release|Any CPU.Build.0 = Release|Any CPU
-		{039000A1-0D5B-4877-840A-9621D7D76D27}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{039000A1-0D5B-4877-840A-9621D7D76D27}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{039000A1-0D5B-4877-840A-9621D7D76D27}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{039000A1-0D5B-4877-840A-9621D7D76D27}.Release|Any CPU.Build.0 = Release|Any CPU
-		{48EFAC0E-1740-4348-ADC5-3D5AAD935932}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{48EFAC0E-1740-4348-ADC5-3D5AAD935932}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{48EFAC0E-1740-4348-ADC5-3D5AAD935932}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{48EFAC0E-1740-4348-ADC5-3D5AAD935932}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4913BD2D-80F9-4E4E-A28E-097203BC2B5E}
 	EndGlobalSection
 EndGlobal

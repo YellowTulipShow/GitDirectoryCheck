@@ -31,10 +31,22 @@ namespace GitCheckCommand.Logic.Implementation
 
         public TaskResponse OnExecute(GitRepository repository)
         {
-            print.WriteLine($"任务: 打开Shell, 仓库: {repository.Path.FullName}");
+            bool isOpenShell = commandOptions.IsOpenShell ?? repository.IsOpenShell ?? false;
+            if (!isOpenShell)
+            {
+                return new TaskResponse()
+                {
+                    IsSuccess = true,
+                    ErrorCode = ETaskResponseErrorCode.None,
+                    ErrorMessage = string.Empty,
+                };
+            }
+            print.WriteLine($"执行打开Shell操作中, 请等待...", EPrintColor.Purple);
             return new TaskResponse()
             {
-                IsSuccess = true,
+                IsSuccess = false,
+                ErrorCode = ETaskResponseErrorCode.NotFinished,
+                ErrorMessage = "未实现打开Shell逻辑操作",
             };
         }
     }

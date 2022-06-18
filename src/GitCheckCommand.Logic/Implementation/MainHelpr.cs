@@ -42,7 +42,7 @@ namespace GitCheckCommand.Logic.Implementation
                 .OnExecute(configs);
             ITask[] tasks = GetNeedExecuteITask(print, commandOptions);
 
-            var initGitRepositoryHelper = new InitGitRepositoryInfoHelper(log, commandOptions);
+            var initGitRepositoryHelper = new InitGitRepositoryInfoHelper(log, encoding, commandOptions);
             for (int index_gitRepo = 0; index_gitRepo < gitRepos.Length; index_gitRepo++)
             {
                 GitRepository gitRepo = gitRepos[index_gitRepo];
