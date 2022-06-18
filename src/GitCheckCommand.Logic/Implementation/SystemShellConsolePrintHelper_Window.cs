@@ -76,6 +76,7 @@ namespace GitCheckCommand.Logic.Implementation
                 EPrintColor.Red => ConsoleColor.Red,
                 EPrintColor.Blue => ConsoleColor.Blue,
                 EPrintColor.Purple => ConsoleColor.Magenta,
+                EPrintColor.Green => ConsoleColor.Green,
                 _ => throw new ArgumentOutOfRangeException(nameof(printColor), $"转为 Window 控制台颜色, 无法解析: {printColor}"),
             };
         }

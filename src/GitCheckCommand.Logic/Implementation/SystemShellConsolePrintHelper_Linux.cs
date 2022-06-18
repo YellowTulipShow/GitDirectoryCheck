@@ -66,6 +66,7 @@ namespace GitCheckCommand.Logic.Implementation
                 EPrintColor.Red => "31",
                 EPrintColor.Blue => "34",
                 EPrintColor.Purple => "35",
+                EPrintColor.Green => "32",
                 _ => throw new ArgumentOutOfRangeException(nameof(printColor), $"转为 Linux Shell 文本颜色, 无法解析: {printColor}"),
             };
         }
@@ -80,6 +81,7 @@ namespace GitCheckCommand.Logic.Implementation
                 EPrintColor.Red => "41",
                 EPrintColor.Blue => "44",
                 EPrintColor.Purple => "45",
+                EPrintColor.Green => "42",
                 _ => throw new ArgumentOutOfRangeException(nameof(printColor), $"转为 Linux Shell 文本颜色, 无法解析: {printColor}"),
             };
         }
