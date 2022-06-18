@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Linq;
+using System.Text;
 using System.Collections.Generic;
 
 using YTS.Log;
@@ -10,27 +11,18 @@ using GitCheckCommand.Logic.Models;
 
 namespace GitCheckCommand.Logic.Implementation
 {
-    public class TaskGitRepoCheckStatus : ITask
+    public class WriteGitRepositoryInfo_Status : IWriteGitRepositoryInfo
     {
         private readonly ILog log;
         private readonly Encoding encoding;
-        private readonly IPrintColor print;
-        private readonly CommandOptions commandOptions;
 
-        public TaskGitRepoCheckStatus(ILog log, Encoding encoding, IPrintColor print, CommandOptions commandOptions)
+        public WriteGitRepositoryInfo_Status(ILog log, Encoding encoding)
         {
             this.log = log;
             this.encoding = encoding;
-            this.print = print;
-            this.commandOptions = commandOptions;
         }
 
-        public string GetDescribe()
-        {
-            return "检查仓库是否含有更改项";
-        }
-
-        public TaskResponse OnExecute(GitRepository repository)
+        public GitRepository OnExecute(GitRepository repository)
         {
             IGitStatus gitStatus = new GitStatusHelper(new YTS.Git.Models.Repository()
             {
@@ -39,34 +31,13 @@ namespace GitCheckCommand.Logic.Implementation
             });
             IList<string> msgs = gitStatus.OnCommand();
             (bool isClean, int noCleanMsgIndex) = CheckStatusMessageIsClean(msgs);
-
-            if (isClean)
+            repository.Status = new GitRepositoryStatus()
             {
-                return new TaskResponse()
-                {
-                    IsSuccess = true,
-                    ErrorCode = ETaskResponseErrorCode.None,
-                    ErrorMessage = string.Empty,
-                };
-            }
-            print.WriteIntervalLine();
-            print.WriteLine("当前仓库需要处理:\n");
-            for (int i = 0; i < msgs.Count; i++)
-            {
-                string msg = msgs[i];
-                if (noCleanMsgIndex == i)
-                {
-                    print.WriteLine(msg, EPrintColor.Purple);
-                    continue;
-                }
-                print.WriteLine(msg);
+                IClean = isClean,
+                StatusMsgs = msgs.ToArray(),
+                NoCleanMsgIndex = noCleanMsgIndex,
             };
-            return new TaskResponse()
-            {
-                IsSuccess = false,
-                ErrorCode = ETaskResponseErrorCode.NotClean,
-                ErrorMessage = "仓库需要处理",
-            };
+            return repository;
         }
 
         private (bool, int) CheckStatusMessageIsClean(IList<string> msgs)
@@ -97,5 +68,6 @@ namespace GitCheckCommand.Logic.Implementation
             }
             return (true, -1);
         }
+
     }
 }

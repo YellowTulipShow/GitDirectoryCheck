@@ -10,5 +10,6 @@ namespace GitCheckCommand.Logic.Models
         public DirectoryInfo Path { get; set; }
         public bool? IsOpenShell { get; set; }
         public string BranchName { get; set; }
+        public GitRepositoryStatus Status { get; set; }
     }
 }

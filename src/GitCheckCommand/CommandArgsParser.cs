@@ -30,15 +30,17 @@ namespace GitCheckCommand
             try
             {
                 Option<string> configFilePathOption = GetOption_ConfigFilePath();
-                Option<bool?> openShellOption = GetOption_OpenShell();
-                Option<string> commandOption = GetOption_Command();
                 Option<ESystemType> systemTypeOption = GetOption_SystemType();
 
+                Option<bool?> openShellOption = GetOption_OpenShell();
+                Option<string> commandOption = GetOption_Command();
+
                 RootCommand rootC = new RootCommand("检查目录下所有 Git 仓库状态");
-                rootC.AddOption(configFilePathOption);
+                rootC.AddGlobalOption(configFilePathOption);
+                rootC.AddGlobalOption(systemTypeOption);
+
                 rootC.AddOption(openShellOption);
                 rootC.AddOption(commandOption);
-                rootC.AddOption(systemTypeOption);
 
                 rootC.SetHandler(context =>
                 {
@@ -46,17 +48,18 @@ namespace GitCheckCommand
                     {
                         string configFilePath = context.ParseResult.GetValueForOption(configFilePathOption);
                         logArgs["configFilePath"] = configFilePath;
+                        ESystemType systemType = context.ParseResult.GetValueForOption(systemTypeOption);
+                        logArgs["systemType"] = systemType.ToString();
+
                         bool? isOpenShell = context.ParseResult.GetValueForOption(openShellOption);
                         logArgs["isOpenShell"] = isOpenShell;
                         string command = context.ParseResult.GetValueForOption(commandOption);
                         logArgs["command"] = command;
-                        ESystemType systemType = context.ParseResult.GetValueForOption(systemTypeOption);
-                        logArgs["systemType"] = systemType.ToString();
                         main.OnExecute(configFilePath, new Logic.Models.CommandOptions()
                         {
+                            SystemType = systemType,
                             IsOpenShell = isOpenShell,
                             Command = command,
-                            SystemType = systemType,
                         });
                     }
                     catch (Exception ex)
@@ -91,25 +94,6 @@ namespace GitCheckCommand
             option.Arity = ArgumentArity.ExactlyOne;
             return option;
         }
-        private Option<bool?> GetOption_OpenShell()
-        {
-            var option = new Option<bool?>(
-                aliases: new string[] { "-o", "--open-shell" },
-                getDefaultValue: () => null,
-                description: "当Git仓库'不干净'时, 是否需要自动打开命令窗口"); ;
-            option.Arity = ArgumentArity.ExactlyOne;
-            return option;
-        }
-        private Option<string> GetOption_Command()
-        {
-            var option = new Option<string>(
-                aliases: new string[] { "--command" },
-                getDefaultValue: () => null,
-                description: "当Git仓库'不干净'时, 在其路径执行的命令内容");
-            option.Arity = ArgumentArity.ExactlyOne;
-            return option;
-        }
-
         private Option<ESystemType> GetOption_SystemType()
         {
             var option = new Option<ESystemType>(
@@ -127,6 +111,24 @@ namespace GitCheckCommand
                     return ESystemType.Linux;
                 },
                 description: "显示的执行当前执行的系统标识, 用于打印输出消息内容颜色使用");
+            option.Arity = ArgumentArity.ExactlyOne;
+            return option;
+        }
+        private Option<bool?> GetOption_OpenShell()
+        {
+            var option = new Option<bool?>(
+                aliases: new string[] { "-o", "--open-shell" },
+                getDefaultValue: () => null,
+                description: "当Git仓库'不干净'时, 是否需要自动打开命令窗口"); ;
+            option.Arity = ArgumentArity.ExactlyOne;
+            return option;
+        }
+        private Option<string> GetOption_Command()
+        {
+            var option = new Option<string>(
+                aliases: new string[] { "--command" },
+                getDefaultValue: () => null,
+                description: "当Git仓库'不干净'时, 在其路径执行的命令内容");
             option.Arity = ArgumentArity.ExactlyOne;
             return option;
         }

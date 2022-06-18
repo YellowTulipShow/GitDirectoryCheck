@@ -41,5 +41,55 @@ namespace GitCheckCommand.Logic
         {
             print.WriteLine(interval_line);
         }
+
+        public static void WriteGitRepositoryPath(this IPrintColor print, GitRepository gitRepo, ESystemType systemType)
+        {
+            string branchName = gitRepo.BranchName;
+            if (branchName == "master")
+            {
+                print.Write($"({branchName})");
+            }
+            else
+            {
+                print.Write("(");
+                print.Write(branchName, EPrintColor.Red);
+                print.Write(")");
+            }
+            print.Write(" | ");
+            string path = gitRepo.Path.FullName;
+            if (systemType == ESystemType.Window)
+            {
+                path = '/' + path
+                    .Replace('\\', '/')
+                    .Replace("", "");
+            }
+            if (gitRepo.Status.IClean)
+            {
+                print.WriteLine(path, EPrintColor.Yellow);
+            }
+            else
+            {
+                print.WriteLine(path, EPrintColor.Red);
+                print.WriteIntervalLine();
+            }
+        }
+
+        public static void WriteGitRepositoryStatusInfo(this IPrintColor print, GitRepositoryStatus status)
+        {
+            if (status.IClean)
+                return;
+            print.WriteLine("当前仓库需要处理:\n");
+            for (int i = 0; i < status.StatusMsgs.Length; i++)
+            {
+                string msg = status.StatusMsgs[i];
+                if (i == status.NoCleanMsgIndex)
+                {
+                    print.WriteLine(msg, EPrintColor.Purple);
+                    continue;
+                }
+                print.WriteLine(msg);
+            }
+            print.WriteLine("\n");
+        }
     }
 }

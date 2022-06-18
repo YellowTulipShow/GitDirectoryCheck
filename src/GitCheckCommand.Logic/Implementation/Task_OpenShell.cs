@@ -9,14 +9,14 @@ using GitCheckCommand.Logic.Models;
 
 namespace GitCheckCommand.Logic.Implementation
 {
-    public class TaskGitRepoOpenShell : ITask
+    public class Task_OpenShell : ITask
     {
         private readonly ILog log;
         private readonly Encoding encoding;
         private readonly IPrintColor print;
         private readonly CommandOptions commandOptions;
 
-        public TaskGitRepoOpenShell(ILog log, Encoding encoding, IPrintColor print, CommandOptions commandOptions)
+        public Task_OpenShell(ILog log, Encoding encoding, IPrintColor print, CommandOptions commandOptions)
         {
             this.log = log;
             this.encoding = encoding;

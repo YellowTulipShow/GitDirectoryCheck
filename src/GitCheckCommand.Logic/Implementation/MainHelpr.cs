@@ -18,94 +18,93 @@ namespace GitCheckCommand.Logic.Implementation
     {
         private readonly ILog log;
         private readonly Encoding encoding;
-        private readonly JsonSerializerSettings jsonSerializerSettings;
+        private readonly ConfigHelper configHelper;
+        private readonly FindGitRepositoryHelper findGitRepositoryHelper;
 
         public MainHelpr(ILog log, Encoding encoding)
         {
             this.log = log;
             this.encoding = encoding;
+            configHelper = new ConfigHelper(log, encoding);
+            findGitRepositoryHelper = new FindGitRepositoryHelper(log);
         }
 
-        public void OnExecute(string configFilePath, CommandOptions commandOptions)
+        public void OnExecute(string configFilePath, CommandOptions cOption)
         {
             var logArgs = log.CreateArgDictionary();
             logArgs["configFilePath"] = configFilePath;
-            logArgs["commandOptions"] = commandOptions;
-
-            IPrintColor print = commandOptions.SystemType.ToIPrintColor();
+            logArgs["commandOptions"] = cOption;
+            IPrintColor print = cOption.SystemType.ToIPrintColor();
             string printTypeName = print.GetType().Name;
             logArgs["printTypeName"] = printTypeName;
-
-            Configs configs = new ConfigHelper(log, encoding, print)
-                .ReadConfigs(configFilePath, commandOptions.SystemType);
-            GitRepository[] gitRepos = new FindGitRepositoryHelper(log)
-                .OnExecute(configs);
-            ITask[] tasks = GetNeedExecuteITask(print, commandOptions);
-
-            var initGitRepositoryHelper = new InitGitRepositoryInfoHelper(log, encoding, commandOptions);
+            Configs configs = configHelper.ReadConfigs(configFilePath, cOption.SystemType);
+            GitRepository[] gitRepos = findGitRepositoryHelper.OnExecute(configs);
+            IWriteGitRepositoryInfo[] readTools = GetNeed_IReadGitRepositoryInfo();
+            ITask[] tasks = GetNeedExecuteITask(print, cOption);
             for (int index_gitRepo = 0; index_gitRepo < gitRepos.Length; index_gitRepo++)
             {
                 GitRepository gitRepo = gitRepos[index_gitRepo];
-                gitRepo = initGitRepositoryHelper.OnExecute(gitRepo);
                 logArgs["gitRepo.Path.FullName"] = gitRepo.Path.FullName;
-
-                bool isSuccess = true;
-                foreach (ITask task in tasks)
+                foreach (var readTool in readTools)
                 {
-                    string taskTypeName = task.GetType().Name;
-                    logArgs["taskTypeName"] = taskTypeName;
-                    string taskDesc = task.GetDescribe();
-                    logArgs["taskDesc"] = taskDesc;
-                    TaskResponse response = task.OnExecute(gitRepo);
-                    if (!response.IsSuccess)
-                    {
-                        isSuccess = false;
-                        print.WriteLine($"任务: [{taskDesc}]({taskTypeName}) 执行失败!");
-                        print.WriteLine($"响应错误: [{response.ErrorCode}] {response.ErrorMessage}");
-                        print.WriteIntervalLine();
-                    }
+                    gitRepo = readTool.OnExecute(gitRepo);
                 }
-
-                print.WriteLine("项目路径:");
-                string branchName = gitRepo.BranchName;
-                if (branchName == "master")
-                {
-                    print.Write($"({branchName})");
-                }
-                else
-                {
-                    print.Write("(");
-                    print.Write(branchName, EPrintColor.Red);
-                    print.Write(")");
-                }
-                print.Write(" | ");
-                string path = gitRepo.Path.FullName;
-                if (commandOptions.SystemType == ESystemType.Window)
-                {
-                    path = '/' + path
-                        .Replace('\\', '/')
-                        .Replace("", "");
-                }
-                if (isSuccess)
-                {
-                    print.WriteLine(path, EPrintColor.Yellow);
-                }
-                else
-                {
-                    print.WriteLine(path, EPrintColor.Red);
-                    print.WriteIntervalLine();
-                }
+                HandlerGitRepository(print, gitRepo, tasks, cOption);
             }
+        }
+        private IWriteGitRepositoryInfo[] GetNeed_IReadGitRepositoryInfo()
+        {
+            return new IWriteGitRepositoryInfo[]
+            {
+                new WriteGitRepositoryInfo_Branch(log, encoding),
+                new WriteGitRepositoryInfo_Status(log, encoding),
+            };
         }
 
         private ITask[] GetNeedExecuteITask(IPrintColor print, CommandOptions commandOptions)
         {
             return new ITask[]
             {
-                new TaskGitRepoCheckStatus(log, encoding, print, commandOptions),
-                new TaskGitRepoOpenShell(log, encoding, print, commandOptions),
-                new TaskGitRepoRunCommand(log, encoding, print, commandOptions),
+                new Task_OpenShell(log, encoding, print, commandOptions),
+                new Task_RunCommand(log, encoding, print, commandOptions),
             };
+        }
+
+        private void HandlerGitRepository(IPrintColor print, GitRepository gitRepo, ITask[] tasks, CommandOptions cOption)
+        {
+            var logArgs = log.CreateArgDictionary();
+            if (gitRepo.Status.IClean)
+            {
+                print.WriteGitRepositoryPath(gitRepo, cOption.SystemType);
+                return;
+            }
+            print.WriteGitRepositoryStatusInfo(gitRepo.Status);
+            print.WriteIntervalLine();
+            foreach (ITask task in tasks)
+            {
+                string taskTypeName = task.GetType().Name;
+                logArgs["taskTypeName"] = taskTypeName;
+                string taskDesc = task.GetDescribe();
+                logArgs["taskDesc"] = taskDesc;
+                TaskResponse response = task.OnExecute(gitRepo);
+                if (!response.IsSuccess)
+                {
+                    print.WriteLine($"任务: [{taskDesc}]({taskTypeName}) 执行失败!");
+                    print.WriteLine($"响应内容: [{response.ErrorCode}] {response.ErrorMessage}");
+                    log.Error("任务执行失败!", logArgs);
+                }
+                else if (response.ErrorCode != ETaskResponseErrorCode.None)
+                {
+                    print.WriteLine($"任务: [{taskDesc}]({taskTypeName}) 执行完成!");
+                    print.WriteLine($"响应内容: [{response.ErrorCode}] {response.ErrorMessage}");
+                }
+                else
+                {
+                    continue;
+                }
+                print.WriteLine("");
+            }
+            print.WriteGitRepositoryPath(gitRepo, cOption.SystemType);
         }
     }
 }

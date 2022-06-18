@@ -13,14 +13,12 @@ namespace GitCheckCommand.Logic.Implementation
     {
         private readonly ILog log;
         private readonly Encoding encoding;
-        private readonly IPrintColor print;
         private readonly JsonSerializerSettings jsonSerializerSettings;
 
-        public ConfigHelper(ILog log, Encoding encoding, IPrintColor print)
+        public ConfigHelper(ILog log, Encoding encoding)
         {
             this.log = log;
             this.encoding = encoding;
-            this.print = print;
             jsonSerializerSettings = new JsonSerializerSettings()
             {
                 Formatting = Formatting.Indented,
@@ -36,13 +34,12 @@ namespace GitCheckCommand.Logic.Implementation
                 Configs defaultConfigs = GetDefaultConfigs(systemType);
                 string json = JsonConvert.SerializeObject(defaultConfigs, jsonSerializerSettings);
                 File.WriteAllText(file.FullName, json, this.encoding);
-                print.WriteLine($"配置文件不存在, 自动创建默认项: {file.FullName}", EPrintColor.Red);
+                log.Error($"配置文件不存在, 自动创建默认项: {file.FullName}");
                 return defaultConfigs;
             }
             string content = File.ReadAllText(file.FullName, this.encoding);
             var config = JsonConvert.DeserializeObject<Configs>(content);
-            print.Write($"获取配置文件成功: ");
-            print.WriteLine($"{file.FullName}", EPrintColor.Blue);
+            log.Info($"获取配置文件成功: {file.FullName}");
             return config;
         }
 

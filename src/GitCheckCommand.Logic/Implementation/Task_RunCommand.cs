@@ -1,26 +1,21 @@
 ﻿using System.IO;
 using System.Text;
-
-using Newtonsoft.Json;
+using System.Diagnostics;
 
 using YTS.Log;
-using YTS.Git;
 
 using GitCheckCommand.Logic.Models;
-using System.Text.RegularExpressions;
-using System.Diagnostics;
-using System.Collections.Generic;
 
 namespace GitCheckCommand.Logic.Implementation
 {
-    public class TaskGitRepoRunCommand : ITask
+    public class Task_RunCommand : ITask
     {
         private readonly ILog log;
         private readonly Encoding encoding;
         private readonly IPrintColor print;
         private readonly CommandOptions commandOptions;
 
-        public TaskGitRepoRunCommand(ILog log, Encoding encoding, IPrintColor print, CommandOptions commandOptions)
+        public Task_RunCommand(ILog log, Encoding encoding, IPrintColor print, CommandOptions commandOptions)
         {
             this.log = log;
             this.encoding = encoding;
