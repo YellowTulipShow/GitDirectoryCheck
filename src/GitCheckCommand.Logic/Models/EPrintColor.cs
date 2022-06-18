@@ -33,5 +33,9 @@
         /// 紫色
         /// </summary>
         Purple,
+        /// <summary>
+        /// 绿色
+        /// </summary>
+        Green,
     }
 }

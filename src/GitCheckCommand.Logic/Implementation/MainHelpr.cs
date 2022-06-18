@@ -33,6 +33,7 @@ namespace GitCheckCommand.Logic.Implementation
             GitRepository[] gitRepos = findGitRepositoryHelper.OnExecute(configs);
             IWriteGitRepositoryInfo[] readTools = GetNeed_IReadGitRepositoryInfo();
             ITask[] tasks = GetNeedExecuteITask(print, cOption);
+            int notCleanGitCount = 0;
             for (int index_gitRepo = 0; index_gitRepo < gitRepos.Length; index_gitRepo++)
             {
                 GitRepository gitRepo = gitRepos[index_gitRepo];
@@ -41,8 +42,22 @@ namespace GitCheckCommand.Logic.Implementation
                 {
                     gitRepo = readTool.OnExecute(gitRepo);
                 }
+                if (!gitRepo.Status.IsClean)
+                {
+                    notCleanGitCount++;
+                }
                 HandlerGitRepository(print, gitRepo, tasks, cOption);
             }
+            if (notCleanGitCount > 0)
+            {
+                print.Write("Need Oper Repo Count: ");
+                print.WriteLine($"{notCleanGitCount}", EPrintColor.Red);
+            }
+            else
+            {
+                print.WriteLine("All warehouses are very clean... ok!", EPrintColor.Green);
+            }
+            print.WriteIntervalLine();
         }
 
         private IWriteGitRepositoryInfo[] GetNeed_IReadGitRepositoryInfo()

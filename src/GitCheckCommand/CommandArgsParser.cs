@@ -1,4 +1,7 @@
 ﻿using System;
+using System.IO;
+using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 
 using System.CommandLine;
 
@@ -6,9 +9,6 @@ using YTS.Log;
 
 using GitCheckCommand.Logic;
 using GitCheckCommand.Logic.Models;
-using System.Runtime.InteropServices;
-using System.IO;
-using System.Text.RegularExpressions;
 
 namespace GitCheckCommand
 {

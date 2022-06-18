@@ -32,13 +32,17 @@ namespace GitCheckCommand.Logic
         }
 
         private readonly static string interval_line = $"\n{"".PadLeft(80, '-')}\n";
+        private static int beforeWriteLineCount = -1;
         /// <summary>
         /// 写入间隔行
         /// </summary>
         /// <param name="print">输出接口</param>
         public static void WriteIntervalLine(this IPrint print)
         {
+            if (beforeWriteLineCount == print.GetLineCount())
+                return;
             print.WriteLine(interval_line);
+            beforeWriteLineCount = print.GetLineCount();
         }
 
         public static void WriteGitRepositoryPath(this IPrintColor print, GitRepository gitRepo, ESystemType systemType)
@@ -72,15 +76,17 @@ namespace GitCheckCommand.Logic
         }
         private static void WriteOnlyGitRepositoryPath_WindowAndLinux(this IPrintColor print, bool IsClean, string PathFullName)
         {
-            print.WriteLine(PathFullName, IsClean ? EPrintColor.Yellow : EPrintColor.Red);
+            print.Write(PathFullName, IsClean ? EPrintColor.Yellow : EPrintColor.Red);
+            print.Write("\n");
         }
         private static void WriteOnlyGitRepositoryPath_WindowGitBash(this IPrintColor print, bool IsClean, string PathFullName)
         {
             string windowPath = PathFullName;
             string linuePath = '/' + PathFullName.Replace('\\', '/').Replace(":", "");
-            print.WriteLine(linuePath, IsClean ? EPrintColor.Yellow : EPrintColor.Red);
+            print.Write(linuePath, IsClean ? EPrintColor.Yellow : EPrintColor.Red);
             print.Write(" | ");
-            print.WriteLine(windowPath, EPrintColor.Blue);
+            print.Write(windowPath, EPrintColor.Blue);
+            print.Write("\n");
         }
 
         public static void WriteGitRepositoryStatusInfo(this IPrintColor print, GitRepositoryStatus status)

@@ -9,8 +9,14 @@ namespace GitCheckCommand.Logic.Implementation
     /// </summary>
     public class SystemShellConsolePrintHelper_Window : IPrint, IPrintColor
     {
-        public SystemShellConsolePrintHelper_Window()
+        private int lineCount = 0;
+
+        public SystemShellConsolePrintHelper_Window() { }
+
+        /// <inheritdoc/>
+        public int GetLineCount()
         {
+            return lineCount;
         }
 
         /// <inheritdoc/>
@@ -23,15 +29,14 @@ namespace GitCheckCommand.Logic.Implementation
         public void WriteLine(string content)
         {
             Console.WriteLine(content);
+            lineCount++;
         }
 
         /// <inheritdoc/>
         public void Write(string content, EPrintColor textColor, EPrintColor backgroundColor)
         {
             SetConsoleColor(textColor, backgroundColor);
-
             this.Write(content);
-
             Console.ResetColor();
         }
 
@@ -39,10 +44,9 @@ namespace GitCheckCommand.Logic.Implementation
         public void WriteLine(string content, EPrintColor textColor, EPrintColor backgroundColor)
         {
             SetConsoleColor(textColor, backgroundColor);
-
             this.WriteLine(content);
-
             Console.ResetColor();
+            lineCount++;
         }
         private static void SetConsoleColor(EPrintColor textColor, EPrintColor backgroundColor)
         {
