@@ -26,63 +26,55 @@ $ dotnet run --project ./src/GitCheckCommand/GitCheckCommand.csproj
 
 ### 方便使用
 
-在 `shell` 中添加一个命令别名, 以便于使用
+快速调用脚本发布安装, 使用 `Powershell` 脚本
 
-再 `~/.bashrc` 文件加入一行:
-```shell
-alias gits='python /(linux格式的路径)/GitDirectoryCheck/main.py'
+```powershell
+./shell/find_all_project.ps1
+./shell/release.ps1
+./shell/install_command_packages.ps1
 ```
 
-之后再 `shell` 中就可以直接使用命令了
+执行完成, 无错误即可使用命令程序:
 
-```shell
-$ gits
+```powershell
+gits
 ```
 
 ## 配置文件说明
 
-第一次运行`main.py`时就根据程序内置的配置内容自动生成运行时配置文件: `config.json`
+第一次运行时就根据程序内置的配置内容自动生成运行时配置文件
 
-可随意修改`config.json`的内容, 达到配置程序的目的
+如 `Window` 系统下路径: `C:\Users\Administrator\.command_gitcheck_config.json`
+
+也可以手动指定配置路径, 使用别名调用即可, 具体参数请使用 `-h` 查看
 
 内容参数注解如下:
-```
+```json
 {
     // 全局配置项: 如果仓库不干净是否, 自动打开对应的Git Bash程序
-    // 目前仅在 Window系统下有效, 同时注意修改脚本文件 open_window_git_bash.bat: Git Bash程序的安装路径
-    "is_open_git_bash": false,
+    // 目前还没有完成, 正在寻找实现思路
+    "IsOpenShell": false,
 
     // 全局配置项, 循环递归查找指定目录下所有仓库的路径隐藏项
     // 在查找过程中会将每一项与路径进行正则表达式的匹配, 如果匹配成功则跳过不计算在程序运行范围内
-    "ignores": [
-        "wwwroot$",
-    ],
+    "IgnoresRegexs": [],
 
     // 全局必备项, 执行需要查找那些路径
-    "roots": [
+    "Roots": [
         {
-            // 如: 查找C盘Work文件夹下所有的Git仓库
-            "path": "C:\\Work",
+            // 如: 查找 C盘 Work文件夹下所有的Git仓库
+            "Path": "C:\\Work",
+
             // 没有明确指明其他配置则继承上面的全局配置项
-        },
-        {
-            // 如: 查找D盘Work文件夹下所有的Git仓库
-            "path": "D:\\Work",
-            // 指定了需要单独屏蔽某些路径的项
-            "ignores": [
+            "IsOpenShell": null,
+            // 指定了需要单独屏蔽某些路径的正则表达式
+            "IgnoresRegexs": [
                 "YTS.Test$",
-                "YTS.Learn$",
-            ],
-        },
-        {
-            // 为此仓库单独配置
-            "path": "D:\\Work\\YTS.ZRQ\\GitDirectoryCheck",
-            // 指定了自动打开Git Bash程序的配置
-            "is_open_git_bash": true,
-        },
+                "YTS.Learn$"
+            ]
+        }
     ]
 }
-
 ```
 
 ## 参考学习地址

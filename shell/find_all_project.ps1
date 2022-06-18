@@ -1,11 +1,10 @@
-$ExecutePath = $PWD
-Set-Location $PSScriptRoot
-Set-Location ..
+param([string]$runMethod)
+if ($runMethod -ne "toolScript") {
+    $ExecutePath = $PWD
+    Set-Location $PSScriptRoot
+    Set-Location ..
 
-function PrintLineSplit([string]$path) {
-    Write-Host ""
-    Write-Host "======================================================================================="
-    Write-Host ""
+    . ./shell/global_tools.ps1
 }
 
 # 查找所有项目名单
@@ -18,13 +17,12 @@ if (!(Test-Path $cpath)) {
     New-Item -ItemType File -Force -Path $cpath
 }
 $list = Get-ChildItem -Recurse -Include *.csproj -Name
-if ($list.getType().Name -eq "String" -or $list.Count -eq 1) {
-    $list = $list -replace "\\", "/"
+if ($list.Count -eq 1) {
+    $list = $list -replace "\\","/"
     Write-Host "project: $list"
-}
-else {
+} else {
     for ($i = 0; $i -lt $list.Count; $i++) {
-        $list[$i] = $list[$i] -replace "\\", "/"
+        $list[$i] = $list[$i] -replace "\\","/"
         $item = $list[$i];
         Write-Host "project: $item"
     }
@@ -32,7 +30,9 @@ else {
 $list > $cpath
 PrintLineSplit
 
-Set-Location $ExecutePath
-if ($PSScriptRoot -eq $ExecutePath) {
-    timeout.exe /T -1
+if ($runMethod -ne "toolScript") {
+    Set-Location $ExecutePath
+    if ($PSScriptRoot -eq $ExecutePath) {
+        timeout.exe /T -1
+    }
 }
