@@ -9,8 +9,19 @@ namespace GitCheckCommand.Logic.Models
     /// </summary>
     public enum ESystemType
     {
+        /// <summary>
+        /// Microsoft Windows 系统类型: cmd / powershell
+        /// </summary>
         Window,
+
+        /// <summary>
+        /// Linux 系统类型: bash
+        /// </summary>
         Linux,
+
+        /// <summary>
+        /// Microsoft Windows 系统系统下使用的命令行: Mintty Git Bash
+        /// </summary>
         WindowGitBash,
     }
 
@@ -35,6 +46,11 @@ namespace GitCheckCommand.Logic.Models
             };
         }
 
+        /// <summary>
+        /// 转为配置根目录项默认路径
+        /// </summary>
+        /// <param name="systemType">系统路径</param>
+        /// <returns>默认路径</returns>
         public static string ToConfigRootDefaultPath(this ESystemType systemType)
         {
             const string window = @"C:\Work";

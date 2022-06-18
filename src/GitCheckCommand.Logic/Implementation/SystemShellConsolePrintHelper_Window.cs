@@ -5,12 +5,15 @@ using GitCheckCommand.Logic.Models;
 namespace GitCheckCommand.Logic.Implementation
 {
     /// <summary>
-    /// Window ÏµÍ³ÀàĞÍ Shell ¿ØÖÆÌ¨´òÓ¡Êä³öÊµÏÖÀà
+    /// Window ç³»ç»Ÿç±»å‹ Shell æ§åˆ¶å°æ‰“å°è¾“å‡ºå®ç°ç±»
     /// </summary>
     public class SystemShellConsolePrintHelper_Window : IPrint, IPrintColor
     {
         private int lineCount = 0;
 
+        /// <summary>
+        /// å®ä¾‹åŒ– - Window ç³»ç»Ÿç±»å‹ Shell æ§åˆ¶å°æ‰“å°è¾“å‡ºå®ç°ç±»
+        /// </summary>
         public SystemShellConsolePrintHelper_Window() { }
 
         /// <inheritdoc/>
@@ -77,7 +80,7 @@ namespace GitCheckCommand.Logic.Implementation
                 EPrintColor.Blue => ConsoleColor.Blue,
                 EPrintColor.Purple => ConsoleColor.Magenta,
                 EPrintColor.Green => ConsoleColor.Green,
-                _ => throw new ArgumentOutOfRangeException(nameof(printColor), $"×ªÎª Window ¿ØÖÆÌ¨ÑÕÉ«, ÎŞ·¨½âÎö: {printColor}"),
+                _ => throw new ArgumentOutOfRangeException(nameof(printColor), $"è½¬ä¸º Window æ§åˆ¶å°é¢œè‰², æ— æ³•è§£æ: {printColor}"),
             };
         }
     }

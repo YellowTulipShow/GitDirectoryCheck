@@ -6,27 +6,27 @@ using GitCheckCommand.Logic.Models;
 namespace GitCheckCommand.Logic
 {
     /// <summary>
-    /// ¾²Ì¬À©Õ¹½Ó¿Ú: ´òÓ¡Êä³ö½Ó¿Ú
+    /// é™æ€æ‰©å±•æ¥å£: æ‰“å°è¾“å‡ºæ¥å£
     /// </summary>
     public static class IPrintExtend
     {
         /// <summary>
-        /// Ä¬ÈÏºÚµ×, Ğ´ÈëÄÚÈİ
+        /// é»˜è®¤é»‘åº•, å†™å…¥å†…å®¹
         /// </summary>
-        /// <param name="printColor">´òÓ¡Êä³ö½Ó¿Úº¬ÓĞÑÕÉ«Ïî</param>
-        /// <param name="content">ÏûÏ¢ÄÚÈİ</param>
-        /// <param name="textColor">ÎÄ±¾ÄÚÈİÑÕÉ«</param>
+        /// <param name="printColor">æ‰“å°è¾“å‡ºæ¥å£å«æœ‰é¢œè‰²é¡¹</param>
+        /// <param name="content">æ¶ˆæ¯å†…å®¹</param>
+        /// <param name="textColor">æ–‡æœ¬å†…å®¹é¢œè‰²</param>
         public static void Write(this IPrintColor printColor, string content, EPrintColor textColor)
         {
             printColor.Write(content, textColor, EPrintColor.None);
         }
 
         /// <summary>
-        /// Ä¬ÈÏºÚµ×, Ğ´ÈëÒ»ĞĞÄÚÈİ
+        /// é»˜è®¤é»‘åº•, å†™å…¥ä¸€è¡Œå†…å®¹
         /// </summary>
-        /// <param name="printColor">´òÓ¡Êä³ö½Ó¿Úº¬ÓĞÑÕÉ«Ïî</param>
-        /// <param name="content">ÏûÏ¢ÄÚÈİ</param>
-        /// <param name="textColor">ÎÄ±¾ÄÚÈİÑÕÉ«</param>
+        /// <param name="printColor">æ‰“å°è¾“å‡ºæ¥å£å«æœ‰é¢œè‰²é¡¹</param>
+        /// <param name="content">æ¶ˆæ¯å†…å®¹</param>
+        /// <param name="textColor">æ–‡æœ¬å†…å®¹é¢œè‰²</param>
         public static void WriteLine(this IPrintColor printColor, string content, EPrintColor textColor)
         {
             printColor.WriteLine(content, textColor, EPrintColor.None);
@@ -36,9 +36,9 @@ namespace GitCheckCommand.Logic
         private readonly static string interval_line = $"{"".PadLeft(80, '-')}";
         private static int beforeWriteIntervalLineCount = -1;
         /// <summary>
-        /// Ğ´Èë¼ä¸ôĞĞ
+        /// å†™å…¥é—´éš”è¡Œ
         /// </summary>
-        /// <param name="print">Êä³ö½Ó¿Ú</param>
+        /// <param name="print">è¾“å‡ºæ¥å£</param>
         public static void WriteIntervalLine(this IPrint print)
         {
             if (beforeWriteIntervalLineCount == print.GetLineCount())
@@ -48,11 +48,12 @@ namespace GitCheckCommand.Logic
             print.WriteLine(interval_line);
             beforeWriteIntervalLineCount = print.GetLineCount();
         }
+
         private static int beforeWriteSpaceLineCount = -1;
         /// <summary>
-        /// Ğ´Èë¿ÕĞĞ
+        /// å†™å…¥ç©ºè¡Œ
         /// </summary>
-        /// <param name="print">Êä³ö½Ó¿Ú</param>
+        /// <param name="print">è¾“å‡ºæ¥å£</param>
         public static void WriteSpaceLine(this IPrint print)
         {
             if (beforeWriteSpaceLineCount == print.GetLineCount())
@@ -63,6 +64,12 @@ namespace GitCheckCommand.Logic
             beforeWriteSpaceLineCount = print.GetLineCount();
         }
 
+        /// <summary>
+        /// å†™å…¥å­˜å‚¨åº“è·¯å¾„ä¿¡æ¯è¡Œ
+        /// </summary>
+        /// <param name="print">è¾“å‡ºæ¥å£</param>
+        /// <param name="gitRepo">å­˜å‚¨åº“ä¿¡æ¯</param>
+        /// <param name="systemType">ç³»ç»Ÿç±»å‹</param>
         public static void WriteGitRepositoryPath(this IPrintColor print, GitRepository gitRepo, ESystemType systemType)
         {
             string branchName = gitRepo.BranchName;
@@ -89,7 +96,7 @@ namespace GitCheckCommand.Logic
                     print.WriteOnlyGitRepositoryPath_WindowGitBash(gitRepo.Status.IsClean, gitRepo.Path.FullName);
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(systemType), $"Êä³ö´æ´¢¿âÂ·¾¶µØÖ·, ÎŞ·¨½âÎö: {systemType}");
+                    throw new ArgumentOutOfRangeException(nameof(systemType), $"è¾“å‡ºå­˜å‚¨åº“è·¯å¾„åœ°å€, æ— æ³•è§£æ: {systemType}");
             }
         }
         private static void WriteOnlyGitRepositoryPath_WindowAndLinux(this IPrintColor print, bool IsClean, string PathFullName)
@@ -107,13 +114,18 @@ namespace GitCheckCommand.Logic
             print.Write("\n");
         }
 
+        /// <summary>
+        /// å†™å…¥å­˜å‚¨åº“çŠ¶æ€ç›¸å…³ä¿¡æ¯
+        /// </summary>
+        /// <param name="print">è¾“å‡ºæ¥å£</param>
+        /// <param name="status">å­˜å‚¨åº“çŠ¶æ€ä¿¡æ¯</param>
         public static void WriteGitRepositoryStatusInfo(this IPrintColor print, GitRepositoryStatus status)
         {
             if (status.IsClean)
                 return;
 
             Regex spaceLineRegex = new Regex(@"^\s*$");
-            print.WriteLine("µ±Ç°²Ö¿âĞèÒª´¦Àí:\n");
+            print.WriteLine("å½“å‰ä»“åº“éœ€è¦å¤„ç†:\n");
             for (int i = 0; i < status.StatusMsgs.Length; i++)
             {
                 string msg = status.StatusMsgs[i];

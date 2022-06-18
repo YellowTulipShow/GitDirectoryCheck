@@ -12,17 +12,26 @@ using GitCheckCommand.Logic.Models;
 
 namespace GitCheckCommand.Logic.Implementation
 {
+    /// <summary>
+    /// 写入存储库信息实现类: 分支信息
+    /// </summary>
     public class WriteGitRepositoryInfo_Branch : IWriteGitRepositoryInfo
     {
         private readonly ILog log;
         private readonly Encoding encoding;
 
+        /// <summary>
+        /// 实例化 - 写入存储库信息实现类: 分支信息
+        /// </summary>
+        /// <param name="log">日志接口</param>
+        /// <param name="encoding">文本编码</param>
         public WriteGitRepositoryInfo_Branch(ILog log, Encoding encoding)
         {
             this.log = log;
             this.encoding = encoding;
         }
 
+        /// <inheritdoc/>
         public GitRepository OnExecute(GitRepository repository)
         {
             var gitBranch = new ReadNameClass(new Repository()

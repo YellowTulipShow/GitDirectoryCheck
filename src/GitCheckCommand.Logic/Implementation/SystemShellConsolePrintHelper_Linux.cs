@@ -5,15 +5,16 @@ using GitCheckCommand.Logic.Models;
 namespace GitCheckCommand.Logic.Implementation
 {
     /// <summary>
-    /// Linux ÏµÍ³ÀàĞÍ Shell ¿ØÖÆÌ¨´òÓ¡Êä³öÊµÏÖÀà
+    /// Linux ç³»ç»Ÿç±»å‹ Shell æ§åˆ¶å°æ‰“å°è¾“å‡ºå®ç°ç±»
     /// </summary>
     public class SystemShellConsolePrintHelper_Linux : IPrint, IPrintColor
     {
         private int lineCount = 0;
 
-        public SystemShellConsolePrintHelper_Linux()
-        {
-        }
+        /// <summary>
+        /// å®ä¾‹åŒ– - Linux ç³»ç»Ÿç±»å‹ Shell æ§åˆ¶å°æ‰“å°è¾“å‡ºå®ç°ç±»
+        /// </summary>
+        public SystemShellConsolePrintHelper_Linux() { }
 
         /// <inheritdoc/>
         public int GetLineCount()
@@ -67,7 +68,7 @@ namespace GitCheckCommand.Logic.Implementation
                 EPrintColor.Blue => "34",
                 EPrintColor.Purple => "35",
                 EPrintColor.Green => "32",
-                _ => throw new ArgumentOutOfRangeException(nameof(printColor), $"×ªÎª Linux Shell ÎÄ±¾ÑÕÉ«, ÎŞ·¨½âÎö: {printColor}"),
+                _ => throw new ArgumentOutOfRangeException(nameof(printColor), $"è½¬ä¸º Linux Shell æ–‡æœ¬é¢œè‰², æ— æ³•è§£æ: {printColor}"),
             };
         }
         private static string ToColorValue_BackgroundColor(EPrintColor printColor)
@@ -82,7 +83,7 @@ namespace GitCheckCommand.Logic.Implementation
                 EPrintColor.Blue => "44",
                 EPrintColor.Purple => "45",
                 EPrintColor.Green => "42",
-                _ => throw new ArgumentOutOfRangeException(nameof(printColor), $"×ªÎª Linux Shell ÎÄ±¾ÑÕÉ«, ÎŞ·¨½âÎö: {printColor}"),
+                _ => throw new ArgumentOutOfRangeException(nameof(printColor), $"è½¬ä¸º Linux Shell æ–‡æœ¬é¢œè‰², æ— æ³•è§£æ: {printColor}"),
             };
         }
         private static string MergeContentAndColorFormat(string content, string value_textColor, string value_backgroundColor)

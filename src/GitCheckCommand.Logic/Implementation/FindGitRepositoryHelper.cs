@@ -11,16 +11,28 @@ using YTS.Log;
 
 namespace GitCheckCommand.Logic.Implementation
 {
+    /// <summary>
+    /// 查找存储库帮助类
+    /// </summary>
     public class FindGitRepositoryHelper
     {
         private readonly ILog log;
         private int depthCount;
 
+        /// <summary>
+        /// 实例化 - 查找存储库帮助类
+        /// </summary>
+        /// <param name="log">日志接口</param>
         public FindGitRepositoryHelper(ILog log)
         {
             this.log = log;
         }
 
+        /// <summary>
+        /// 执行查找
+        /// </summary>
+        /// <param name="configs">系统配置项</param>
+        /// <returns>存储库名单列表</returns>
         public GitRepository[] OnExecute(Configs configs)
         {
             depthCount = 0;

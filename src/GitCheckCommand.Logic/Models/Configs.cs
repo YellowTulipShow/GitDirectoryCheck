@@ -13,7 +13,7 @@ namespace GitCheckCommand.Logic.Models
         /// </summary>
         [JsonProperty(Order = 1)]
         public bool? IsOpenShell { get; set; }
-        
+
         /// <summary>
         /// 查找 Git 仓库时进行屏蔽的路径正则匹配字符串队列
         /// </summary>
@@ -32,6 +32,9 @@ namespace GitCheckCommand.Logic.Models
     /// </summary>
     public struct ConfigRoot
     {
+        /// <summary>
+        /// 根目录路径
+        /// </summary>
         [JsonProperty(Order = 0)]
         public string Path { get; set; }
 

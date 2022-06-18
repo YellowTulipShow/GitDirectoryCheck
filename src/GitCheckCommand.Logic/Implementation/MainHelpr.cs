@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 
 using YTS.Log;
 
@@ -6,6 +6,9 @@ using GitCheckCommand.Logic.Models;
 
 namespace GitCheckCommand.Logic.Implementation
 {
+    /// <summary>
+    /// 主程序帮助类
+    /// </summary>
     public class MainHelpr : IMain
     {
         private readonly ILog log;
@@ -13,6 +16,11 @@ namespace GitCheckCommand.Logic.Implementation
         private readonly ConfigHelper configHelper;
         private readonly FindGitRepositoryHelper findGitRepositoryHelper;
 
+        /// <summary>
+        /// 实例化 - 主程序帮助类
+        /// </summary>
+        /// <param name="log">日志接口</param>
+        /// <param name="encoding">文本编码</param>
         public MainHelpr(ILog log, Encoding encoding)
         {
             this.log = log;
@@ -21,6 +29,11 @@ namespace GitCheckCommand.Logic.Implementation
             findGitRepositoryHelper = new FindGitRepositoryHelper(log);
         }
 
+        /// <summary>
+        /// 执行逻辑程序
+        /// </summary>
+        /// <param name="configFilePath">配置文件路径</param>
+        /// <param name="cOption">用户传入的命令选项</param>
         public void OnExecute(string configFilePath, CommandOptions cOption)
         {
             var logArgs = log.CreateArgDictionary();

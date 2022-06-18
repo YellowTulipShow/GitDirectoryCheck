@@ -10,6 +10,9 @@ using System;
 
 namespace GitCheckCommand.Logic.Implementation
 {
+    /// <summary>
+    /// 任务实现类: 运行自定义命令
+    /// </summary>
     public class Task_RunCommand : ITask
     {
         private readonly ILog log;
@@ -17,6 +20,13 @@ namespace GitCheckCommand.Logic.Implementation
         private readonly IPrintColor print;
         private readonly CommandOptions commandOptions;
 
+        /// <summary>
+        /// 实例化 - 任务实现类: 运行自定义命令
+        /// </summary>
+        /// <param name="log">日志接口</param>
+        /// <param name="encoding">文本编码</param>
+        /// <param name="print">输出打印接口</param>
+        /// <param name="commandOptions">命令选项配置</param>
         public Task_RunCommand(ILog log, Encoding encoding, IPrintColor print, CommandOptions commandOptions)
         {
             this.log = log;
@@ -25,17 +35,20 @@ namespace GitCheckCommand.Logic.Implementation
             this.commandOptions = commandOptions;
         }
 
+        /// <inheritdoc/>
         public string GetDescribe()
         {
             return "在仓库所在目录直接运行指定命令";
         }
 
+        /// <inheritdoc/>
         public TaskResponse OnExecute(GitRepository repository)
         {
             var logArgs = log.CreateArgDictionary();
             logArgs["taskDescribe"] = GetDescribe();
             string command = (commandOptions.Command ?? string.Empty).Trim();
-            if (string.IsNullOrEmpty(command)) {
+            if (string.IsNullOrEmpty(command))
+            {
                 return new TaskResponse() { Code = ETaskResponseCode.None };
             }
             logArgs["command"] = command;

@@ -9,12 +9,20 @@ using GitCheckCommand.Logic.Models;
 
 namespace GitCheckCommand.Logic.Implementation
 {
+    /// <summary>
+    /// 配置处理类
+    /// </summary>
     public class ConfigHelper
     {
         private readonly ILog log;
         private readonly Encoding encoding;
         private readonly JsonSerializerSettings jsonSerializerSettings;
 
+        /// <summary>
+        /// 实例化 - 配置处理类
+        /// </summary>
+        /// <param name="log">日志接口</param>
+        /// <param name="encoding">文本编码</param>
         public ConfigHelper(ILog log, Encoding encoding)
         {
             this.log = log;
@@ -25,6 +33,12 @@ namespace GitCheckCommand.Logic.Implementation
             };
         }
 
+        /// <summary>
+        /// 读取配置
+        /// </summary>
+        /// <param name="configFilePath">配置文件路径指定</param>
+        /// <param name="systemType">系统类型</param>
+        /// <returns>配置内容</returns>
         public Configs ReadConfigs(string configFilePath, ESystemType systemType)
         {
             FileInfo file = new FileInfo(configFilePath);

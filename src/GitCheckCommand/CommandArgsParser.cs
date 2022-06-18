@@ -12,17 +12,30 @@ using GitCheckCommand.Logic.Models;
 
 namespace GitCheckCommand
 {
+    /// <summary>
+    /// 命令参数解析器
+    /// </summary>
     public class CommandArgsParser
     {
         private readonly ILog log;
         private readonly IMain main;
 
+        /// <summary>
+        /// 实例化 - 命令参数解析器
+        /// </summary>
+        /// <param name="log">日志接口</param>
+        /// <param name="main">主程序接口</param>
         public CommandArgsParser(ILog log, IMain main)
         {
             this.log = log;
             this.main = main;
         }
 
+        /// <summary>
+        /// 解析执行
+        /// </summary>
+        /// <param name="args">用户传入的命令行参数</param>
+        /// <returns>执行返回编码</returns>
         public int OnParser(string[] args)
         {
             var logArgs = log.CreateArgDictionary();
