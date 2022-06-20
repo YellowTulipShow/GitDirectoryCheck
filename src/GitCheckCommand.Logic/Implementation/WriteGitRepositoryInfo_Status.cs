@@ -57,9 +57,10 @@ namespace GitCheckCommand.Logic.Implementation
                 "(use \"git push\" to publish your local commits)",
                 @"Untracked files:",
             };
-            for (int i = 0; i < yes.Length; i++)
+            for (int i = 0; i < msgs.Count; i++)
             {
-                if (msgs.Contains(yes[i]))
+                string msg = msgs[i];
+                if (yes.Contains(msg))
                 {
                     return (false, i);
                 }
@@ -68,9 +69,10 @@ namespace GitCheckCommand.Logic.Implementation
             string[] no = new string[] {
                 @"nothing to commit, working tree clean",
             };
-            for (int i = 0; i < no.Length; i++)
+            for (int i = 0; i < msgs.Count; i++)
             {
-                if (msgs.Contains(no[i]))
+                string msg = msgs[i];
+                if (no.Contains(msg))
                 {
                     return (true, i);
                 }
