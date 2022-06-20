@@ -139,7 +139,7 @@ namespace GitCheckCommand
                 aliases: new string[] { "-o", "--open-shell" },
                 getDefaultValue: () => null,
                 description: "当Git仓库'不干净'时, 是否需要自动打开命令窗口"); ;
-            option.Arity = ArgumentArity.ExactlyOne;
+            option.Arity = ArgumentArity.ZeroOrOne;
             return option;
         }
         private Option<string> GetOption_Command()
