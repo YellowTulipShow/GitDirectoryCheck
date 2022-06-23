@@ -39,15 +39,15 @@ namespace GitCheckCommand.Logic.Implementation
         /// 读取配置
         /// </summary>
         /// <param name="configFilePath">配置文件路径指定</param>
-        /// <param name="systemType">系统类型</param>
+        /// <param name="consoleType">控制台类型</param>
         /// <returns>配置内容</returns>
-        public Configs ReadConfigs(string configFilePath, EConsoleType systemType)
+        public Configs ReadConfigs(string configFilePath, EConsoleType consoleType)
         {
             FileInfo file = new FileInfo(configFilePath);
             if (!file.Exists)
             {
                 file.Create().Close();
-                Configs defaultConfigs = GetDefaultConfigs(systemType);
+                Configs defaultConfigs = GetDefaultConfigs(consoleType);
                 string json = JsonConvert.SerializeObject(defaultConfigs, jsonSerializerSettings);
                 File.WriteAllText(file.FullName, json, this.encoding);
                 log.Error($"配置文件不存在, 自动创建默认项: {file.FullName}");
@@ -59,7 +59,7 @@ namespace GitCheckCommand.Logic.Implementation
             return config;
         }
 
-        private Configs GetDefaultConfigs(EConsoleType systemType)
+        private Configs GetDefaultConfigs(EConsoleType consoleType)
         {
             return new Configs()
             {
@@ -68,7 +68,7 @@ namespace GitCheckCommand.Logic.Implementation
                 Roots = new ConfigRoot[] {
                     new ConfigRoot()
                     {
-                        Path = ToConfigRootDefaultPath(systemType),
+                        Path = ToConfigRootDefaultPath(consoleType),
                         IgnoresRegexs = new string[] {
                             @"YTS.Test$",
                             @"YTS.Learn$",
@@ -77,22 +77,18 @@ namespace GitCheckCommand.Logic.Implementation
                 },
             };
         }
-        /// <summary>
-        /// 转为配置根目录项默认路径
-        /// </summary>
-        /// <param name="systemType">系统路径</param>
-        /// <returns>默认路径</returns>
-        public static string ToConfigRootDefaultPath(EConsoleType systemType)
+
+        private static string ToConfigRootDefaultPath(EConsoleType consoleType)
         {
             const string window = @"C:\Work";
             const string linux = @"/var/work";
-            return systemType switch
+            return consoleType switch
             {
                 EConsoleType.CMD => window,
                 EConsoleType.PowerShell => window,
                 EConsoleType.Bash => linux,
                 EConsoleType.WindowGitBash => window,
-                _ => throw new ArgumentOutOfRangeException(nameof(systemType), $"转为配置默认项根目录地址, 无法解析: {systemType}"),
+                _ => throw new ArgumentOutOfRangeException(nameof(consoleType), $"转为配置默认项根目录地址, 无法解析: {consoleType}"),
             };
         }
     }

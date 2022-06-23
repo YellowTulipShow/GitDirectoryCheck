@@ -31,33 +31,33 @@ namespace YTS.ConsolePrint.Implementation
         }
         private static string ToColorValue_Text(EPrintColor printColor)
         {
-            return printColor switch
+            switch (printColor)
             {
-                EPrintColor.None => null,
-                EPrintColor.Black => "30",
-                EPrintColor.White => "37",
-                EPrintColor.Yellow => "33",
-                EPrintColor.Red => "31",
-                EPrintColor.Blue => "34",
-                EPrintColor.Purple => "35",
-                EPrintColor.Green => "32",
-                _ => throw new ArgumentOutOfRangeException(nameof(printColor), $"转为 Linux Shell 文本颜色, 无法解析: {printColor}"),
-            };
+                case EPrintColor.None: return null;
+                case EPrintColor.Black: return "30";
+                case EPrintColor.White: return "37";
+                case EPrintColor.Yellow: return "33";
+                case EPrintColor.Red: return "31";
+                case EPrintColor.Blue: return "34";
+                case EPrintColor.Purple: return "35";
+                case EPrintColor.Green: return "32";
+                default: throw new ArgumentOutOfRangeException(nameof(printColor), $"转为 Linux Shell 文本颜色, 无法解析: {printColor}");
+            }
         }
         private static string ToColorValue_BackgroundColor(EPrintColor printColor)
         {
-            return printColor switch
+            switch (printColor)
             {
-                EPrintColor.None => null,
-                EPrintColor.Black => "40",
-                EPrintColor.White => "47",
-                EPrintColor.Yellow => "43",
-                EPrintColor.Red => "41",
-                EPrintColor.Blue => "44",
-                EPrintColor.Purple => "45",
-                EPrintColor.Green => "42",
-                _ => throw new ArgumentOutOfRangeException(nameof(printColor), $"转为 Linux Shell 文本颜色, 无法解析: {printColor}"),
-            };
+                case EPrintColor.None: return null;
+                case EPrintColor.Black: return "40";
+                case EPrintColor.White: return "47";
+                case EPrintColor.Yellow: return "43";
+                case EPrintColor.Red: return "41";
+                case EPrintColor.Blue: return "44";
+                case EPrintColor.Purple: return "45";
+                case EPrintColor.Green: return "42";
+                default: throw new ArgumentOutOfRangeException(nameof(printColor), $"转为 Linux Shell 背景颜色, 无法解析: {printColor}");
+            }
         }
         private static string MergeContentAndColorFormat(string content, string value_textColor, string value_backgroundColor)
         {

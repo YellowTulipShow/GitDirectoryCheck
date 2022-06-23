@@ -43,18 +43,18 @@ namespace YTS.ConsolePrint.Implementation
         }
         private static ConsoleColor? ToConsoleColor(EPrintColor printColor)
         {
-            return printColor switch
+            switch (printColor)
             {
-                EPrintColor.None => null,
-                EPrintColor.Black => ConsoleColor.Black,
-                EPrintColor.White => ConsoleColor.White,
-                EPrintColor.Yellow => ConsoleColor.Yellow,
-                EPrintColor.Red => ConsoleColor.Red,
-                EPrintColor.Blue => ConsoleColor.Blue,
-                EPrintColor.Purple => ConsoleColor.Magenta,
-                EPrintColor.Green => ConsoleColor.Green,
-                _ => throw new ArgumentOutOfRangeException(nameof(printColor), $"转为 Window 控制台颜色, 无法解析: {printColor}"),
-            };
+                case EPrintColor.None: return null;
+                case EPrintColor.Black: return ConsoleColor.Black;
+                case EPrintColor.White: return ConsoleColor.White;
+                case EPrintColor.Yellow: return ConsoleColor.Yellow;
+                case EPrintColor.Red: return ConsoleColor.Red;
+                case EPrintColor.Blue: return ConsoleColor.Blue;
+                case EPrintColor.Purple: return ConsoleColor.Magenta;
+                case EPrintColor.Green: return ConsoleColor.Green;
+                default: throw new ArgumentOutOfRangeException(nameof(printColor), $"转为 Window 控制台颜色, 无法解析: {printColor}");
+            }
         }
     }
 }

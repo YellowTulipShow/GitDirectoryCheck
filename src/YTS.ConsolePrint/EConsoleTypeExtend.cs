@@ -37,20 +37,25 @@ namespace YTS.ConsolePrint
         }
 
         /// <summary>
-        /// 系统类型转为打印接口实例
+        /// 控制台类型转为打印接口实例
         /// </summary>
-        /// <param name="systemType">系统类型</param>
+        /// <param name="consoleType">控制台类型</param>
         /// <returns>打印接口</returns>
-        public static IPrintColor ToIPrintColor(this EConsoleType systemType)
+        public static IPrintColor ToIPrintColor(this EConsoleType consoleType)
         {
-            return systemType switch
+            switch (consoleType)
             {
-                EConsoleType.CMD => new WindowSystemConsole_CMD(),
-                EConsoleType.PowerShell => new WindowSystemConsole_PowerShell(),
-                EConsoleType.Bash => new LinuxSystemConsole_Bash(),
-                EConsoleType.WindowGitBash => new WindowSystemConsole_GitBash(),
-                _ => throw new ArgumentOutOfRangeException(nameof(systemType), $"转为打印输出颜色接口, 无法解析: {systemType}"),
-            };
+                case EConsoleType.CMD:
+                    return new WindowSystemConsole_CMD();
+                case EConsoleType.PowerShell:
+                    return new WindowSystemConsole_PowerShell();
+                case EConsoleType.Bash:
+                    return new LinuxSystemConsole_Bash();
+                case EConsoleType.WindowGitBash:
+                    return new WindowSystemConsole_GitBash();
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(consoleType), $"转为打印输出颜色接口, 无法解析: {consoleType}");
+            }
         }
     }
 }

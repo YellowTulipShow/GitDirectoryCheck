@@ -45,14 +45,14 @@ namespace GitCheckCommand
             try
             {
                 Option<string> configFilePathOption = GetOption_ConfigFilePath();
-                Option<EConsoleType> systemTypeOption = GetOption_ConsoleType();
+                Option<EConsoleType> consoleTypeOption = GetOption_ConsoleType();
 
                 Option<bool?> openShellOption = GetOption_OpenShell();
                 Option<string> commandOption = GetOption_Command();
 
                 RootCommand rootC = new RootCommand("检查目录下所有 Git 仓库状态");
                 rootC.AddGlobalOption(configFilePathOption);
-                rootC.AddGlobalOption(systemTypeOption);
+                rootC.AddGlobalOption(consoleTypeOption);
 
                 rootC.AddOption(openShellOption);
                 rootC.AddOption(commandOption);
@@ -63,7 +63,7 @@ namespace GitCheckCommand
                     {
                         string configFilePath = context.ParseResult.GetValueForOption(configFilePathOption);
                         logArgs["configFilePath"] = configFilePath;
-                        EConsoleType consoleType = context.ParseResult.GetValueForOption(systemTypeOption);
+                        EConsoleType consoleType = context.ParseResult.GetValueForOption(consoleTypeOption);
                         logArgs["consoleType"] = consoleType.ToString();
 
                         bool? isOpenShell = context.ParseResult.GetValueForOption(openShellOption);
