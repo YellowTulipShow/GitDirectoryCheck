@@ -24,4 +24,8 @@
         <PackageReference Include="YTS.Log" Version="0.1.2" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\YTS.ConsolePrint\YTS.ConsolePrint.csproj" />
+    </ItemGroup>
+
 </Project>

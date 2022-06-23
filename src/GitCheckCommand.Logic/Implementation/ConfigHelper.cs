@@ -1,9 +1,11 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Text;
 
 using Newtonsoft.Json;
 
 using YTS.Log;
+using YTS.ConsolePrint;
 
 using GitCheckCommand.Logic.Models;
 
@@ -39,7 +41,7 @@ namespace GitCheckCommand.Logic.Implementation
         /// <param name="configFilePath">配置文件路径指定</param>
         /// <param name="systemType">系统类型</param>
         /// <returns>配置内容</returns>
-        public Configs ReadConfigs(string configFilePath, ESystemType systemType)
+        public Configs ReadConfigs(string configFilePath, EConsoleType systemType)
         {
             FileInfo file = new FileInfo(configFilePath);
             if (!file.Exists)
@@ -57,7 +59,7 @@ namespace GitCheckCommand.Logic.Implementation
             return config;
         }
 
-        private Configs GetDefaultConfigs(ESystemType systemType)
+        private Configs GetDefaultConfigs(EConsoleType systemType)
         {
             return new Configs()
             {
@@ -66,13 +68,31 @@ namespace GitCheckCommand.Logic.Implementation
                 Roots = new ConfigRoot[] {
                     new ConfigRoot()
                     {
-                        Path = systemType.ToConfigRootDefaultPath(),
+                        Path = ToConfigRootDefaultPath(systemType),
                         IgnoresRegexs = new string[] {
                             @"YTS.Test$",
                             @"YTS.Learn$",
                         },
                     },
                 },
+            };
+        }
+        /// <summary>
+        /// 转为配置根目录项默认路径
+        /// </summary>
+        /// <param name="systemType">系统路径</param>
+        /// <returns>默认路径</returns>
+        public static string ToConfigRootDefaultPath(EConsoleType systemType)
+        {
+            const string window = @"C:\Work";
+            const string linux = @"/var/work";
+            return systemType switch
+            {
+                EConsoleType.CMD => window,
+                EConsoleType.PowerShell => window,
+                EConsoleType.Bash => linux,
+                EConsoleType.WindowGitBash => window,
+                _ => throw new ArgumentOutOfRangeException(nameof(systemType), $"转为配置默认项根目录地址, 无法解析: {systemType}"),
             };
         }
     }

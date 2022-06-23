@@ -1,49 +1,22 @@
 using System;
 
-using GitCheckCommand.Logic.Models;
-
-namespace GitCheckCommand.Logic.Implementation
+namespace YTS.ConsolePrint.Implementation
 {
     /// <summary>
-    /// Window 系统类型 Shell 控制台打印输出实现类
+    /// Window系统 - cmd类型实现
     /// </summary>
-    public class SystemShellConsolePrintHelper_Window : IPrint, IPrintColor
+    public class WindowSystemConsole_CMD : BasicConsole, IPrint, IPrintColor
     {
-        private int lineCount = 0;
-
         /// <summary>
-        /// 实例化 - Window 系统类型 Shell 控制台打印输出实现类
+        /// 实例化 - Window系统 - cmd类型实现
         /// </summary>
-        public SystemShellConsolePrintHelper_Window() { }
-
-        /// <inheritdoc/>
-        public int GetLineCount()
-        {
-            return lineCount;
-        }
-
-        /// <inheritdoc/>
-        public void Write(string content)
-        {
-            Console.Write(content);
-            if (content.Contains("\n"))
-            {
-                lineCount++;
-            }
-        }
-
-        /// <inheritdoc/>
-        public void WriteLine(string content)
-        {
-            Console.WriteLine(content);
-            lineCount++;
-        }
+        public WindowSystemConsole_CMD() : base() { }
 
         /// <inheritdoc/>
         public void Write(string content, EPrintColor textColor, EPrintColor backgroundColor)
         {
             SetConsoleColor(textColor, backgroundColor);
-            this.Write(content);
+            base.Write(content);
             Console.ResetColor();
         }
 
@@ -51,7 +24,7 @@ namespace GitCheckCommand.Logic.Implementation
         public void WriteLine(string content, EPrintColor textColor, EPrintColor backgroundColor)
         {
             SetConsoleColor(textColor, backgroundColor);
-            this.WriteLine(content);
+            base.WriteLine(content);
             Console.ResetColor();
         }
         private static void SetConsoleColor(EPrintColor textColor, EPrintColor backgroundColor)

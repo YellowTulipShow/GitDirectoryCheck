@@ -1,6 +1,7 @@
 using System.Text;
 
 using YTS.Log;
+using YTS.ConsolePrint;
 
 using GitCheckCommand.Logic.Models;
 
@@ -39,10 +40,10 @@ namespace GitCheckCommand.Logic.Implementation
             var logArgs = log.CreateArgDictionary();
             logArgs["configFilePath"] = configFilePath;
             logArgs["commandOptions"] = cOption;
-            IPrintColor print = cOption.SystemType.ToIPrintColor();
+            IPrintColor print = cOption.ConsoleType.ToIPrintColor();
             string printTypeName = print.GetType().Name;
             logArgs["printTypeName"] = printTypeName;
-            Configs configs = configHelper.ReadConfigs(configFilePath, cOption.SystemType);
+            Configs configs = configHelper.ReadConfigs(configFilePath, cOption.ConsoleType);
             GitRepository[] gitRepos = findGitRepositoryHelper.OnExecute(configs);
             if (gitRepos == null || gitRepos.Length <= 0)
             {
@@ -105,7 +106,7 @@ namespace GitCheckCommand.Logic.Implementation
             var logArgs = log.CreateArgDictionary();
             if (gitRepo.Status.IsClean)
             {
-                print.WriteGitRepositoryPath(gitRepo, cOption.SystemType);
+                print.WriteGitRepositoryPath(gitRepo, cOption.ConsoleType);
                 return;
             }
             print.WriteIntervalLine();
@@ -137,7 +138,7 @@ namespace GitCheckCommand.Logic.Implementation
                 print.WriteSpaceLine();
             }
             print.WriteSpaceLine();
-            print.WriteGitRepositoryPath(gitRepo, cOption.SystemType);
+            print.WriteGitRepositoryPath(gitRepo, cOption.ConsoleType);
             print.WriteIntervalLine();
         }
     }

@@ -1,43 +1,16 @@
 using System;
 
-using GitCheckCommand.Logic.Models;
-
-namespace GitCheckCommand.Logic.Implementation
+namespace YTS.ConsolePrint.Implementation
 {
     /// <summary>
-    /// Linux 系统类型 Shell 控制台打印输出实现类
+    /// Linux系统 - Bash类型实现
     /// </summary>
-    public class SystemShellConsolePrintHelper_Linux : IPrint, IPrintColor
+    public class LinuxSystemConsole_Bash : BasicConsole, IPrint, IPrintColor
     {
-        private int lineCount = 0;
-
         /// <summary>
-        /// 实例化 - Linux 系统类型 Shell 控制台打印输出实现类
+        /// 实例化 - Linux系统 - Bash类型实现
         /// </summary>
-        public SystemShellConsolePrintHelper_Linux() { }
-
-        /// <inheritdoc/>
-        public int GetLineCount()
-        {
-            return lineCount;
-        }
-
-        /// <inheritdoc/>
-        public void Write(string content)
-        {
-            Console.Write(content);
-            if (content.Contains("\n"))
-            {
-                lineCount++;
-            }
-        }
-
-        /// <inheritdoc/>
-        public void WriteLine(string content)
-        {
-            Console.WriteLine(content);
-            lineCount++;
-        }
+        public LinuxSystemConsole_Bash() : base() { }
 
         /// <inheritdoc/>
         public void Write(string content, EPrintColor textColor, EPrintColor backgroundColor)
@@ -45,7 +18,7 @@ namespace GitCheckCommand.Logic.Implementation
             string value_textColor = ToColorValue_Text(textColor);
             string value_backgroundColor = ToColorValue_BackgroundColor(backgroundColor);
             string mergeContnet = MergeContentAndColorFormat(content, value_textColor, value_backgroundColor);
-            this.Write($"{mergeContnet}");
+            base.Write($"{mergeContnet}");
         }
 
         /// <inheritdoc/>
@@ -54,7 +27,7 @@ namespace GitCheckCommand.Logic.Implementation
             string value_textColor = ToColorValue_Text(textColor);
             string value_backgroundColor = ToColorValue_BackgroundColor(backgroundColor);
             string mergeContnet = MergeContentAndColorFormat(content, value_textColor, value_backgroundColor);
-            this.WriteLine(mergeContnet);
+            base.WriteLine(mergeContnet);
         }
         private static string ToColorValue_Text(EPrintColor printColor)
         {

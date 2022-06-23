@@ -1,13 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-
-using GitCheckCommand.Logic.Models;
+using System.Collections.Generic;
 
 using YTS.Log;
+
+using GitCheckCommand.Logic.Models;
 
 namespace GitCheckCommand.Logic.Implementation
 {

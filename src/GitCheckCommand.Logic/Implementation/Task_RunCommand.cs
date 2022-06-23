@@ -1,12 +1,13 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Text;
 using System.Diagnostics;
+using System.Text.RegularExpressions;
 
 using YTS.Log;
+using YTS.ConsolePrint;
 
 using GitCheckCommand.Logic.Models;
-using System.Text.RegularExpressions;
-using System;
 
 namespace GitCheckCommand.Logic.Implementation
 {

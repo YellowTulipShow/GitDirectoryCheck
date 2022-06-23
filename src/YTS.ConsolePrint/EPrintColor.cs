@@ -1,4 +1,4 @@
-﻿namespace GitCheckCommand.Logic.Models
+﻿namespace YTS.ConsolePrint
 {
     /// <summary>
     /// 枚举: 打印输出颜色

@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using System.CommandLine;
 
 using YTS.Log;
+using YTS.ConsolePrint;
 
 using GitCheckCommand.Logic;
 using GitCheckCommand.Logic.Models;
@@ -44,7 +45,7 @@ namespace GitCheckCommand
             try
             {
                 Option<string> configFilePathOption = GetOption_ConfigFilePath();
-                Option<ESystemType> systemTypeOption = GetOption_SystemType();
+                Option<EConsoleType> systemTypeOption = GetOption_ConsoleType();
 
                 Option<bool?> openShellOption = GetOption_OpenShell();
                 Option<string> commandOption = GetOption_Command();
@@ -62,8 +63,8 @@ namespace GitCheckCommand
                     {
                         string configFilePath = context.ParseResult.GetValueForOption(configFilePathOption);
                         logArgs["configFilePath"] = configFilePath;
-                        ESystemType systemType = context.ParseResult.GetValueForOption(systemTypeOption);
-                        logArgs["systemType"] = systemType.ToString();
+                        EConsoleType consoleType = context.ParseResult.GetValueForOption(systemTypeOption);
+                        logArgs["consoleType"] = consoleType.ToString();
 
                         bool? isOpenShell = context.ParseResult.GetValueForOption(openShellOption);
                         logArgs["isOpenShell"] = isOpenShell;
@@ -71,7 +72,7 @@ namespace GitCheckCommand
                         logArgs["command"] = command;
                         main.OnExecute(configFilePath, new Logic.Models.CommandOptions()
                         {
-                            SystemType = systemType,
+                            ConsoleType = consoleType,
                             IsOpenShell = isOpenShell,
                             Command = command,
                         });
@@ -108,28 +109,12 @@ namespace GitCheckCommand
             option.Arity = ArgumentArity.ExactlyOne;
             return option;
         }
-        private Option<ESystemType> GetOption_SystemType()
+        private Option<EConsoleType> GetOption_ConsoleType()
         {
-            var option = new Option<ESystemType>(
-                aliases: new string[] { "--system" },
-                getDefaultValue: () =>
-                {
-                    string userDire = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-                    bool isWindowTypePath = Regex.IsMatch(userDire, @"^[a-z]+:\\",
-                        RegexOptions.ECMAScript | RegexOptions.IgnoreCase);
-                    bool isOSWindow = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
-                    // 判断是否 Window 类型盘符路径: C:\Users
-                    if (isWindowTypePath || isOSWindow)
-                    {
-                        if (Console.Title.ToLower().Trim().Contains(@"invisible cygwin console"))
-                        {
-                            return ESystemType.WindowGitBash;
-                        }
-                        return ESystemType.Window;
-                    }
-                    return ESystemType.Linux;
-                },
-                description: "显示的执行当前执行的系统标识, 用于打印输出消息内容颜色使用");
+            var option = new Option<EConsoleType>(
+                aliases: new string[] { "--console" },
+                description: "配置当前执行的控制台标识, 用于打印输出消息内容颜色使用",
+                getDefaultValue: () => EConsoleTypeExtend.GetDefalutConsoleType());
             option.Arity = ArgumentArity.ExactlyOne;
             return option;
         }

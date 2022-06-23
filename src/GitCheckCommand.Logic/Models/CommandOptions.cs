@@ -1,4 +1,6 @@
-﻿namespace GitCheckCommand.Logic.Models
+﻿using YTS.ConsolePrint;
+
+namespace GitCheckCommand.Logic.Models
 {
     /// <summary>
     /// 命令选项内容
@@ -16,8 +18,8 @@
         public string Command { get; set; }
 
         /// <summary>
-        /// 显示的执行当前执行的系统标识, 用于打印输出消息内容颜色使用
+        /// 配置当前执行的控制台标识, 用于打印输出消息内容颜色使用
         /// </summary>
-        public ESystemType SystemType { get; set; }
+        public EConsoleType ConsoleType { get; set; }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Text;
 
 using YTS.Log;
+using YTS.ConsolePrint;
 
 using GitCheckCommand.Logic.Models;
 
