@@ -20,12 +20,9 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="YTS.ConsolePrint" Version="0.0.1" />
         <PackageReference Include="YTS.Git" Version="0.1.1" />
         <PackageReference Include="YTS.Log" Version="0.1.2" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\YTS.ConsolePrint\YTS.ConsolePrint.csproj" />
     </ItemGroup>
 
 </Project>
