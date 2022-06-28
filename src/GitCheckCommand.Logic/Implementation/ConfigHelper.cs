@@ -18,6 +18,7 @@ namespace GitCheckCommand.Logic.Implementation
     {
         private readonly ILog log;
         private readonly Encoding encoding;
+        private readonly IPrintColor print;
         private readonly JsonSerializerSettings jsonSerializerSettings;
 
         /// <summary>
@@ -25,10 +26,12 @@ namespace GitCheckCommand.Logic.Implementation
         /// </summary>
         /// <param name="log">日志接口</param>
         /// <param name="encoding">文本编码</param>
-        public ConfigHelper(ILog log, Encoding encoding)
+        /// <param name="print">打印输出接口</param>
+        public ConfigHelper(ILog log, Encoding encoding, IPrintColor print)
         {
             this.log = log;
             this.encoding = encoding;
+            this.print = print;
             jsonSerializerSettings = new JsonSerializerSettings()
             {
                 Formatting = Formatting.Indented,
@@ -50,12 +53,14 @@ namespace GitCheckCommand.Logic.Implementation
                 Configs defaultConfigs = GetDefaultConfigs(consoleType);
                 string json = JsonConvert.SerializeObject(defaultConfigs, jsonSerializerSettings);
                 File.WriteAllText(file.FullName, json, this.encoding);
-                log.Error($"配置文件不存在, 自动创建默认项: {file.FullName}");
+                print.Write($"配置文件不存在, 自动创建默认项: ");
+                print.WriteLine(file.FullName, EPrintColor.Red);
                 return defaultConfigs;
             }
             string content = File.ReadAllText(file.FullName, this.encoding);
             var config = JsonConvert.DeserializeObject<Configs>(content);
-            log.Info($"获取配置文件成功: {file.FullName}");
+            print.Write($"获取配置文件成功: ");
+            print.WriteLine(file.FullName, EPrintColor.Green);
             return config;
         }
 
@@ -64,6 +69,7 @@ namespace GitCheckCommand.Logic.Implementation
             return new Configs()
             {
                 IsOpenShell = false,
+                OpenShellGitBashExePath = ToOpenShellGitBashExePath(consoleType),
                 IgnoresRegexs = new string[] { },
                 Roots = new ConfigRoot[] {
                     new ConfigRoot()
@@ -82,6 +88,20 @@ namespace GitCheckCommand.Logic.Implementation
         {
             const string window = @"C:\Work";
             const string linux = @"/var/work";
+            return consoleType switch
+            {
+                EConsoleType.CMD => window,
+                EConsoleType.PowerShell => window,
+                EConsoleType.Bash => linux,
+                EConsoleType.WindowGitBash => window,
+                _ => throw new ArgumentOutOfRangeException(nameof(consoleType), $"转为配置默认项根目录地址, 无法解析: {consoleType}"),
+            };
+        }
+
+        private static string ToOpenShellGitBashExePath(EConsoleType consoleType)
+        {
+            const string window = @"C:\Program Files\Git\git-bash.exe";
+            const string linux = @"/bin/git/git-bash";
             return consoleType switch
             {
                 EConsoleType.CMD => window,

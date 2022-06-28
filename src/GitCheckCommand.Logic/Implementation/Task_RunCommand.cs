@@ -3,6 +3,7 @@ using System.IO;
 using System.Text;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
+using System.Collections.Generic;
 
 using YTS.Log;
 using YTS.ConsolePrint;
@@ -16,44 +17,79 @@ namespace GitCheckCommand.Logic.Implementation
     /// </summary>
     public class Task_RunCommand : ITask
     {
-        private readonly ILog log;
-        private readonly Encoding encoding;
-        private readonly IPrintColor print;
-        private readonly CommandOptions commandOptions;
+        /// <summary>
+        /// 日志接口
+        /// </summary>
+        protected readonly ILog log;
+        /// <summary>
+        /// 文件编码
+        /// </summary>
+        protected readonly Encoding encoding;
+        /// <summary>
+        /// 打印输出接口
+        /// </summary>
+        protected readonly IPrintColor print;
+        /// <summary>
+        /// 命令参数
+        /// </summary>
+        protected readonly CommandOptions commandOptions;
 
         /// <summary>
         /// 实例化 - 任务实现类: 运行自定义命令
         /// </summary>
         /// <param name="log">日志接口</param>
-        /// <param name="encoding">文本编码</param>
         /// <param name="print">输出打印接口</param>
         /// <param name="commandOptions">命令选项配置</param>
-        public Task_RunCommand(ILog log, Encoding encoding, IPrintColor print, CommandOptions commandOptions)
+        public Task_RunCommand(ILog log, IPrintColor print, CommandOptions commandOptions)
         {
             this.log = log;
-            this.encoding = encoding;
+            this.encoding = Encoding.UTF8;
             this.print = print;
             this.commandOptions = commandOptions;
         }
 
         /// <inheritdoc/>
-        public string GetDescribe()
+        public virtual string GetDescribe()
         {
             return "在仓库所在目录直接运行指定命令";
         }
 
         /// <inheritdoc/>
-        public TaskResponse OnExecute(GitRepository repository)
+        public virtual TaskResponse OnExecute(GitRepository repository)
         {
-            var logArgs = log.CreateArgDictionary();
-            logArgs["taskDescribe"] = GetDescribe();
             string command = (commandOptions.Command ?? string.Empty).Trim();
             if (string.IsNullOrEmpty(command))
             {
-                return new TaskResponse() { Code = ETaskResponseCode.None };
+                return new TaskResponse()
+                {
+                    Code = ETaskResponseCode.None,
+                };
             }
+            return RunCommand(repository, command);
+        }
+
+        /// <summary>
+        /// 执行命令
+        /// </summary>
+        /// <param name="repository">存储库</param>
+        /// <param name="command">命令字符串</param>
+        /// <returns>执行结果</returns>
+        protected TaskResponse RunCommand(GitRepository repository, string command)
+        {
+            var logArgs = log.CreateArgDictionary();
+            string describe = GetDescribe();
+            logArgs["taskDescribe"] = describe;
             logArgs["command"] = command;
-            Regex commandRegex = new Regex(@"^([a-z]+)\s+([^\n]+)$",
+            if (string.IsNullOrEmpty(command))
+            {
+                return new TaskResponse()
+                {
+                    Code = ETaskResponseCode.ParameterIsEmpty,
+                    IsSuccess = false,
+                    ErrorMessage = "执行命令内容为空",
+                };
+            }
+            Regex commandRegex = new Regex(@"^([a-z_-]+)\s+([^\n]+)$",
                 RegexOptions.ECMAScript | RegexOptions.IgnoreCase);
             logArgs["commandRegex"] = commandRegex.ToString();
             try
@@ -96,19 +132,20 @@ namespace GitCheckCommand.Logic.Implementation
                 print.WriteSpaceLine();
                 return new TaskResponse()
                 {
-                    IsSuccess = true,
                     Code = ETaskResponseCode.End,
+                    IsSuccess = true,
                     ErrorMessage = string.Empty,
                 };
             }
             catch (Exception ex)
             {
-                log.Error($"运行任务出错!", ex, logArgs);
+                string name = $"运行任务, {describe}出错";
+                log.Error($"{name}!", ex, logArgs);
                 return new TaskResponse()
                 {
-                    IsSuccess = false,
                     Code = ETaskResponseCode.Exception,
-                    ErrorMessage = $"运行任务出错: {ex.Message}",
+                    IsSuccess = false,
+                    ErrorMessage = $"{name}: {ex.Message}",
                 };
             }
         }

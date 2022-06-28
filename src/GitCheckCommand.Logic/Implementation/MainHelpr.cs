@@ -14,7 +14,6 @@ namespace GitCheckCommand.Logic.Implementation
     {
         private readonly ILog log;
         private readonly Encoding encoding;
-        private readonly ConfigHelper configHelper;
         private readonly FindGitRepositoryHelper findGitRepositoryHelper;
 
         /// <summary>
@@ -26,7 +25,6 @@ namespace GitCheckCommand.Logic.Implementation
         {
             this.log = log;
             this.encoding = encoding;
-            configHelper = new ConfigHelper(log, encoding);
             findGitRepositoryHelper = new FindGitRepositoryHelper(log);
         }
 
@@ -43,6 +41,8 @@ namespace GitCheckCommand.Logic.Implementation
             IPrintColor print = cOption.ConsoleType.ToIPrintColor();
             string printTypeName = print.GetType().Name;
             logArgs["printTypeName"] = printTypeName;
+
+            var configHelper = new ConfigHelper(log, encoding, print);
             Configs configs = configHelper.ReadConfigs(configFilePath, cOption.ConsoleType);
             GitRepository[] gitRepos = findGitRepositoryHelper.OnExecute(configs);
             if (gitRepos == null || gitRepos.Length <= 0)
@@ -51,7 +51,7 @@ namespace GitCheckCommand.Logic.Implementation
                 return;
             }
             IWriteGitRepositoryInfo[] readTools = GetNeed_IReadGitRepositoryInfo();
-            ITask[] tasks = GetNeedExecuteITask(print, cOption);
+            ITask[] tasks = GetNeedExecuteITask(print, cOption, configs);
             int notCleanGitCount = 0;
             print.WriteIntervalLine();
             print.WriteLine("开始检查:");
@@ -92,12 +92,12 @@ namespace GitCheckCommand.Logic.Implementation
             };
         }
 
-        private ITask[] GetNeedExecuteITask(IPrintColor print, CommandOptions commandOptions)
+        private ITask[] GetNeedExecuteITask(IPrintColor print, CommandOptions commandOptions, Configs configs)
         {
             return new ITask[]
             {
-                new Task_OpenShell(log, encoding, print, commandOptions),
-                new Task_RunCommand(log, encoding, print, commandOptions),
+                new Task_OpenShell(log, print, commandOptions, configs),
+                new Task_RunCommand(log, print, commandOptions),
             };
         }
 

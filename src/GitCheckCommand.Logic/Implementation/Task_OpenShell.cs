@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 
 using YTS.Log;
 using YTS.ConsolePrint;
@@ -10,36 +11,31 @@ namespace GitCheckCommand.Logic.Implementation
     /// <summary>
     /// 任务实现类: 打开Shell窗口
     /// </summary>
-    public class Task_OpenShell : ITask
+    public class Task_OpenShell : Task_RunCommand, ITask
     {
-        private readonly ILog log;
-        private readonly Encoding encoding;
-        private readonly IPrintColor print;
-        private readonly CommandOptions commandOptions;
+        private readonly Configs configs;
 
         /// <summary>
         /// 实例化 - 任务实现类: 打开Shell窗口
         /// </summary>
         /// <param name="log">日志接口</param>
-        /// <param name="encoding">文本编码</param>
         /// <param name="print">输出打印接口</param>
         /// <param name="commandOptions">命令选项配置</param>
-        public Task_OpenShell(ILog log, Encoding encoding, IPrintColor print, CommandOptions commandOptions)
+        /// <param name="configs">配置文件项</param>
+        public Task_OpenShell(ILog log, IPrintColor print, CommandOptions commandOptions, Configs configs)
+            : base(log, print, commandOptions)
         {
-            this.log = log;
-            this.encoding = encoding;
-            this.print = print;
-            this.commandOptions = commandOptions;
+            this.configs = configs;
         }
 
         /// <inheritdoc/>
-        public string GetDescribe()
+        public override string GetDescribe()
         {
             return "打开仓库所在目录的 Shell 窗口";
         }
 
         /// <inheritdoc/>
-        public TaskResponse OnExecute(GitRepository repository)
+        public override TaskResponse OnExecute(GitRepository repository)
         {
             bool isOpenShell = commandOptions.IsOpenShell ?? repository.IsOpenShell ?? false;
             if (!isOpenShell)
@@ -47,12 +43,26 @@ namespace GitCheckCommand.Logic.Implementation
                 return new TaskResponse() { Code = ETaskResponseCode.None };
             }
             print.WriteLine($"执行打开Shell操作中, 请等待...", EPrintColor.Purple);
-            return new TaskResponse()
+
+            string git_exe_path = configs.OpenShellGitBashExePath?.Trim();
+            if (string.IsNullOrEmpty(git_exe_path))
+                throw new Exception("Git Bash 程序地址未配置, 请检查!");
+
+            string command;
+            switch (commandOptions.ConsoleType)
             {
-                IsSuccess = false,
-                Code = ETaskResponseCode.NotFinished,
-                ErrorMessage = "未实现打开Shell逻辑操作",
-            };
+                case EConsoleType.CMD:
+                case EConsoleType.PowerShell:
+                case EConsoleType.WindowGitBash:
+                    command = @$"powershell -Command ""Start-Process -FilePath '{git_exe_path}' -ArgumentList '--cd={repository.Path.FullName}'""";
+                        break;
+                case EConsoleType.Bash:
+                    throw new Exception("未实现执行 Linux Bash 打开命令");
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(commandOptions.ConsoleType), $"未实现打开Shell逻辑操作, 无法解析: {commandOptions.ConsoleType}");
+            }
+            print.WriteLine($"执行命令: {command}");
+            return RunCommand(repository, command);
         }
     }
 }
