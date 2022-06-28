@@ -51,9 +51,12 @@ gits
 内容参数注解如下:
 ```json
 {
-    // 全局配置项: 如果仓库不干净是否, 自动打开对应的Git Bash程序
+    // 全局配置项: 如果仓库不干净是否, 自动打开对应的 Git Bash 程序
     // 目前还没有完成, 正在寻找实现思路
     "IsOpenShell": false,
+
+    // 全局配置项: 对应的 Git Bash 程序路径地址
+    "OpenShellGitBashExePath": "C:\\Program Files\\Git\\git-bash.exe",
 
     // 全局配置项, 循环递归查找指定目录下所有仓库的路径隐藏项
     // 在查找过程中会将每一项与路径进行正则表达式的匹配, 如果匹配成功则跳过不计算在程序运行范围内
