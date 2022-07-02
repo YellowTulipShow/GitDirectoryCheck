@@ -98,10 +98,6 @@ namespace GitCheckCommand.Logic.Implementation
                     new ConfigRoot()
                     {
                         Path = ToConfigRootDefaultPath(consoleType),
-                        IgnoresRegexs = new string[] {
-                            @"YTS.Test$",
-                            @"YTS.Learn$",
-                        },
                     },
                 },
             };

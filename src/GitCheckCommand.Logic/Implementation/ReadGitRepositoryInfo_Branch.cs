@@ -53,7 +53,7 @@ namespace GitCheckCommand.Logic.Implementation
             public string GetSelfBranchName()
             {
                 var logArgs = log.CreateArgDictionary();
-                IList<string> lines = new List<string>() { "EEEE" };
+                IList<string> lines = new List<string>() { };
                 logArgs["lines"] = lines;
                 OnExecuteOnlyCommand("branch", line =>
                 {
