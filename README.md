@@ -51,6 +51,9 @@ gits
 内容参数注解如下:
 ```json
 {
+    // 版本号标识
+    "Version": "x.x.x",
+
     // 全局配置项: 如果仓库不干净是否, 自动打开对应的 Git Bash 程序
     // 目前还没有完成, 正在寻找实现思路
     "IsOpenShell": false,
