@@ -1,3 +1,4 @@
+using System;
 using System.Text;
 
 using YTS.Log;
@@ -50,7 +51,7 @@ namespace GitCheckCommand.Logic.Implementation
                 print.WriteLine("存储库列表为空!", EPrintColor.Red);
                 return;
             }
-            IWriteGitRepositoryInfo[] readTools = GetNeed_IReadGitRepositoryInfo();
+            IReadGitRepositoryInfo[] readTools = GetNeed_IReadGitRepositoryInfo();
             ITask[] tasks = GetNeedExecuteITask(print, cOption, configs);
             int notCleanGitCount = 0;
             print.WriteIntervalLine();
@@ -58,17 +59,26 @@ namespace GitCheckCommand.Logic.Implementation
             print.WriteIntervalLine();
             for (int index_gitRepo = 0; index_gitRepo < gitRepos.Length; index_gitRepo++)
             {
-                GitRepository gitRepo = gitRepos[index_gitRepo];
-                logArgs["gitRepo.Path.FullName"] = gitRepo.Path.FullName;
-                foreach (var readTool in readTools)
+                try
                 {
-                    gitRepo = readTool.OnExecute(gitRepo);
+                    GitRepository gitRepo = gitRepos[index_gitRepo];
+                    logArgs["gitRepo.Path.FullName"] = gitRepo.Path.FullName;
+                    foreach (var readTool in readTools)
+                    {
+                        logArgs["IWriteGitRepositoryInfo"] = readTool.GetType().FullName;
+                        gitRepo = readTool.OnExecute(gitRepo);
+                    }
+                    if (!gitRepo.Status.IsClean)
+                    {
+                        notCleanGitCount++;
+                    }
+                    HandlerGitRepository(print, gitRepo, tasks, cOption);
                 }
-                if (!gitRepo.Status.IsClean)
+                catch (Exception ex)
                 {
+                    log.Error("读取存储库信息出错!", ex, logArgs);
                     notCleanGitCount++;
                 }
-                HandlerGitRepository(print, gitRepo, tasks, cOption);
             }
             print.WriteIntervalLine();
             if (notCleanGitCount > 0)
@@ -83,12 +93,12 @@ namespace GitCheckCommand.Logic.Implementation
             print.WriteIntervalLine();
         }
 
-        private IWriteGitRepositoryInfo[] GetNeed_IReadGitRepositoryInfo()
+        private IReadGitRepositoryInfo[] GetNeed_IReadGitRepositoryInfo()
         {
-            return new IWriteGitRepositoryInfo[]
+            return new IReadGitRepositoryInfo[]
             {
-                new WriteGitRepositoryInfo_Branch(log, encoding),
-                new WriteGitRepositoryInfo_Status(log, encoding),
+                new ReadGitRepositoryInfo_Branch(log, encoding),
+                new ReadGitRepositoryInfo_Status(log, encoding),
             };
         }
 
@@ -104,6 +114,8 @@ namespace GitCheckCommand.Logic.Implementation
         private void HandlerGitRepository(IPrintColor print, GitRepository gitRepo, ITask[] tasks, CommandOptions cOption)
         {
             var logArgs = log.CreateArgDictionary();
+            logArgs["print"] = print.GetType().FullName;
+            logArgs["gitRepo.Path.FullName"] = gitRepo.Path.FullName;
             if (gitRepo.Status.IsClean)
             {
                 print.WriteGitRepositoryPath(gitRepo, cOption.ConsoleType);
@@ -114,28 +126,34 @@ namespace GitCheckCommand.Logic.Implementation
             print.WriteSpaceLine();
             foreach (ITask task in tasks)
             {
-                string taskTypeName = task.GetType().Name;
-                logArgs["taskTypeName"] = taskTypeName;
-                string taskDesc = task.GetDescribe();
-                logArgs["taskDesc"] = taskDesc;
-                TaskResponse response = task.OnExecute(gitRepo);
-
-                if (response.Code == ETaskResponseCode.None)
-                    continue;
-                if (response.IsSuccess)
+                try
                 {
-                    print.WriteLine($"任务: [{taskDesc}] ({taskTypeName}) [{response.Code}] 执行完成!");
-                    if (!string.IsNullOrEmpty(response.ErrorMessage))
-                        print.WriteLine($"错误消息: {response.ErrorMessage}");
+                    string taskTypeName = task.GetType().Name;
+                    logArgs["taskTypeName"] = taskTypeName;
+                    string taskDesc = task.GetDescribe();
+                    logArgs["taskDesc"] = taskDesc;
+                    TaskResponse response = task.OnExecute(gitRepo);
+                    if (response.Code == ETaskResponseCode.None)
+                        continue;
+                    if (response.IsSuccess)
+                    {
+                        print.WriteLine($"任务: [{taskDesc}] ({taskTypeName}) [{response.Code}] 执行完成!");
+                        if (!string.IsNullOrEmpty(response.ErrorMessage))
+                            print.WriteLine($"错误消息: {response.ErrorMessage}");
+                    }
+                    else
+                    {
+                        print.WriteLine($"任务: [{taskDesc}] ({taskTypeName}) [{response.Code}] 执行失败!");
+                        if (!string.IsNullOrEmpty(response.ErrorMessage))
+                            print.WriteLine($"错误消息: {response.ErrorMessage}");
+                        log.Error("任务执行失败!", logArgs);
+                    }
+                    print.WriteSpaceLine();
                 }
-                else
+                catch (Exception ex)
                 {
-                    print.WriteLine($"任务: [{taskDesc}] ({taskTypeName}) [{response.Code}] 执行失败!");
-                    if (!string.IsNullOrEmpty(response.ErrorMessage))
-                        print.WriteLine($"错误消息: {response.ErrorMessage}");
-                    log.Error("任务执行失败!", logArgs);
+                    log.Error("存储库执行任务出错!", ex, logArgs);
                 }
-                print.WriteSpaceLine();
             }
             print.WriteSpaceLine();
             print.WriteGitRepositoryPath(gitRepo, cOption.ConsoleType);

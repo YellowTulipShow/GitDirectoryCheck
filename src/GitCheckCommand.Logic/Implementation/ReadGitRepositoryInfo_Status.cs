@@ -14,7 +14,7 @@ namespace GitCheckCommand.Logic.Implementation
     /// <summary>
     /// 写入存储库信息实现类: 状态信息
     /// </summary>
-    public class WriteGitRepositoryInfo_Status : IWriteGitRepositoryInfo
+    public class ReadGitRepositoryInfo_Status : IReadGitRepositoryInfo
     {
         private readonly ILog log;
         private readonly Encoding encoding;
@@ -24,7 +24,7 @@ namespace GitCheckCommand.Logic.Implementation
         /// </summary>
         /// <param name="log">日志接口</param>
         /// <param name="encoding">文本编码</param>
-        public WriteGitRepositoryInfo_Status(ILog log, Encoding encoding)
+        public ReadGitRepositoryInfo_Status(ILog log, Encoding encoding)
         {
             this.log = log;
             this.encoding = encoding;

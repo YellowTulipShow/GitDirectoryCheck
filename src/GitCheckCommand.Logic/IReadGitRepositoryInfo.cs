@@ -3,15 +3,15 @@
 namespace GitCheckCommand.Logic
 {
     /// <summary>
-    /// 接口: 写入赋值 Git 存储库信息
+    /// 接口: 读取 Git 存储库信息
     /// </summary>
-    public interface IWriteGitRepositoryInfo
+    public interface IReadGitRepositoryInfo
     {
         /// <summary>
-        /// 执行写入内容操作
+        /// 执行读取操作
         /// </summary>
         /// <param name="repository">存储库信息</param>
-        /// <returns>写入完成后的存储库信息</returns>
+        /// <returns>读取完成后的存储库信息</returns>
         GitRepository OnExecute(GitRepository repository);
     }
 }

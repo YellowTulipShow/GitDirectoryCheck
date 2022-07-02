@@ -15,7 +15,7 @@ namespace GitCheckCommand.Logic.Implementation
     /// <summary>
     /// 写入存储库信息实现类: 分支信息
     /// </summary>
-    public class WriteGitRepositoryInfo_Branch : IWriteGitRepositoryInfo
+    public class ReadGitRepositoryInfo_Branch : IReadGitRepositoryInfo
     {
         private readonly ILog log;
         private readonly Encoding encoding;
@@ -25,7 +25,7 @@ namespace GitCheckCommand.Logic.Implementation
         /// </summary>
         /// <param name="log">日志接口</param>
         /// <param name="encoding">文本编码</param>
-        public WriteGitRepositoryInfo_Branch(ILog log, Encoding encoding)
+        public ReadGitRepositoryInfo_Branch(ILog log, Encoding encoding)
         {
             this.log = log;
             this.encoding = encoding;
@@ -34,7 +34,7 @@ namespace GitCheckCommand.Logic.Implementation
         /// <inheritdoc/>
         public GitRepository OnExecute(GitRepository repository)
         {
-            var gitBranch = new ReadNameClass(new Repository()
+            var gitBranch = new ReadNameClass(log, new Repository()
             {
                 OutputTextEncoding = encoding,
                 RootPath = repository.Path,
@@ -45,25 +45,34 @@ namespace GitCheckCommand.Logic.Implementation
 
         internal class ReadNameClass : AbsGitCommandExecuteHelper
         {
-            public ReadNameClass(Repository repository) : base(repository) { }
+            private readonly ILog log;
+            public ReadNameClass(ILog log, Repository repository) : base(repository)
+            {
+                this.log = log;
+            }
 
             public string GetSelfBranchName()
             {
-                IList<string> lines = new List<string>();
+                var logArgs = log.CreateArgDictionary();
+                IList<string> lines = new List<string>() { "EEEE" };
+                logArgs["lines"] = lines;
                 OnExecuteOnlyCommand("branch", line =>
                 {
                     lines.Add(line);
                 });
                 Regex selfBranchRegex = new Regex(@"^\*\s+([^\s]+)$");
+                logArgs["selfBranchRegex"] = selfBranchRegex.ToString();
                 foreach (string line in lines)
                 {
+                    logArgs["line"] = line;
                     Match match = selfBranchRegex.Match(line);
                     if (match.Success)
                     {
                         return match.Groups[1].Value;
                     }
                 }
-                throw new Exception("无法查询到当前分支名称");
+                log.Error("无法查询到当前分支名称", logArgs);
+                return @"<Query NULL Branch!!!>";
             }
         }
     }
