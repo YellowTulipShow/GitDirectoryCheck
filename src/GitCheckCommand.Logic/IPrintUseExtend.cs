@@ -12,7 +12,6 @@ namespace GitCheckCommand.Logic
     /// </summary>
     public static class IPrintUseExtend
     {
-        //private readonly static string interval_line = $"\n{"".PadLeft(80, '-')}\n";
         private readonly static string interval_line = $"{"".PadLeft(80, '-')}";
         private static int beforeWriteIntervalLineCount = -1;
         /// <summary>

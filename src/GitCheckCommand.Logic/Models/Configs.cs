@@ -9,27 +9,33 @@ namespace GitCheckCommand.Logic.Models
     public struct Configs
     {
         /// <summary>
+        /// 版本号
+        /// </summary>
+        [JsonProperty(Order = 0)]
+        public string Version { get; set; }
+
+        /// <summary>
         /// 当Git仓库'不干净'时, 是否需要自动打开命令窗口
         /// </summary>
-        [JsonProperty(Order = 1)]
+        [JsonProperty(Order = 10)]
         public bool? IsOpenShell { get; set; }
 
         /// <summary>
         /// 打开 Git Bash 命令行程序路径地址配置
         /// </summary>
-        [JsonProperty(Order = 2)]
+        [JsonProperty(Order = 11)]
         public string OpenShellGitBashExePath { get; set; }
 
         /// <summary>
         /// 查找 Git 仓库时进行屏蔽的路径正则匹配字符串队列
         /// </summary>
-        [JsonProperty(Order = 3)]
+        [JsonProperty(Order = 20)]
         public string[] IgnoresRegexs { get; set; }
 
         /// <summary>
         /// 查找 Git 仓库从哪些目录开始
         /// </summary>
-        [JsonProperty(Order = 4)]
+        [JsonProperty(Order = 30)]
         public ConfigRoot[] Roots { get; set; }
     }
 
@@ -41,19 +47,19 @@ namespace GitCheckCommand.Logic.Models
         /// <summary>
         /// 根目录路径
         /// </summary>
-        [JsonProperty(Order = 0)]
+        [JsonProperty(Order = 10)]
         public string Path { get; set; }
 
         /// <summary>
         /// 当Git仓库'不干净'时, 是否需要自动打开命令窗口
         /// </summary>
-        [JsonProperty(Order = 1)]
+        [JsonProperty(Order = 20)]
         public bool? IsOpenShell { get; set; }
 
         /// <summary>
         /// 查找 Git 仓库时进行屏蔽的路径正则匹配字符串队列
         /// </summary>
-        [JsonProperty(Order = 2)]
+        [JsonProperty(Order = 30)]
         public string[] IgnoresRegexs { get; set; }
     }
 }

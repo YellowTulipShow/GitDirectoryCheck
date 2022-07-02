@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text;
 
 using YTS.Log;
 using YTS.ConsolePrint;
@@ -55,7 +54,7 @@ namespace GitCheckCommand.Logic.Implementation
                 case EConsoleType.PowerShell:
                 case EConsoleType.WindowGitBash:
                     command = @$"powershell -Command ""Start-Process -FilePath '{git_exe_path}' -ArgumentList '--cd={repository.Path.FullName}'""";
-                        break;
+                    break;
                 case EConsoleType.Bash:
                     throw new Exception("未实现执行 Linux Bash 打开命令");
                 default:

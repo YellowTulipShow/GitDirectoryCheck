@@ -1,15 +1,11 @@
 ﻿using System;
 using System.IO;
-using System.Runtime.InteropServices;
-using System.Text.RegularExpressions;
-
 using System.CommandLine;
 
 using YTS.Log;
 using YTS.ConsolePrint;
 
 using GitCheckCommand.Logic;
-using GitCheckCommand.Logic.Models;
 
 namespace GitCheckCommand
 {

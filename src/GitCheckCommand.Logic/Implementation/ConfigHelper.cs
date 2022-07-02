@@ -3,11 +3,13 @@ using System.IO;
 using System.Text;
 
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 using YTS.Log;
 using YTS.ConsolePrint;
 
 using GitCheckCommand.Logic.Models;
+using System.Reflection;
 
 namespace GitCheckCommand.Logic.Implementation
 {
@@ -47,10 +49,10 @@ namespace GitCheckCommand.Logic.Implementation
         public Configs ReadConfigs(string configFilePath, EConsoleType consoleType)
         {
             FileInfo file = new FileInfo(configFilePath);
+            Configs defaultConfigs = GetDefaultConfigs(consoleType);
             if (!file.Exists)
             {
                 file.Create().Close();
-                Configs defaultConfigs = GetDefaultConfigs(consoleType);
                 string json = JsonConvert.SerializeObject(defaultConfigs, jsonSerializerSettings);
                 File.WriteAllText(file.FullName, json, this.encoding);
                 print.Write($"配置文件不存在, 自动创建默认项: ");
@@ -58,16 +60,37 @@ namespace GitCheckCommand.Logic.Implementation
                 return defaultConfigs;
             }
             string content = File.ReadAllText(file.FullName, this.encoding);
-            var config = JsonConvert.DeserializeObject<Configs>(content);
+            Configs config = JsonConvert.DeserializeObject<Configs>(content);
             print.Write($"获取配置文件成功: ");
             print.WriteLine(file.FullName, EPrintColor.Green);
+            if (config.Version != defaultConfigs.Version)
+            {
+                string oldVersion = config.Version;
+                string newVersion = defaultConfigs.Version;
+                config = Merge(defaultConfigs, config);
+                config.Version = defaultConfigs.Version;
+                string json = JsonConvert.SerializeObject(config, jsonSerializerSettings);
+                File.WriteAllText(file.FullName, json, this.encoding);
+                print.Write($"版本号过期: ");
+                print.WriteLine($"[{oldVersion}] => [{newVersion}], ", EPrintColor.Red);
+                print.Write($"更改配置文件!");
+            }
             return config;
+        }
+        private static T Merge<T>(T obj1, T obj2)
+        {
+            JObject json_obj1 = JObject.FromObject(obj1);
+            JObject json_obj2 = JObject.FromObject(obj2);
+            json_obj1.Merge(json_obj2);
+            return json_obj1.ToObject<T>();
         }
 
         private Configs GetDefaultConfigs(EConsoleType consoleType)
         {
+            string version = Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
             return new Configs()
             {
+                Version = version,
                 IsOpenShell = false,
                 OpenShellGitBashExePath = ToOpenShellGitBashExePath(consoleType),
                 IgnoresRegexs = new string[] { },

@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/RunCommand/RunCommand.csproj",
+                "${workspaceFolder}/GitCheckCommand/GitCheckCommand.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -19,7 +19,7 @@
             "type": "process",
             "args": [
                 "publish",
-                "${workspaceFolder}/RunCommand/RunCommand.csproj",
+                "${workspaceFolder}/GitCheckCommand/GitCheckCommand.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -33,7 +33,7 @@
                 "watch",
                 "run",
                 "--project",
-                "${workspaceFolder}/RunCommand/RunCommand.csproj"
+                "${workspaceFolder}/GitCheckCommand/GitCheckCommand.csproj"
             ],
             "problemMatcher": "$msCompile"
         }

@@ -10,9 +10,9 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/RunCommand/bin/Debug/netcoreapp3.1/RunCommand.dll",
+            "program": "${workspaceFolder}/GitCheckCommand/bin/Debug/netcoreapp3.1/GitCheckCommand.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/RunCommand",
+            "cwd": "${workspaceFolder}/GitCheckCommand",
             // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
             "console": "internalConsole",
             "stopAtEntry": false
