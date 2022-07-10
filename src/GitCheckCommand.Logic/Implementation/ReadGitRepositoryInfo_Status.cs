@@ -59,7 +59,7 @@ namespace GitCheckCommand.Logic.Implementation
             };
             for (int i = 0; i < msgs.Count; i++)
             {
-                string msg = msgs[i];
+                string msg = msgs[i].Trim();
                 if (yes.Contains(msg))
                 {
                     return (false, i);
@@ -71,7 +71,7 @@ namespace GitCheckCommand.Logic.Implementation
             };
             for (int i = 0; i < msgs.Count; i++)
             {
-                string msg = msgs[i];
+                string msg = msgs[i].Trim();
                 if (no.Contains(msg))
                 {
                     return (true, i);
