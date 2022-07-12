@@ -83,6 +83,14 @@ gits
 }
 ```
 
+## 注意事项
+
+本人开发使用的是 `Window` 系统, 使用的 `Git` 自带的 `Git Bash (mintty)`
+
+建议安装使用最新版本的 `Git git version 2.30+` `mintty 3.6+`
+
+否则会有中文信息删除出现乱码的情况
+
 ## 参考学习地址
 * [RadoRado 的 git检查脚本, 功能基本实现 但与我的想法还有一些区别, 所以以此为基础进行代码的更改](https://github.com/RadoRado/Statuser)
 * [python脚本执行CMD命令并返回结果](https://blog.csdn.net/xgh1951/article/details/85244272)
