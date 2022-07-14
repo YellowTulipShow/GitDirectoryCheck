@@ -1,4 +1,4 @@
-param([string]$runMethod)
+﻿param([string]$runMethod)
 if ($runMethod -ne "toolScript") {
     $ExecutePath = $PWD
     Set-Location $PSScriptRoot

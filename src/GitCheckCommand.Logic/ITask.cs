@@ -1,4 +1,4 @@
-using GitCheckCommand.Logic.Models;
+﻿using GitCheckCommand.Logic.Models;
 
 namespace GitCheckCommand
 {
