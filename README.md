@@ -12,7 +12,22 @@
 * 运行平台: `.Net Core 3.1`
 * 与之前版本相比基于可以跨平台安装执行
 
-### 使用
+
+## 使用
+
+### 发布版本 dotnet SDK 安装命令
+
+[GitHub Release 发布页下载地址](https://github.com/YellowTulipShow/GitDirectoryCheck/releases)
+
+切换下载文件目录
+```bash
+# 卸载旧版本
+dotnet tool uninstall -g GitCheckCommand
+# 安装新版本
+dotnet tool install -g --add-source ./ GitCheckCommand
+```
+
+### 源代码手动编译
 
 首先确保计算机中含有 `.Net Core 3.1 +` 运行时环境, 如果没有请自行下载
 
@@ -24,8 +39,6 @@
 $ dotnet run --project ./src/GitCheckCommand/GitCheckCommand.csproj
 ```
 
-### 方便使用
-
 快速调用脚本发布安装, 使用 `Powershell` 脚本
 
 ```powershell
@@ -34,7 +47,9 @@ $ dotnet run --project ./src/GitCheckCommand/GitCheckCommand.csproj
 ./shell/install_command_packages.ps1
 ```
 
-执行完成, 无错误即可使用命令程序:
+执行完成, 无错误即可使用命令程序
+
+### 使用命令
 
 ```powershell
 gits
@@ -85,7 +100,7 @@ gits
 
 ## 注意事项
 
-本人开发使用的是 `Window` 系统, 使用的 `Git` 自带的 `Git Bash (mintty)`
+开发使用的是 `Window` 系统, 使用的 `Git` 自带的 `Git Bash (mintty)`
 
 建议安装使用最新版本的 `Git version 2.30+` `mintty 3.6+`
 
