@@ -9,23 +9,11 @@
 ## 运行测试版本
 
 * 程序语言: `C#`
-* 运行平台: `.Net Core 3.1`
+* 运行平台: `.Net 9+`
 * 与之前版本相比基于可以跨平台安装执行
 
 
 ## 使用
-
-### 发布版本 dotnet SDK 安装命令
-
-[GitHub Release 发布页下载地址](https://github.com/YellowTulipShow/GitDirectoryCheck/releases)
-
-切换下载文件目录
-```bash
-# 卸载旧版本
-dotnet tool uninstall -g GitCheckCommand
-# 安装新版本
-dotnet tool install -g --add-source ./ GitCheckCommand
-```
 
 ### 源代码手动编译
 
@@ -43,7 +31,7 @@ git config --global alias.gits '!E:/XXX/GitCheckCommand/GitCheckCommand.exe'
 ### 使用命令
 
 ```powershell
-gits
+git gits
 ```
 
 ## 配置文件说明
