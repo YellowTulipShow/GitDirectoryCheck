@@ -29,22 +29,13 @@ dotnet tool install -g --add-source ./ GitCheckCommand
 
 ### 源代码手动编译
 
-首先确保计算机中含有 `.Net Core 3.1 +` 运行时环境, 如果没有请自行下载
-
-随便找一个目录 `git clone` 拉取下程序源码
-
-调用命令即可运行:
-
-```shell
-$ dotnet run --project ./src/GitCheckCommand/GitCheckCommand.csproj
+```powershell
+dotnet publish .\src\GitCheckCommand\GitCheckCommand.csproj -o "_release/GitCheckCommand/" -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true
 ```
 
-快速调用脚本发布安装, 使用 `Powershell` 脚本
-
+重命名为 Git 子命令, 确保全局使用
 ```powershell
-./shell/find_all_project.ps1
-./shell/release.ps1
-./shell/install_command_packages.ps1
+git config --global alias.gits '!E:/XXX/GitCheckCommand/GitCheckCommand.exe'
 ```
 
 执行完成, 无错误即可使用命令程序

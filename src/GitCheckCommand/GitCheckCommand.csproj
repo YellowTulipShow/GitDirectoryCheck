@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <TargetFramework>net9</TargetFramework>
         <Title>操作 Git 检查命令</Title>
         <PackageId>GitCheckCommand</PackageId>
         <Version>2.1.1</Version>
@@ -19,8 +19,8 @@
         <xmlDoc>true</xmlDoc>
 
         <OutputType>Exe</OutputType>
-        <PackAsTool>true</PackAsTool>
-        <ToolCommandName>gits</ToolCommandName>
+        <!-- <PackAsTool>true</PackAsTool> -->
+        <!-- <ToolCommandName>gits</ToolCommandName> -->
     </PropertyGroup>
 
     <ItemGroup>
